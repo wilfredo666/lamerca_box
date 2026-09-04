@@ -1,0 +1,488 @@
+body{
+
+    margin:0;
+
+    font-family:Arial;
+
+    background:#f4f6f9;
+
+}
+
+.entrega-encabezado{
+    background:#16a34a;
+    color:white;
+    padding:20px;
+    font-size:30px;
+    font-weight:bold;
+}
+
+
+/* =========================
+   ENCABEZADO
+========================= */
+
+header{
+
+    background:#16a34a;
+
+    color:white;
+
+    padding:20px;
+
+    font-size:30px;
+
+    font-weight:bold;
+
+}
+
+
+/* =========================
+   CONTENEDOR
+========================= */
+
+.contenedor{
+
+    width:95%;
+
+    max-width:900px;
+
+    margin:auto;
+
+    margin-top:30px;
+
+}
+
+
+/* =========================
+   TARJETA
+========================= */
+
+.card{
+
+    background:white;
+
+    padding:30px;
+
+    border-radius:15px;
+
+    box-shadow:0 5px 15px rgba(0,0,0,.15);
+
+}
+
+
+/* =========================
+   DETALLE + FOTO
+========================= */
+
+.contenidoDetalle{
+
+    display:grid;
+
+    grid-template-columns:1fr 300px;
+
+    gap:35px;
+
+    align-items:start;
+
+}
+
+
+/* =========================
+   FOTO
+========================= */
+
+.fotoDetalle{
+
+    width:100%;
+
+    height:300px;
+
+    border:2px dashed #d1d5db;
+
+    border-radius:15px;
+
+    background:#f8fafc;
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+    overflow:hidden;
+
+    color:#9ca3af;
+
+    font-size:16px;
+
+}
+
+.fotoDetalle img{
+
+    width:100%;
+
+    height:100%;
+
+    object-fit:cover;
+
+}
+
+
+/* =========================
+   ACCIONES DE COBRO
+========================= */
+
+.accionesCobro{
+
+    margin-top:18px;
+
+}
+
+
+/* TITULO */
+
+.tituloCobro{
+
+    font-size:17px;
+
+    font-weight:bold;
+
+    color:#374151;
+
+    margin-bottom:10px;
+
+}
+
+
+/* BOTONES */
+
+.accionesCobro button{
+
+    width:100%;
+
+    border:none;
+
+    border-radius:12px;
+
+    padding:15px;
+
+    color:white;
+
+    font-size:17px;
+
+    font-weight:bold;
+
+    cursor:pointer;
+
+    margin-bottom:10px;
+
+}
+
+
+/* EFECTIVO */
+
+.btnEfectivo{
+
+    background:#16a34a;
+
+}
+
+
+/* QR */
+
+.btnQR{
+
+    background:#2563eb;
+
+}
+
+
+/* TEXTO PEQUEÑO */
+
+.accionesCobro button span{
+
+    display:block;
+
+    font-size:13px;
+
+    margin-top:4px;
+
+}
+
+
+/* =========================
+   COBRO REALIZADO
+========================= */
+
+.cobroRealizado{
+
+    margin-top:18px;
+
+    padding:15px;
+
+    background:#dcfce7;
+
+    color:#15803d;
+
+    border-radius:10px;
+
+    text-align:center;
+
+    font-weight:bold;
+
+}
+
+
+/* =========================
+   MODAL QR
+========================= */
+
+.modalQR{
+
+    display:none;
+
+    position:fixed;
+
+    inset:0;
+
+    background:rgba(0,0,0,.55);
+
+    z-index:9999;
+
+    align-items:center;
+
+    justify-content:center;
+
+    padding:20px;
+
+}
+
+
+.modalQRContenido{
+
+    background:white;
+
+    width:100%;
+
+    max-width:430px;
+
+    border-radius:16px;
+
+    padding:25px;
+
+    box-shadow:0 15px 40px rgba(0,0,0,.3);
+
+    text-align:center;
+
+}
+
+
+.modalQRTitulo{
+
+    font-size:22px;
+
+    font-weight:bold;
+
+    color:#2563eb;
+
+    margin-bottom:15px;
+
+}
+
+
+.montoQR{
+
+    font-size:32px;
+
+    font-weight:bold;
+
+    color:#16a34a;
+
+    margin:15px 0;
+
+}
+
+
+.advertenciaQR{
+
+    background:#fff7ed;
+
+    color:#9a3412;
+
+    padding:12px;
+
+    border-radius:8px;
+
+    font-size:14px;
+
+}
+
+
+.botonesModalQR{
+
+    display:flex;
+
+    gap:10px;
+
+    margin-top:20px;
+
+}
+
+
+.botonesModalQR button{
+
+    flex:1;
+
+    padding:13px;
+
+    border:none;
+
+    border-radius:9px;
+
+    font-weight:bold;
+
+    cursor:pointer;
+
+}
+
+
+.btnCancelarQR{
+
+    background:#e5e7eb;
+
+    color:#374151;
+
+}
+
+
+.btnConfirmarQR{
+
+    background:#2563eb;
+
+    color:white;
+
+}
+
+
+/* =========================
+   RETIRAR
+========================= */
+
+.botonRetirar{
+
+    margin-top:18px;
+
+    text-align:center;
+
+}
+
+
+.botonRetirar button{
+
+    background:none;
+
+    border:none;
+
+    color:#b91c1c;
+
+    font-size:14px;
+
+    cursor:pointer;
+
+    text-decoration:underline;
+
+    padding:6px 10px;
+
+}
+
+
+/* =========================
+   FORMULARIO RETIRO
+========================= */
+
+#formRetiro{
+
+    display:none;
+
+    margin-top:15px;
+
+    padding:18px;
+
+    border:1px solid #fecaca;
+
+    background:#fff7f7;
+
+    border-radius:12px;
+
+}
+
+.alerta{
+    padding:12px;
+    margin:0 0 16px;
+    border-radius:8px;
+    background:#dcfce7;
+    color:#166534;
+    font-weight:bold;
+}
+
+.titulo-retiro{
+    margin-bottom:8px;
+    color:#991b1b;
+    font-weight:bold;
+}
+
+#formRetiro label{
+    display:block;
+    margin:15px 0 7px;
+    font-weight:bold;
+}
+
+#formRetiro textarea{
+    width:100%;
+    min-height:80px;
+    box-sizing:border-box;
+    padding:10px;
+    border:1px solid #d1d5db;
+    border-radius:8px;
+    font:14px Arial, sans-serif;
+    resize:vertical;
+}
+
+.acciones-retiro{
+    display:flex;
+    gap:10px;
+    margin-top:12px;
+}
+
+.acciones-retiro button{
+    flex:1;
+    padding:11px;
+    border:0;
+    border-radius:8px;
+    cursor:pointer;
+    font-weight:bold;
+}
+
+.acciones-retiro button:first-child{ background:#e5e7eb; color:#374151; }
+.acciones-retiro button:last-child{ background:#b91c1c; color:white; }
+
+
+/* =========================
+   RESPONSIVE
+========================= */
+
+@media(max-width:700px){
+
+    .contenidoDetalle{
+
+        grid-template-columns:1fr;
+
+    }
+
+    .fotoDetalle{
+
+        height:300px;
+
+    }
+
+}

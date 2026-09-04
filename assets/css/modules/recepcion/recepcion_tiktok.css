@@ -1,0 +1,283 @@
+body{
+
+margin:0;
+font-family:Arial;
+background:#f4f6f9;
+
+}
+
+header{
+
+background:#16a34a;
+color:white;
+padding:20px;
+font-size:30px;
+font-weight:bold;
+
+}
+
+.contenedor{
+
+width:95%;
+max-width:1500px;
+margin:auto;
+margin-top:20px;
+
+}
+
+.card{
+
+background:white;
+padding:20px;
+border-radius:15px;
+box-shadow:0 5px 15px rgba(0,0,0,.15);
+
+}
+
+.layoutRecepcion{
+
+display:grid;
+grid-template-columns:320px 1fr;
+gap:20px;
+align-items:start;
+
+}
+
+.columnaIzquierda{
+
+min-width:0;
+
+}
+
+.columnaDerecha{
+
+min-width:0;
+
+}
+
+@media (max-width: 800px){
+
+    .layoutRecepcion{
+
+        grid-template-columns:1fr;
+
+    }
+
+}
+
+label{
+
+font-weight:bold;
+display:block;
+margin-top:15px;
+
+}
+
+select{
+
+padding:8px;
+font-size:15px;
+
+}
+
+select[name="empresa"]{
+
+width:350px;
+
+}
+
+.tablaSelect{
+
+width:100%;
+
+}
+
+.info{
+
+margin-top:25px;
+background:#f1f5f9;
+padding:20px;
+border-radius:10px;
+line-height:35px;
+
+}
+
+.resumenRecepcion{
+
+    display:grid;
+    grid-template-columns:1fr 1fr 1fr;
+    gap:20px;
+
+}
+
+.resumenRecepcion > div{
+
+    background:#f8fafc;
+    padding:10px 15px;
+    border-radius:10px;
+
+}
+
+.resumenRecepcion b{
+
+    display:inline-block;
+    margin-bottom:4px;
+
+}
+
+@media(max-width:700px){
+
+    .resumenRecepcion{
+
+        grid-template-columns:1fr;
+
+    }
+
+}
+
+table{
+
+margin-top:25px;
+width:100%;
+border-collapse:collapse;
+
+}
+
+th{
+
+background:#16a34a;
+color:white;
+padding:12px;
+
+}
+
+td{
+
+padding:10px;
+border-bottom:1px solid #ddd;
+
+}
+
+input{
+
+width:98%;
+padding:8px;
+font-size:15px;
+
+}
+
+button{
+
+margin-top:25px;
+padding:18px;
+width:100%;
+font-size:20px;
+background:#16a34a;
+color:white;
+border:none;
+border-radius:10px;
+cursor:pointer;
+
+}
+
+.resultados-cajas {
+    background: #fff;
+    border: 1px solid #d1d5db;
+    border-radius: 10px;
+    margin-top: 8px;
+    max-height: 315px;
+    overflow-y: auto;
+}
+
+.resultado-caja {
+    background: #fff;
+    border: 0;
+    border-bottom: 1px solid #e5e7eb;
+    border-radius: 0;
+    color: #111827;
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    margin: 0;
+    padding: 14px 16px;
+    text-align: left;
+    width: 100%;
+}
+
+.resultado-caja:last-child {
+    border-bottom: 0;
+}
+
+.resultado-caja:hover,
+.resultado-caja:focus {
+    background: #f0fdf4;
+    color: #111827;
+}
+
+.resultado-caja strong {
+    color: #16a34a;
+}
+
+.resultado-caja span {
+    font-size: 14px;
+}
+
+.caja-seleccionada {
+    background: #f8fafc;
+    border: 1px solid #d1d5db;
+    border-radius: 15px;
+    color: #111827;
+    font-size: 16px;
+    margin-top: 20px;
+    padding: 22px 24px;
+}
+
+.nombre-caja-seleccionada {
+    color: #16a34a;
+    display: block;
+    font-size: 22px;
+    margin-bottom: 24px;
+}
+
+.caja-seleccionada p {
+    margin: 0 0 18px;
+}
+
+.btnEditarCajaTikTok {
+    background: #2563eb;
+    border-radius: 10px;
+    color: #fff;
+    display: block;
+    font-size: 20px;
+    font-weight: bold;
+    margin-top: 20px;
+    padding: 16px;
+    text-align: center;
+    text-decoration: none;
+}
+
+.btnEditarCajaTikTok:hover,
+.btnEditarCajaTikTok:focus {
+    background: #1d4ed8;
+    color: #fff;
+    text-decoration: none;
+}
+
+.btnNuevaCajaTikTok {
+    background: #2563eb;
+    border-radius: 10px;
+    color: #fff;
+    display: block;
+    font-size: 20px;
+    margin-top: 15px;
+    padding: 18px;
+    text-align: center;
+    text-decoration: none;
+}
+
+.btnNuevaCajaTikTok:hover,
+.btnNuevaCajaTikTok:focus {
+    background: #1d4ed8;
+    color: #fff;
+    text-decoration: none;
+}

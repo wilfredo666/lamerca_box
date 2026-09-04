@@ -1,0 +1,9 @@
+.usuarios-contenedor { margin: 28px auto; max-width: 1400px; }
+.usuarios-encabezado { align-items: center; display: flex; justify-content: space-between; margin-bottom: 20px; }
+.usuarios-encabezado h1 { color: #14532d; font-size: 28px; margin: 0; }
+.usuarios-encabezado p { color: #64748b; margin: 5px 0 0; }
+.usuarios-card { border: 0; box-shadow: 0 3px 12px rgba(15,23,42,.12); }
+#tablaUsuarios { width: 100% !important; }
+#tablaUsuarios th { white-space: nowrap; }
+.usuarios-acciones { display: flex; gap: 5px; }
+.usuarios-acciones form { display: inline; }

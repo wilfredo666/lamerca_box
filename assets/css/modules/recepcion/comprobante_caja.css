@@ -1,0 +1,287 @@
+body{
+
+    margin:0;
+    font-family:Arial;
+    background:#f4f6f9;
+
+}
+
+.contenedor{
+
+    width:90%;
+    max-width:900px;
+    margin:auto;
+    margin-top:30px;
+
+}
+
+.card{
+
+    background:white;
+    padding:30px;
+    border-radius:15px;
+    box-shadow:0 5px 15px rgba(0,0,0,.15);
+
+}
+
+h1{
+
+    color:#16a34a;
+    text-align:center;
+
+}
+
+.info{
+
+    margin-top:20px;
+    font-size:16px;
+
+}
+
+.dato{
+
+    margin-bottom:12px;
+
+}
+
+.resumen{
+
+    margin-top:28px;
+    margin-bottom:28px;
+
+}
+
+.estadoCaja{
+
+    margin-top:28px;
+
+}
+
+.paquete{
+
+    background:#f8fafc;
+    border-left:6px solid #16a34a;
+    border-radius:12px;
+    padding:20px;
+    margin-bottom:18px;
+    line-height:30px;
+    box-shadow:0 2px 8px rgba(0,0,0,.08);
+
+}
+
+.paquete h3{
+
+    margin-top:0;
+    color:#16a34a;
+
+}
+
+.paquetePendiente{
+
+    border-left:6px solid #facc15;
+
+}
+
+.paqueteEntregado{
+
+    border-left:6px solid #16a34a;
+
+}
+
+.estadoPendiente{
+
+    color:#ca8a04;
+    font-weight:bold;
+
+}
+
+.estadoEntregado{
+
+    color:#16a34a;
+    font-weight:bold;
+
+}
+
+.btnVerde{
+
+    background:#16a34a;
+    color:white;
+    border:none;
+    padding:15px 30px;
+    font-size:18px;
+    border-radius:10px;
+    cursor:pointer;
+    margin:10px;
+
+}
+
+.btnVerde:hover{
+
+    background:#15803d;
+
+}
+
+.btnWhatsapp{
+
+    background:#25D366;
+    color:white;
+    border:none;
+    padding:15px 30px;
+    font-size:18px;
+    border-radius:10px;
+    cursor:pointer;
+    margin:10px;
+
+}
+
+.btnWhatsapp:hover{
+
+    background:#1da851;
+
+}
+
+.acciones{
+
+    text-align:center;
+    margin-top:35px;
+
+}
+
+.tituloAcciones{
+
+    font-size:18px;
+    font-weight:bold;
+    margin-bottom:15px;
+    color:#374151;
+
+}
+
+.botonesRecepcion{
+
+    display:flex;
+    justify-content:center;
+    gap:15px;
+    flex-wrap:wrap;
+    margin-bottom:15px;
+
+}
+
+.btnRecepcion{
+
+    display:inline-block;
+    padding:14px 25px;
+    border-radius:10px;
+    color:white;
+    text-decoration:none;
+    font-size:17px;
+    font-weight:bold;
+    min-width:220px;
+
+}
+
+.btnGeneral{
+
+    background:#16a34a;
+
+}
+
+.btnGeneral:hover{
+
+    background:#15803d;
+
+}
+
+.btnTikTok{
+
+    background:#111827;
+
+}
+
+.btnTikTok:hover{
+
+    background:#000000;
+
+}
+
+.paquetesGrid{
+
+    display:grid;
+    grid-template-columns:repeat(2, minmax(0, 1fr));
+    gap:18px;
+
+}
+
+.paquetesGrid h2{
+
+    grid-column:1 / -1;
+
+}
+
+@media(max-width:700px){
+
+    .paquetesGrid{
+
+        grid-template-columns:1fr;
+
+    }
+
+}
+
+.info{
+    margin-top:25px;
+    font-size:16px;
+    line-height:28px;
+}
+
+.info > div{
+    margin-bottom:4px;
+}
+
+.separador-info{
+    height:10px;
+}
+
+.estado-final{
+    margin-top:14px;
+}
+
+.separadorLote{
+
+    grid-column:1 / -1;
+
+    margin-top:20px;
+    margin-bottom:5px;
+
+    padding:9px 4px 8px;
+
+    border-bottom:2px solid #d1d5db;
+
+}
+
+.separadorLote strong{
+
+    color:#374151;
+    font-size:17px;
+
+}
+
+.separadorLote span{
+
+    color:#6b7280;
+    font-size:14px;
+
+}
+
+.paqueteEntregado{
+
+    background:#f3f4f6;
+    border-left:6px solid #16a34a;
+    opacity:.78;
+
+}
+
+.paqueteEntregado h3{
+
+    color:#15803d;
+
+}

@@ -1,0 +1,46 @@
+.clientes-contenedor {
+  margin: 28px auto;
+  max-width: 1400px;
+}
+
+.clientes-encabezado {
+  align-items: center;
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+
+.clientes-encabezado h1 {
+  color: #14532d;
+  font-size: 28px;
+  margin: 0;
+}
+
+.clientes-encabezado p {
+  color: #64748b;
+  margin: 5px 0 0;
+}
+
+.clientes-card {
+  border: 0;
+  box-shadow: 0 3px 12px rgba(15, 23, 42, 0.12);
+}
+
+.clientes-acciones {
+  display: flex;
+  gap: 6px;
+  min-width: 116px;
+}
+
+.form-accion-cliente {
+  display: inline;
+  margin: 0;
+}
+
+@media (max-width: 576px) {
+  .clientes-encabezado {
+    align-items: stretch;
+    flex-direction: column;
+    gap: 12px;
+  }
+}

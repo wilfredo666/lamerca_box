@@ -1,0 +1,48 @@
+.almacenes-contenedor {
+  margin: 28px auto;
+  max-width: 1400px;
+}
+
+.almacenes-encabezado {
+  align-items: center;
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+
+.almacenes-acciones {
+  display: flex;
+  gap: 5px;
+}
+
+.almacenes-acciones form {
+  display: inline;
+}
+
+.almacenes-encabezado h1 {
+  color: #14532d;
+  font-size: 28px;
+  margin: 0;
+}
+
+.almacenes-encabezado p {
+  color: #64748b;
+  margin: 5px 0 0;
+}
+
+.almacenes-card {
+  border: 0;
+  box-shadow: 0 3px 12px rgba(15, 23, 42, 0.12);
+}
+
+#tablaAlmacenes {
+  width: 100% !important;
+}
+
+#tablaAlmacenes th {
+  white-space: nowrap;
+}
+
+.almacenes-encabezado button {
+  white-space: nowrap;
+}

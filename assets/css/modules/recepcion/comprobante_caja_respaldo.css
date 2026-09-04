@@ -1,0 +1,37 @@
+body{
+
+    font-family:Arial;
+    background:#f4f6f9;
+    margin:0;
+
+}
+
+.contenedor{
+
+    width:900px;
+    margin:40px auto;
+
+}
+
+.card{
+
+    background:white;
+    border-radius:15px;
+    padding:30px;
+    box-shadow:0 5px 15px rgba(0,0,0,.15);
+
+}
+
+h1{
+
+    color:#16a34a;
+    text-align:center;
+
+}
+
+.info{
+
+    line-height:35px;
+    font-size:18px;
+
+}

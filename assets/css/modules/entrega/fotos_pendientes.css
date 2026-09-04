@@ -1,0 +1,372 @@
+body{
+
+    margin:0;
+
+    font-family:Arial;
+
+    background:#f4f6f9;
+
+}
+
+.entrega-encabezado{
+    background:#16a34a;
+    color:white;
+    padding:20px;
+    font-size:30px;
+    font-weight:bold;
+}
+
+
+header{
+
+    background:#16a34a;
+
+    color:white;
+
+    padding:20px;
+
+    font-size:30px;
+
+    font-weight:bold;
+
+}
+
+
+.contenedor{
+
+    width:95%;
+
+    max-width:1750px;
+
+    margin:auto;
+
+    margin-top:30px;
+
+}
+
+
+.cardPrincipal{
+
+    background:white;
+
+    padding:25px;
+
+    border-radius:15px;
+
+    box-shadow:0 5px 15px rgba(0,0,0,.15);
+
+}
+
+
+.titulo{
+
+    color:#16a34a;
+
+    font-size:25px;
+
+    font-weight:bold;
+
+    margin-bottom:20px;
+
+}
+
+
+.contador{
+
+    display:inline-block;
+
+    background:#dc2626;
+
+    color:white;
+
+    padding:6px 12px;
+
+    border-radius:20px;
+
+    font-size:18px;
+
+    margin-left:8px;
+
+}
+
+
+#buscar{
+
+    width:100%;
+
+    box-sizing:border-box;
+
+    padding:15px;
+
+    font-size:18px;
+
+    border:1px solid #ccc;
+
+    border-radius:10px;
+
+    margin-bottom:25px;
+
+}
+
+
+#resultados{
+
+    display:grid;
+
+    grid-template-columns:
+        repeat(4,1fr);
+
+    gap:14px;
+
+}
+
+
+.paquete{
+
+    position:relative;
+
+    padding:12px;
+
+    background:white;
+
+    border:1px solid #ddd;
+
+    border-radius:12px;
+
+    min-height:390px;
+
+    display:flex;
+
+    flex-direction:column;
+
+    justify-content:space-between;
+
+}
+
+
+.filaSuperior{
+
+    display:flex;
+
+    justify-content:space-between;
+
+    align-items:flex-start;
+
+    gap:10px;
+
+}
+
+
+.nombreCliente{
+
+    font-size:18px;
+
+    font-weight:bold;
+
+    color:#111827;
+
+}
+
+
+.detalle{
+
+    color:#374151;
+
+    margin-top:4px;
+
+    font-size:15px;
+
+}
+
+
+.codigoCaja{
+
+    background:#16a34a;
+
+    color:white;
+
+    padding:8px 14px;
+
+    border-radius:999px;
+
+    font-weight:bold;
+
+    white-space:nowrap;
+
+}
+
+
+.datosExtra{
+
+    margin-top:20px;
+
+    color:#374151;
+
+    line-height:22px;
+
+}
+
+
+.contenidoPaquete{
+
+    display:grid;
+
+    grid-template-columns:1fr;
+
+    gap:15px;
+
+    margin-top:15px;
+
+}
+
+
+.hoy{
+
+    color:#dc2626;
+
+    font-size:16px;
+
+    font-weight:900;
+
+    letter-spacing:1px;
+
+}
+
+
+.fotoPendiente{
+
+    width:100%;
+
+    min-height:150px;
+
+    border:2px dashed #d1d5db;
+
+    border-radius:12px;
+
+    background:#f8fafc;
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+    color:#9ca3af;
+
+    font-size:15px;
+
+}
+
+
+/*
+|--------------------------------------------------------------------------
+| BOTÓN SACAR FOTO
+|--------------------------------------------------------------------------
+*/
+
+.botonFoto{
+
+    display:block;
+
+    width:100%;
+
+    box-sizing:border-box;
+
+    margin-top:12px;
+
+    padding:15px;
+
+    background:#16a34a;
+
+    color:white;
+
+    border-radius:12px;
+
+    text-align:center;
+
+    font-size:18px;
+
+    font-weight:bold;
+
+    cursor:pointer;
+
+}
+
+
+.botonFoto:hover{
+
+    background:#15803d;
+
+}
+
+
+.inputFoto{
+
+    display:none;
+
+}
+
+.alerta{
+    padding:12px;
+    margin:0 0 16px;
+    border-radius:8px;
+    background:#dcfce7;
+    color:#166534;
+    font-weight:bold;
+}
+
+.sin-pendientes{
+    padding:60px 20px;
+    color:#16a34a;
+    text-align:center;
+    font-size:24px;
+    font-weight:bold;
+}
+
+.sin-pendientes div{
+    margin-top:10px;
+    color:#6b7280;
+    font-size:16px;
+    font-weight:normal;
+}
+
+
+@media(max-width:1200px){
+
+    #resultados{
+
+        grid-template-columns:
+            repeat(3,1fr);
+
+    }
+
+}
+
+
+@media(max-width:900px){
+
+    #resultados{
+
+        grid-template-columns:
+            repeat(2,1fr);
+
+    }
+
+}
+
+
+@media(max-width:600px){
+
+    #resultados{
+
+        grid-template-columns:1fr;
+
+    }
+
+    header{
+
+        font-size:24px;
+
+    }
+
+}
