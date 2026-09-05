@@ -1,4 +1,4 @@
-<?php $h = fn($valor) => htmlspecialchars((string) ($valor ?? ""), ENT_QUOTES, "UTF-8"); ?>
+<?php $h = function ($valor) { return htmlspecialchars((string) ($valor ?? ""), ENT_QUOTES, "UTF-8"); }; ?>
 <section class="almacenes-contenedor">
   <div class="almacenes-encabezado">
     <div>

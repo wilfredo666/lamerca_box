@@ -33,8 +33,11 @@
               <?php
               $registros = ControladorAlmacen::ctrMostrarRegistros();
               foreach ($registros as $value) {
+               $nombreAlmacen = (string) $value["nombre_almacen"];
+               $descripcionAlmacen = (string) $value["descripcion"];
+               $idAlmacen = (int) $value["id_almacen"];
               ?>
-                <option value="<?php echo $value["nombre_almacen"] . "-" . $value["id_almacen"]; ?>"><?php echo $value["nombre_almacen"] . " - " . $value["descripcion"]; ?></option>
+               <option value="<?php echo htmlspecialchars($nombreAlmacen . "-" . $idAlmacen, ENT_QUOTES, "UTF-8"); ?>"><?php echo htmlspecialchars($nombreAlmacen . " - " . $descripcionAlmacen, ENT_QUOTES, "UTF-8"); ?></option>
               <?php
               }
               ?>

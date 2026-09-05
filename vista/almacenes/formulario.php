@@ -1,5 +1,5 @@
 <?php
-$h = fn($valor) => htmlspecialchars((string) ($valor ?? ""), ENT_QUOTES, "UTF-8");
+$h = function ($valor) { return htmlspecialchars((string) ($valor ?? ""), ENT_QUOTES, "UTF-8"); };
 $editar = $modo === "editar";
 ?>
 <section class="almacenes-contenedor">
