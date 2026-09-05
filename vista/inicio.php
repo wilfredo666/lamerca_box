@@ -88,6 +88,10 @@ $entregadasHoy = $encomiendasEntregadasHoy["total"];
 
 </a>
 
+<a href="<?= $base_url ?? '' ?>traspasos" class="boton">
+    ↔ Listado de Traspasos
+</a>
+
     <a href="<?= $base_url ?? '' ?>encomiendas/buscar" class="boton">
         🔍 Buscar Encomienda
     </a>

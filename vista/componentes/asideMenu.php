@@ -36,6 +36,11 @@ $rutaActual = $_GET["ruta"] ?? "";
       <span>Usuarios</span>
     </a>
 
+    <a class="menu-enlace <?= $rutaActual === "traspasos" ? "menu-enlace-activo" : "" ?>" href="<?= $base_url ?>traspasos">
+      <i class="fas fa-exchange-alt" aria-hidden="true"></i>
+      <span>Traspasos</span>
+    </a>
+
   </nav>
 
   <div class="menu-salir">

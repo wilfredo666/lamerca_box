@@ -363,3 +363,16 @@
 	font-size: 18px;
 	font-weight: 700
 }
+
+.boton-traspasar-seleccionadas {
+    background: #2563eb;
+}
+
+.modal-entrega-lista textarea {
+    width: 100%;
+    padding: 9px;
+    border: 1px solid #cbd5e1;
+    border-radius: 6px;
+    font-size: 18px;
+    resize: vertical;
+}

@@ -4,8 +4,9 @@ require_once "conexion.php";
 
 class ModeloEncomiendas
 {
-  static public function mdlBuscar($termino = "")
+  static public function mdlBuscar($termino = "", $idAlmacen = null)
   {
+    $filtroAlmacen = $idAlmacen !== null ? " AND e.id_almacen_actual = :id_almacen" : "";
     $stmt = Conexion::conectar()->prepare(
       "SELECT e.*,
         r.codigo AS codigo_recepcion,
@@ -17,7 +18,7 @@ class ModeloEncomiendas
       FROM encomiendas e
       INNER JOIN recepciones r ON r.id = e.id_recepcion
       INNER JOIN clientes c ON c.id = r.id_cliente
-      WHERE e.estado = 'Pendiente'
+      WHERE e.estado = 'Pendiente'" . $filtroAlmacen . "
       AND (
         e.codigo LIKE :termino_codigo OR
         e.destinatario LIKE :termino_destinatario OR
@@ -28,13 +29,17 @@ class ModeloEncomiendas
       ORDER BY e.fecha_registro DESC, e.id DESC"
     );
     $valor = "%" . trim($termino) . "%";
-    $stmt->execute([
+    $parametros = [
       ":termino_codigo" => $valor,
       ":termino_destinatario" => $valor,
       ":termino_contacto" => $valor,
       ":termino_nombre" => $valor,
       ":termino_celular" => $valor
-    ]);
+    ];
+    if ($idAlmacen !== null) {
+      $parametros[":id_almacen"] = $idAlmacen;
+    }
+    $stmt->execute($parametros);
     return $stmt->fetchAll(PDO::FETCH_ASSOC);
   }
 

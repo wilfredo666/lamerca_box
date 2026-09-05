@@ -45,12 +45,19 @@ class ModeloUsuario
   static public function mdlActualizarDesdePanel($id, $datos)
   {
     $campos = "nombre = :nombre, email = :email, categoria = :categoria, estado_usuario = :estado";
+    $parametros = [
+      ":nombre" => $datos[":nombre"],
+      ":email" => $datos[":email"],
+      ":categoria" => $datos[":categoria"],
+      ":estado" => $datos[":estado"],
+      ":id" => $id
+    ];
     if ($datos[":password"] !== "") {
       $campos .= ", password = :password";
+      $parametros[":password"] = $datos[":password"];
     }
-    $datos["id"] = $id;
     $stmt = Conexion::conectar()->prepare("UPDATE usuario SET $campos WHERE id_usuario = :id");
-    return $stmt->execute($datos);
+    return $stmt->execute($parametros);
   }
 
 

@@ -14,6 +14,7 @@ require_once "controlador/cajasTikTokControlador.php";
 require_once "controlador/entregaControlador.php";
 require_once "controlador/clienteControlador.php";
 require_once "controlador/encomiendasControlador.php";
+require_once "controlador/traspasoControlador.php";
 
 /* modelos 
 
@@ -29,6 +30,7 @@ require_once "modelo/cajasTikTokModelo.php";
 require_once "modelo/entregaModelo.php";
 require_once "modelo/clienteModelo.php";
 require_once "modelo/encomiendasModelo.php";
+require_once "modelo/traspasoModelo.php";
 
 
 $plantilla=new ControladorPlantilla();

@@ -1,8 +1,9 @@
 document.addEventListener("DOMContentLoaded", function () {
     const boton = document.getElementById("botonEntregarSeleccionadas");
+    const botonTraspasar = document.getElementById("botonTraspasarSeleccionadas");
     const selectores = document.querySelectorAll(".selectorEncomienda");
 
-    if (!boton || selectores.length === 0) {
+    if (!boton || !botonTraspasar || selectores.length === 0) {
         return;
     }
 
@@ -10,6 +11,7 @@ document.addEventListener("DOMContentLoaded", function () {
         const ids = Array.from(document.querySelectorAll(".selectorEncomienda:checked"))
             .map(function (selector) { return selector.value; });
         boton.hidden = ids.length === 0;
+        botonTraspasar.hidden = ids.length === 0;
         boton.dataset.ids = ids.join(",");
     }
 
@@ -37,6 +39,68 @@ document.addEventListener("DOMContentLoaded", function () {
     function cerrarModal() {
         modal.hidden = true;
     }
+
+    const modalTraspaso = document.getElementById("modalTraspasoSeleccionadas");
+    const cerrarTraspaso = document.getElementById("cerrarModalTraspaso");
+    const detalleTraspaso = document.getElementById("detalleTraspasoSeleccionadas");
+    const almacenDestino = document.getElementById("almacenDestinoTraspaso");
+    const observaciones = document.getElementById("observacionesTraspaso");
+    const registrarTraspaso = document.getElementById("registrarTraspasoSeleccionadas");
+
+    function cerrarModalTraspaso() {
+        modalTraspaso.hidden = true;
+    }
+
+    botonTraspasar.addEventListener("click", function () {
+        const ids = Array.from(document.querySelectorAll(".selectorEncomienda:checked")).map(function (selector) {
+            return selector.value;
+        });
+        if (ids.length === 0) return;
+        detalleTraspaso.replaceChildren();
+        ids.forEach(function (id) {
+            const tarjeta = document.querySelector('.tarjeta-encomienda[data-id="' + id + '"]');
+            if (!tarjeta) return;
+            const item = document.createElement("div");
+            item.textContent = tarjeta.dataset.destinatario + " | " + tarjeta.dataset.descripcion + " | " + tarjeta.dataset.codigo;
+            detalleTraspaso.appendChild(item);
+        });
+        almacenDestino.value = "";
+        observaciones.value = "";
+        modalTraspaso.hidden = false;
+    });
+
+    cerrarTraspaso.addEventListener("click", cerrarModalTraspaso);
+    modalTraspaso.addEventListener("click", function (evento) {
+        if (evento.target === modalTraspaso) cerrarModalTraspaso();
+    });
+    registrarTraspaso.addEventListener("click", function () {
+        const ids = Array.from(document.querySelectorAll(".selectorEncomienda:checked")).map(function (selector) {
+            return Number(selector.value);
+        });
+        if (!almacenDestino.value) {
+            alert("Seleccione el almacén destino.");
+            return;
+        }
+        registrarTraspaso.disabled = true;
+        const formulario = new FormData();
+        ids.forEach(function (id) { formulario.append("ids[]", id); });
+        formulario.append("id_almacen_destino", almacenDestino.value);
+        formulario.append("concepto", observaciones.value.trim());
+        formulario.append("csrf_token", window.traspasoCsrfToken);
+        fetch(window.traspasoMultipleUrl, { method: "POST", body: formulario })
+            .then(function (respuesta) {
+                if (!respuesta.ok) {
+                    return respuesta.text().then(function (mensaje) {
+                        throw new Error(mensaje || "No se pudo registrar el traspaso.");
+                    });
+                }
+                window.location.reload();
+            })
+            .catch(function (error) {
+                registrarTraspaso.disabled = false;
+                alert(error.message);
+            });
+    });
 
     boton.addEventListener("click", function () {
         const ids = Array.from(document.querySelectorAll(".selectorEncomienda:checked")).map(function (selector) {

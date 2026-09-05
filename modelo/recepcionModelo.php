@@ -97,13 +97,14 @@ class ModeloRecepcion
 
       $stmt = $conexion->prepare(
         "INSERT INTO encomiendas
-        (codigo, id_recepcion, clasificacion, descripcion, precio, destinatario, contacto, quien_paga, estado, cobrado)
-        VALUES ('', :id_recepcion, :clasificacion, :descripcion, :precio, :destinatario, :contacto, :quien_paga, 'Pendiente', 0)"
+        (codigo, id_recepcion, id_almacen_actual, clasificacion, descripcion, precio, destinatario, contacto, quien_paga, estado, cobrado)
+        VALUES ('', :id_recepcion, (SELECT id_almacen FROM recepciones WHERE id = :id_recepcion_almacen), :clasificacion, :descripcion, :precio, :destinatario, :contacto, :quien_paga, 'Pendiente', 0)"
       );
       $stmtCodigo = $conexion->prepare("UPDATE encomiendas SET codigo = :codigo WHERE id = :id");
       foreach ($paquetes as $paquete) {
         $stmt->execute([
           ":id_recepcion" => $id,
+          ":id_recepcion_almacen" => $id,
           ":clasificacion" => $paquete["clasificacion"],
           ":descripcion" => $paquete["descripcion"],
           ":precio" => $paquete["precio"],
@@ -218,14 +219,15 @@ class ModeloRecepcion
 
       $stmtEncomienda = $conexion->prepare(
         "INSERT INTO encomiendas
-        (codigo, id_recepcion, clasificacion, descripcion, precio, destinatario, contacto, quien_paga, estado, cobrado)
-        VALUES ('', :id_recepcion, :clasificacion, :descripcion, :precio, :destinatario, :contacto, :quien_paga, 'Pendiente', 0)"
+        (codigo, id_recepcion, id_almacen_actual, clasificacion, descripcion, precio, destinatario, contacto, quien_paga, estado, cobrado)
+        VALUES ('', :id_recepcion, :id_almacen_actual, :clasificacion, :descripcion, :precio, :destinatario, :contacto, :quien_paga, 'Pendiente', 0)"
       );
       $stmtCodigo = $conexion->prepare("UPDATE encomiendas SET codigo = :codigo WHERE id = :id");
 
       foreach ($paquetes as $paquete) {
         $stmtEncomienda->execute([
           ":id_recepcion" => $idRecepcion,
+          ":id_almacen_actual" => $recepcion["id_almacen"],
           ":clasificacion" => $paquete["clasificacion"],
           ":descripcion" => $paquete["descripcion"],
           ":precio" => $paquete["precio"],

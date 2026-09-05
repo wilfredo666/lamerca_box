@@ -5,8 +5,12 @@ class ControladorEncomiendas
   static public function ctrBuscar()
   {
     return [
-      "encomiendas" => ModeloEncomiendas::mdlBuscar($_GET["buscar"] ?? ""),
-      "buscar" => trim((string) ($_GET["buscar"] ?? ""))
+      "encomiendas" => ModeloEncomiendas::mdlBuscar(
+        $_GET["buscar"] ?? "",
+        (int) ($_SESSION["idAlmacen"] ?? 0)
+      ),
+      "buscar" => trim((string) ($_GET["buscar"] ?? "")),
+      "almacenesTraspaso" => ModeloTraspaso::mdlAlmacenesActivos((int) ($_SESSION["idAlmacen"] ?? 0))
     ];
   }
 

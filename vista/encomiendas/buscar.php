@@ -3,12 +3,34 @@ $h = static fn($valor) => htmlspecialchars((string) ($valor ?? ""), ENT_QUOTES, 
 ?>
 <div class="busqueda-encomiendas">
   <div class="encabezado-busqueda">
-    <h1>Encomiendas <span><?= count($encomiendas) ?></span> <button type="button" id="botonEntregarSeleccionadas" class="boton-entregar-seleccionadas" hidden>✅ Entregar</button></h1>
+    <h1>Encomiendas <span><?= count($encomiendas) ?></span> <button type="button" id="botonEntregarSeleccionadas" class="boton-entregar-seleccionadas" hidden>✅ Entregar</button> <button type="button" id="botonTraspasarSeleccionadas" class="boton-entregar-seleccionadas boton-traspasar-seleccionadas" hidden>↔ Traspasar</button></h1>
     <form method="GET" action="<?= $base_url ?>encomiendas/buscar">
       <input type="hidden" name="ruta" value="encomiendas/buscar">
       <input type="search" name="buscar" value="<?= $h($buscar) ?>" placeholder="🔎 Buscar por nombre o celular..." autofocus>
     </form>
   </div>
+  <div id="modalTraspasoSeleccionadas" class="modal-entrega-lista" hidden>
+    <div class="modal-entrega-lista-contenido" role="dialog" aria-modal="true" aria-labelledby="tituloModalTraspaso">
+      <button type="button" class="cerrar-modal-entrega" id="cerrarModalTraspaso" aria-label="Cerrar">&times;</button>
+      <h2 id="tituloModalTraspaso">Traspasar encomiendas</h2>
+      <div id="detalleTraspasoSeleccionadas" class="detalle-entrega-seleccionadas"></div>
+      <div class="resumen-cobro-entrega">
+        <label>Almacén destino
+          <select id="almacenDestinoTraspaso" required>
+            <option value="">Seleccione un almacén</option>
+            <?php foreach ($almacenesTraspaso as $almacen): ?>
+              <option value="<?= (int) $almacen["id_almacen"] ?>"><?= $h($almacen["nombre_almacen"] . " - " . $almacen["ciudad"]) ?></option>
+            <?php endforeach; ?>
+          </select>
+        </label>
+        <label>Observaciones
+          <textarea id="observacionesTraspaso" maxlength="255" rows="3"></textarea>
+        </label>
+      </div>
+      <button type="button" id="registrarTraspasoSeleccionadas" class="boton-cobrar-entrega">↔ Registrar traspaso</button>
+    </div>
+  </div>
+  <script>window.traspasoMultipleUrl = <?= json_encode($base_url . "traspaso/multiple") ?>; window.traspasoCsrfToken = <?= json_encode($csrfToken) ?>;</script>
   <div id="modalEntregaSeleccionadas" class="modal-entrega-lista" hidden>
     <div class="modal-entrega-lista-contenido" role="dialog" aria-modal="true" aria-labelledby="tituloModalEntrega">
       <button type="button" class="cerrar-modal-entrega" id="cerrarModalEntrega" aria-label="Cerrar">&times;</button>

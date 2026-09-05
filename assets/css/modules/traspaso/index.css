@@ -1,0 +1,45 @@
+.contenedor-traspasos {
+  width: 95%;
+  max-width: 1750px;
+  margin: 30px auto;
+}
+
+.contenedor-traspasos .card {
+  background: #fff;
+  padding: 25px;
+  border-radius: 15px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, .15);
+}
+
+.titulo-traspasos {
+  margin-bottom: 20px;
+  color: #166534;
+}
+
+.contenedor-traspasos .tabla-responsive {
+  overflow-x: auto;
+}
+
+#tablaTraspasos {
+  width: 100% !important;
+  font-size: 16px;
+}
+
+#tablaTraspasos th {
+  background: #166534;
+  color: #fff;
+  white-space: nowrap;
+}
+
+#tablaTraspasos td {
+  vertical-align: middle;
+}
+
+.estado-traspaso {
+  display: inline-block;
+  padding: 4px 8px;
+  border-radius: 12px;
+  background: #dbeafe;
+  color: #1e40af;
+  font-weight: 600;
+}

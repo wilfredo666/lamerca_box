@@ -19,6 +19,8 @@ $rutas_validas = [
   "encomiendas/ver" => ["vista" => "encomiendas/ver.php", "controlador" => "ControladorEncomiendas", "accion" => "ctrVer"],
   "encomiendas/editar" => ["vista" => "encomiendas/editar.php", "controlador" => "ControladorEncomiendas", "accion" => "ctrEditar"],
   "encomiendas/eliminar" => ["vista" => "encomiendas/buscar.php", "controlador" => "ControladorEncomiendas", "accion" => "ctrEliminar"],
+  "traspaso/multiple" => ["vista" => "encomiendas/buscar.php", "controlador" => "ControladorTraspaso", "accion" => "ctrRegistrarMultiple"],
+  "traspasos" => ["vista" => "traspaso/index.php", "controlador" => "ControladorTraspaso", "accion" => "ctrVistaTraspasos"],
   "entrega" => ["vista" => "entrega/entregar.php", "controlador" => "ControladorEntrega", "accion" => "ctrVistaEntrega"],
   "entrega/entregadas" => ["vista" => "entrega/entregadas.php", "controlador" => "ControladorEntrega", "accion" => "ctrVistaEntregadas"],
   "entrega/retirados" => ["vista" => "entrega/retirados.php", "controlador" => "ControladorEntrega", "accion" => "ctrVistaRetirados"],
@@ -62,6 +64,11 @@ $estilos_vista = [
   ,"entrega" => "assets/css/modules/entrega/entregar.css"
   ,"entrega/entregadas" => [
     "assets/css/modules/entrega/entregadas.css",
+    "assets/plugins/datatables-bs4/css/dataTables.bootstrap4.min.css",
+    "assets/plugins/datatables-responsive/css/responsive.bootstrap4.min.css"
+  ]
+  ,"traspasos" => [
+    "assets/css/modules/traspaso/index.css",
     "assets/plugins/datatables-bs4/css/dataTables.bootstrap4.min.css",
     "assets/plugins/datatables-responsive/css/responsive.bootstrap4.min.css"
   ]
@@ -126,6 +133,14 @@ $scripts_vista = [
     "assets/plugins/datatables-responsive/js/responsive.bootstrap4.min.js",
     "assets/js/modules/entrega/entregadas.js"
   ],
+  "traspasos" => [
+    "assets/js/jquery.min.js",
+    "assets/plugins/datatables/jquery.dataTables.min.js",
+    "assets/plugins/datatables-bs4/js/dataTables.bootstrap4.min.js",
+    "assets/plugins/datatables-responsive/js/dataTables.responsive.min.js",
+    "assets/plugins/datatables-responsive/js/responsive.bootstrap4.min.js",
+    "assets/js/modules/traspaso/index.js"
+  ],
   "usuarios" => [
     "assets/js/jquery.min.js",
     "assets/js/bootstrap.bundle.min.js",
@@ -140,6 +155,24 @@ $scripts_vista = [
 
 $ruta_solicitada = $_GET["ruta"] ?? null;
 $datos_vista = [];
+
+if (
+  isset($_SESSION["ingreso"]) &&
+  $_SESSION["ingreso"] === "ok" &&
+  (
+    !filter_var($_SESSION["idUsuario"] ?? null, FILTER_VALIDATE_INT) ||
+    !filter_var($_SESSION["idAlmacen"] ?? null, FILTER_VALIDATE_INT)
+  )
+) {
+  unset(
+    $_SESSION["ingreso"],
+    $_SESSION["idUsuario"],
+    $_SESSION["idAlmacen"],
+    $_SESSION["nomAlmacen"],
+    $_SESSION["descAlmacen"],
+    $_SESSION["csrf_token"]
+  );
+}
 
 if (isset($_SESSION["ingreso"]) && $_SESSION["ingreso"] === "ok" && empty($_SESSION["csrf_token"])) {
   $_SESSION["csrf_token"] = bin2hex(random_bytes(32));

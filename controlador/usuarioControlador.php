@@ -98,12 +98,20 @@ class ControladorUsuario
   static public function ctrIngresoUsuario()
   {
     if (isset($_POST["usuario"])) {
-      $usuario = $_POST["usuario"];
-      $password = $_POST["password"];
-      $almacen = explode("-",$_POST["almacen"]);
-      
-      $nomAlmacen = $almacen[0];
-      $idAlmacen = $almacen[1];
+      $usuario = trim((string) ($_POST["usuario"] ?? ""));
+      $password = (string) ($_POST["password"] ?? "");
+      $almacenSeleccionado = (string) ($_POST["almacen"] ?? "");
+      $separador = strrpos($almacenSeleccionado, "-");
+      if ($usuario === "" || $password === "" || $separador === false) {
+        echo "<p class='text-danger text-center bg-red mt-1 rounded-pill'>Complete los datos de acceso.</p>";
+        return;
+      }
+      $nomAlmacen = trim(substr($almacenSeleccionado, 0, $separador));
+      $idAlmacen = filter_var(substr($almacenSeleccionado, $separador + 1), FILTER_VALIDATE_INT);
+      if ($nomAlmacen === "" || !$idAlmacen) {
+        echo "<p class='text-danger text-center bg-red mt-1 rounded-pill'>Seleccione un almacén válido.</p>";
+        return;
+      }
 
       //comprobando validez y disponibilidad del usuario
       $respuesta = ModeloUsuario::mdlAccesoUsuario($usuario);
@@ -125,7 +133,12 @@ class ControladorUsuario
         if($accAlmacen["permiso"]==1){
           
           //guardando informacion de almacen en sesion
-          $almacen=ControladorAlmacen::ctrInfoAlmacen($idAlmacen);
+          $almacen = ControladorAlmacen::ctrInfoAlmacen($idAlmacen);
+          if (!$almacen) {
+            echo "<p class='text-danger text-center bg-red mt-1 rounded-pill'>El almacén seleccionado no existe.</p>";
+            return;
+          }
+          session_regenerate_id(true);
           $_SESSION["idAlmacen"] = $almacen["id_almacen"];
           $_SESSION["nomAlmacen"] = $almacen["nombre_almacen"];
           $_SESSION["descAlmacen"] = $almacen["descripcion"];
@@ -134,6 +147,14 @@ class ControladorUsuario
                  window.location="inicio";
                 </script>';
         }else{
+          unset(
+            $_SESSION["ingreso"],
+            $_SESSION["idUsuario"],
+            $_SESSION["idAlmacen"],
+            $_SESSION["nomAlmacen"],
+            $_SESSION["descAlmacen"],
+            $_SESSION["csrf_token"]
+          );
           echo "<p class='text-danger text-center bg-red mt-1 rounded-pill'>Error de acceso, intente de nuevo</p>";
         }
 
