@@ -1,0 +1,6 @@
+.caja-contenedor { margin: 28px auto; max-width: 1500px; }
+.caja-resumen { display: grid; gap: 18px; grid-template-columns: repeat(3, minmax(0, 1fr)); margin-bottom: 20px; }
+.caja-indicador { align-items: center; border-radius: 5px; box-shadow: 0 2px 5px rgba(0, 0, 0, .2); color: #fff; display: flex; gap: 26px; min-height: 100px; padding: 20px 35px; }
+.caja-indicador i { font-size: 38px; }.caja-indicador span, .caja-indicador strong { display: block; font-size: 18px; }.caja-indicador strong { margin-top: 15px; }.caja-indicador-ingreso { background: #24aa47; }.caja-indicador-salida { background: #df3044; }.caja-indicador-saldo { background: #1fa0b5; }
+.caja-encabezado { align-items: center; border-left: 6px solid #6c757d; display: flex; justify-content: space-between; margin: 14px 0; padding-left: 8px; }.caja-encabezado h1 { color: #374151; font-size: 24px; margin: 0; }.caja-card { border: 0; box-shadow: 0 2px 8px rgba(15, 23, 42, .12); }.form-anular-caja { display: inline; }
+@media (max-width: 767px) { .caja-resumen { grid-template-columns: 1fr; }.caja-indicador { min-height: auto; }.caja-encabezado { align-items: flex-start; flex-direction: column; gap: 12px; } }

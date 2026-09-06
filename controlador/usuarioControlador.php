@@ -22,6 +22,28 @@ class ControladorUsuario
     return ["usuarios" => ModeloUsuario::mdlInfoUsuarios()];
   }
 
+  static public function ctrPermisos()
+  {
+    $idUsuario = filter_input(INPUT_GET, "id", FILTER_VALIDATE_INT);
+    $usuario = $idUsuario ? ModeloUsuario::mdlInfoUsuario($idUsuario) : false;
+    if (!$usuario) {
+      throw new InvalidArgumentException("Usuario no encontrado.");
+    }
+
+    if (($_SERVER["REQUEST_METHOD"] ?? "GET") === "POST") {
+      self::validarCsrf($_POST["csrf_token"] ?? "");
+      $permisos = isset($_POST["permisos"]) && is_array($_POST["permisos"]) ? $_POST["permisos"] : [];
+      ModeloUsuario::mdlGuardarPermisos($idUsuario, $permisos);
+      self::redirigir("usuarios/permisos?id=" . $idUsuario);
+    }
+
+    return [
+      "usuario" => $usuario,
+      "permisos" => ModeloUsuario::mdlListaPermisos(),
+      "permisosAsignados" => ModeloUsuario::mdlPermisosUsuario($idUsuario)
+    ];
+  }
+
   static public function ctrNuevo()
   {
     if (($_SERVER["REQUEST_METHOD"] ?? "GET") === "POST") {

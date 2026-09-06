@@ -1,0 +1,14 @@
+.permisos-contenedor { margin: 28px auto; max-width: 1400px; }
+.permisos-encabezado { align-items: center; display: flex; justify-content: space-between; margin-bottom: 20px; }
+.permisos-encabezado h1 { color: #14532d; font-size: 28px; margin: 0; }
+.permisos-encabezado p { color: #64748b; margin: 5px 0 0; }
+.permisos-card { border: 0; box-shadow: 0 3px 12px rgba(15, 23, 42, .12); }
+.permisos-titulo { background: #087df5; color: #fff; font-size: 20px; padding: 16px 25px; }
+.permisos-lista { display: grid; gap: 20px 40px; grid-template-columns: repeat(3, minmax(0, 1fr)); padding: 10px 10px 20px; }
+.permiso-opcion { align-items: center; cursor: pointer; display: flex; font-size: 18px; font-weight: 600; gap: 10px; margin: 0; }
+.permiso-opcion input { height: 28px; margin: 0; width: 28px; }
+.permisos-pie { background: #fff; border-top: 1px solid #e5e7eb; text-align: right; }
+@media (max-width: 767px) {
+  .permisos-encabezado { align-items: flex-start; flex-direction: column; gap: 12px; }
+  .permisos-lista { grid-template-columns: 1fr; }
+}

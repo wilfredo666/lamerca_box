@@ -36,6 +36,11 @@ $rutaActual = $_GET["ruta"] ?? "";
       <span>Usuarios</span>
     </a>
 
+    <a class="menu-enlace <?= $rutaActual === "caja" ? "menu-enlace-activo" : "" ?>" href="<?= $base_url ?>caja">
+      <i class="fas fa-cash-register" aria-hidden="true"></i>
+      <span>Caja</span>
+    </a>
+
     <a class="menu-enlace <?= $rutaActual === "traspasos" ? "menu-enlace-activo" : "" ?>" href="<?= $base_url ?>traspasos">
       <i class="fas fa-exchange-alt" aria-hidden="true"></i>
       <span>Traspasos</span>

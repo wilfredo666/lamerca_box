@@ -30,15 +30,15 @@ $rutas_validas = [
   "entrega/retirar" => ["vista" => "entrega/detalle_entrega.php", "controlador" => "ControladorEntrega", "accion" => "ctrRetirar"],
   "entrega/foto" => ["vista" => "entrega/fotos_pendientes.php", "controlador" => "ControladorEntrega", "accion" => "ctrSubirFoto"],
   "entrega/multiple" => ["vista" => "entrega/entregar.php", "controlador" => "ControladorEntrega", "accion" => "ctrEntregaMultiple"],
-  "caja" => "caja/listar.php",
-  "caja/nueva" => "caja/nueva.php",
-  "caja/dia" => "caja/caja_dia.php",
-  "caja/detalle" => "caja/ver.php",
+  "caja" => ["vista" => "caja/index.php", "controlador" => "ControladorCaja", "accion" => "ctrVistaCaja"],
+  "caja/registrar" => ["vista" => "caja/index.php", "controlador" => "ControladorCaja", "accion" => "ctrRegistrar"],
+  "caja/anular" => ["vista" => "caja/index.php", "controlador" => "ControladorCaja", "accion" => "ctrAnular"],
   "cajas-tiktok/nueva" => ["vista" => "cajas_tiktok/nuevo.php", "controlador" => "ControladorCajasTikTok", "accion" => "ctrNueva"],
   "cajas-tiktok/editar" => ["vista" => "cajas_tiktok/editar.php", "controlador" => "ControladorCajasTikTok", "accion" => "ctrEditar"],
   "clientes" => ["vista" => "clientes/index.php", "controlador" => "ControladorCliente", "accion" => "ctrVistaClientes"],
   "almacenes" => ["vista" => "almacenes/index.php", "controlador" => "ControladorAlmacen", "accion" => "ctrVistaAlmacenes"],
   "usuarios" => ["vista" => "usuarios/index.php", "controlador" => "ControladorUsuario", "accion" => "ctrVistaUsuarios"],
+  "usuarios/permisos" => ["vista" => "usuarios/permisos.php", "controlador" => "ControladorUsuario", "accion" => "ctrPermisos"],
   "usuarios/nuevo" => ["vista" => "usuarios/index.php", "controlador" => "ControladorUsuario", "accion" => "ctrNuevo"],
   "usuarios/editar" => ["vista" => "usuarios/index.php", "controlador" => "ControladorUsuario", "accion" => "ctrEditar"],
   "usuarios/eliminar" => ["vista" => "usuarios/index.php", "controlador" => "ControladorUsuario", "accion" => "ctrEliminar"],
@@ -92,6 +92,14 @@ $estilos_vista = [
     "assets/css/modules/usuarios/index.css",
     "assets/plugins/datatables-bs4/css/dataTables.bootstrap4.min.css",
     "assets/plugins/datatables-responsive/css/responsive.bootstrap4.min.css",
+    "assets/plugins/sweetalert2/sweetalert2.min.css"
+  ]
+  ,"usuarios/permisos" => "assets/css/modules/usuarios/permisos.css"
+  ,"caja" => [
+    "assets/css/modules/caja/index.css",
+    "assets/plugins/datatables-bs4/css/dataTables.bootstrap4.min.css",
+    "assets/plugins/datatables-responsive/css/responsive.bootstrap4.min.css",
+    "assets/plugins/datatables-buttons/css/buttons.bootstrap4.min.css",
     "assets/plugins/sweetalert2/sweetalert2.min.css"
   ]
 ];
@@ -150,6 +158,23 @@ $scripts_vista = [
     "assets/plugins/datatables-responsive/js/responsive.bootstrap4.min.js",
     "assets/plugins/sweetalert2/sweetalert2.all.min.js",
     "assets/js/modules/usuarios/index.js"
+  ],
+  "caja" => [
+    "assets/js/jquery.min.js",
+    "assets/js/bootstrap.bundle.min.js",
+    "assets/plugins/datatables/jquery.dataTables.min.js",
+    "assets/plugins/datatables-bs4/js/dataTables.bootstrap4.min.js",
+    "assets/plugins/datatables-responsive/js/dataTables.responsive.min.js",
+    "assets/plugins/datatables-responsive/js/responsive.bootstrap4.min.js",
+    "assets/plugins/datatables-buttons/js/dataTables.buttons.min.js",
+    "assets/plugins/datatables-buttons/js/buttons.bootstrap4.min.js",
+    "assets/plugins/jszip/jszip.min.js",
+    "assets/plugins/pdfmake/pdfmake.min.js",
+    "assets/plugins/pdfmake/vfs_fonts.js",
+    "assets/plugins/datatables-buttons/js/buttons.html5.min.js",
+    "assets/plugins/datatables-buttons/js/buttons.print.min.js",
+    "assets/plugins/sweetalert2/sweetalert2.all.min.js",
+    "assets/js/modules/caja/index.js"
   ]
 ];
 

@@ -81,24 +81,25 @@ $entregadasHoy = $encomiendasEntregadasHoy["total"];
         📦 Nueva Recepción
 
     </a>
-
-    <a href="<?= $base_url ?? '' ?>entrega/entregadas" class="boton">
-
-        ✅ Listado de Entregas
-
-</a>
-
-<a href="<?= $base_url ?? '' ?>traspasos" class="boton">
-    ↔ Listado de Traspasos
-</a>
+    <a href="<?= $base_url ?? '' ?>traspasos" class="boton">
+        ↔ Listado de Traspasos
+    </a>
 
     <a href="<?= $base_url ?? '' ?>encomiendas/buscar" class="boton">
         🔍 Buscar Encomienda
     </a>
 
+    <a href="<?= $base_url ?? '' ?>entrega/entregadas" class="boton">
+
+        ✅ Listado de Entregas
+
+    </a>
+
     <a href="<?= $base_url ?? '' ?>recepcion/cajas-buscar" class="boton">
         📦 Buscar Cajas
     </a>
+
+
 </div>
 
 </div>

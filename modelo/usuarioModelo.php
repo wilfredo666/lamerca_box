@@ -196,4 +196,57 @@ class ModeloUsuario
     $stmt->closeCursor();
     return $resul;
   }
+
+  static public function mdlPermisosUsuario($idUsuario)
+  {
+    $stmt = Conexion::conectar()->prepare(
+      "SELECT id_permiso FROM permiso_usuario WHERE id_usuario = :id_usuario"
+    );
+    $stmt->execute([":id_usuario" => $idUsuario]);
+    return array_map("intval", $stmt->fetchAll(PDO::FETCH_COLUMN));
+  }
+
+  static public function mdlGuardarPermisos($idUsuario, $permisos)
+  {
+    $ids = [];
+    foreach ($permisos as $permiso) {
+      $idPermiso = filter_var($permiso, FILTER_VALIDATE_INT);
+      if (!$idPermiso) {
+        throw new InvalidArgumentException("Permiso no válido.");
+      }
+      $ids[$idPermiso] = $idPermiso;
+    }
+
+    $pdo = Conexion::conectar();
+    $permisosDisponibles = $pdo->query("SELECT id_permiso FROM permiso")->fetchAll(PDO::FETCH_COLUMN);
+    $permisosDisponibles = array_map("intval", $permisosDisponibles);
+    foreach ($ids as $idPermiso) {
+      if (!in_array($idPermiso, $permisosDisponibles, true)) {
+        throw new InvalidArgumentException("Permiso no válido.");
+      }
+    }
+
+    $pdo->beginTransaction();
+    try {
+      $eliminar = $pdo->prepare("DELETE FROM permiso_usuario WHERE id_usuario = :id_usuario");
+      $eliminar->execute([":id_usuario" => $idUsuario]);
+
+      if ($ids) {
+        $insertar = $pdo->prepare(
+          "INSERT INTO permiso_usuario (id_usuario, id_permiso) VALUES (:id_usuario, :id_permiso)"
+        );
+        foreach ($ids as $idPermiso) {
+          $insertar->execute([
+            ":id_usuario" => $idUsuario,
+            ":id_permiso" => $idPermiso
+          ]);
+        }
+      }
+
+      $pdo->commit();
+    } catch (Exception $error) {
+      $pdo->rollBack();
+      throw $error;
+    }
+  }
 }
