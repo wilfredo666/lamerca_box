@@ -1,257 +1,253 @@
-<?php if(isset($errorVista)): ?>
-<p><?= htmlspecialchars($errorVista, ENT_QUOTES, "UTF-8") ?></p>
+<?php if (isset($errorVista)): ?>
+    <p><?= htmlspecialchars($errorVista, ENT_QUOTES, "UTF-8") ?></p>
 <?php else: ?>
 
-<div class="contenedor">
+    <div class="contenedor">
 
-<div class="card">
+        <div class="card">
 
-<h1>
+            <h1>
 
-📦 TU MERCA ENCOMIENDAS
+                📦 TU MERCA ENCOMIENDAS
 
-</h1>
+            </h1>
 
-<div class="info">
+            <div class="info">
 
-<div>
-    <b>📦 Código:</b>
-    <?= htmlspecialchars($caja["codigo"]) ?>
-</div>
+                <div>
+                    <b>📦 Código:</b>
+                    <?= htmlspecialchars($caja["codigo"]) ?>
+                </div>
 
-<div>
-    <b>📦 Tipo:</b>
-    <?= htmlspecialchars($caja["tipo"]) ?>
-</div>
+                <div>
+                    <b>📦 Tipo:</b>
+                    <?= htmlspecialchars($caja["tipo"]) ?>
+                </div>
 
-<?php if(!empty($caja["empresa"])): ?>
+                <?php if (!empty($caja["empresa"])): ?>
 
-<div>
-    <b>🏪 Empresa:</b>
-    <?= htmlspecialchars($caja["empresa"]) ?>
-</div>
+                    <div>
+                        <b>🏪 Empresa:</b>
+                        <?= htmlspecialchars($caja["empresa"]) ?>
+                    </div>
 
-<?php endif; ?>
+                <?php endif; ?>
 
-<div>
-    <b>📅 Fecha y hora de recepción:</b>
-    <?= date("d/m/Y H:i",strtotime($caja["fecha"])) ?>
-</div>
+                <div>
+                    <b>📅 Fecha y hora de recepción:</b>
+                    <?= date("d/m/Y H:i", strtotime($caja["fecha"])) ?>
+                </div>
 
-<div class="separador-info"></div>
+                <div class="separador-info"></div>
 
-<div>
-    <b>📦 Total registrados:</b>
-    <?= $resumen["total"] ?>
-</div>
+                <div>
+                    <b>📦 Total registrados:</b>
+                    <?= $resumen["total"] ?>
+                </div>
 
-<div>
-    🟡 Pendientes:
-    <b><?= $resumen["pendientes"] ?></b>
-</div>
+                <div>
+                    🟡 Pendientes:
+                    <b><?= $resumen["pendientes"] ?></b>
+                </div>
 
-<div>
-    ✅ Entregados:
-    <b><?= $resumen["entregados"] ?></b>
-</div>
+                <div>
+                    ✅ Entregados:
+                    <b><?= $resumen["entregados"] ?></b>
+                </div>
 
-<div class="estado-final">
-    <b>Estado:</b>
-    <?= htmlspecialchars($caja["estado"]) ?>
-</div>
+                <div class="estado-final">
+                    <b>Estado:</b>
+                    <?= htmlspecialchars($caja["estado"]) ?>
+                </div>
 
-</div>
+            </div>
 
-<hr style="margin-top:25px;margin-bottom:25px;">
+            <hr style="margin-top:25px;margin-bottom:25px;">
 
-<?php
+            <?php
 
-?>
+            ?>
 
-<div class="paquetesGrid">
+            <div class="paquetesGrid">
 
-<?php
+                <?php
 
-$numero = 1;
+                $numero = 1;
 
-$loteActual = null;
+                $loteActual = null;
 
-foreach($paquetes as $paquete){
+                foreach ($paquetes as $paquete) {
 
-    /*
+                    /*
     Detectar cambio de recepción
     */
 
-    if($paquete["lote_recepcion"] != $loteActual){
+                    if ($paquete["lote_recepcion"] != $loteActual) {
 
-        $loteActual = $paquete["lote_recepcion"];
+                        $loteActual = $paquete["lote_recepcion"];
 
-        $datosLote = $lotes[$loteActual];
+                        $datosLote = $lotes[$loteActual];
 
-        $horaLote = date(
-            "H:i",
-            strtotime($datosLote["hora_inicio"])
-        );
+                        $horaLote = date(
+                            "H:i",
+                            strtotime($datosLote["hora_inicio"])
+                        );
 
-        $cantidadLote = $datosLote["cantidad"];
+                        $cantidadLote = $datosLote["cantidad"];
 
-        if($loteActual == $ultimoLote){
+                        if ($loteActual == $ultimoLote) {
 
-            echo '
+                            echo '
 
             <div class="separadorLote">
 
                 🕐 <strong>RECEPCIÓN ACTUAL</strong>
 
                 <span>
-                    · '.$horaLote.'
-                    · '.$cantidadLote.'
-                    paquete'.($cantidadLote != 1 ? 's' : '').' agregado'.($cantidadLote != 1 ? 's' : '').'
+                    · ' . $horaLote . '
+                    · ' . $cantidadLote . '
+                    paquete' . ($cantidadLote != 1 ? 's' : '') . ' agregado' . ($cantidadLote != 1 ? 's' : '') . '
                 </span>
 
             </div>
 
             ';
+                        } else {
 
-        }else{
-
-            echo '
+                            echo '
 
             <div class="separadorLote">
 
-                🕐 <strong>RECEPCIÓN '.$loteActual.'</strong>
+                🕐 <strong>RECEPCIÓN ' . $loteActual . '</strong>
 
                 <span>
-                    · '.$horaLote.'
-                    · '.$cantidadLote.'
-                    paquete'.($cantidadLote != 1 ? 's' : '').'
+                    · ' . $horaLote . '
+                    · ' . $cantidadLote . '
+                    paquete' . ($cantidadLote != 1 ? 's' : '') . '
                 </span>
 
             </div>
 
             ';
+                        }
+                    }
 
-        }
+                ?>
 
-    }
+                    <div class="paquete <?=
+                                        $paquete["estado"] == "Pendiente"
+                                            ? "paquetePendiente"
+                                            : "paqueteEntregado"
+                                        ?>">
 
-?>
+                        <h3>
 
-<div class="paquete <?= 
-    $paquete["estado"]=="Pendiente"
-    ? "paquetePendiente"
-    : "paqueteEntregado"
-?>">
+                            <?=
+                            $paquete["estado"] == "Pendiente"
+                                ? "🟡"
+                                : "✅"
+                            ?>
 
-<h3>
+                            Paquete <?= $numero ?>
 
-<?= 
-    $paquete["estado"]=="Pendiente"
-    ? "🟡"
-    : "✅"
-?>
+                        </h3>
 
-Paquete <?= $numero ?>
+                        <br><br>
 
-</h3>
+                        <b>👤 Cliente:</b>
 
-<br><br>
+                        <?= htmlspecialchars(
+                            $paquete["cliente"] ?? "",
+                            ENT_QUOTES,
+                            "UTF-8"
+                        ) ?>
 
-<b>👤 Cliente:</b>
+                        <br><br>
 
-<?= htmlspecialchars(
-    $paquete["cliente"] ?? "",
-    ENT_QUOTES,
-    "UTF-8"
-) ?>
+                        <b>📱 Celular:</b>
 
-<br><br>
+                        <?= $paquete["celular"] == ""
+                            ? "Sin registrar"
+                            : htmlspecialchars(
+                                $paquete["celular"],
+                                ENT_QUOTES,
+                                "UTF-8"
+                            )
+                        ?>
 
-<b>📱 Celular:</b>
+                        <br><br>
 
-<?= $paquete["celular"]=="" 
-    ? "Sin registrar" 
-    : htmlspecialchars(
-        $paquete["celular"],
-        ENT_QUOTES,
-        "UTF-8"
-    )
-?>
+                        <b>📝 Detalle:</b>
 
-<br><br>
+                        <?= htmlspecialchars(
+                            $paquete["observaciones"] ?? "",
+                            ENT_QUOTES,
+                            "UTF-8"
+                        ) ?>
 
-<b>📝 Detalle:</b>
+                        <br><br>
 
-<?= htmlspecialchars(
-    $paquete["observaciones"] ?? "",
-    ENT_QUOTES,
-    "UTF-8"
-) ?>
+                        <b>Estado:</b>
 
-<br><br>
+                        <span class="<?=
+                                        $paquete["estado"] == "Pendiente"
+                                            ? "estadoPendiente"
+                                            : "estadoEntregado"
+                                        ?>">
 
-<b>Estado:</b>
+                            <?=
+                            $paquete["estado"] == "Pendiente"
+                                ? "🟡 Pendiente"
+                                : "✅ Entregado"
+                            ?>
 
-<span class="<?= 
-    $paquete["estado"]=="Pendiente"
-    ? "estadoPendiente"
-    : "estadoEntregado"
-?>">
+                        </span>
 
-<?= 
-    $paquete["estado"]=="Pendiente"
-    ? "🟡 Pendiente"
-    : "✅ Entregado"
-?>
+                    </div>
 
-</span>
+                <?php
 
-</div>
+                    $numero++;
+                }
 
-<?php
+                ?>
 
-$numero++;
+            </div>
 
-}
+            <hr style="margin-top:30px;">
 
-?>
+            <div class="acciones">
 
-</div>
+                <div class="tituloAcciones">
+                    ➕ ¿Qué recepción quieres registrar ahora?
+                </div>
 
-<hr style="margin-top:30px;">
+                <div class="botonesRecepcion">
 
-<div class="acciones">
+                    <a href="<?= $base_url ?>recepcion/general" class="btnRecepcion btnGeneral">
+                        📦 Recepción General
+                    </a>
 
-    <div class="tituloAcciones">
-        ➕ ¿Qué recepción quieres registrar ahora?
+                    <a href="<?= $base_url ?>recepcion/tiktok" class="btnRecepcion btnTikTok">
+                        🎵 Recepción TikTok
+                    </a>
+
+                </div>
+
+                <button
+                    class="btnWhatsapp"
+                    data-whatsapp="<?= htmlspecialchars($numeroWhatsapp, ENT_QUOTES, "UTF-8") ?>"
+                    data-mensaje="<?= htmlspecialchars($mensajeWhatsapp, ENT_QUOTES, "UTF-8") ?>">
+
+                    📲 Compartir por WhatsApp
+
+                </button>
+
+            </div>
+
+        </div>
+
     </div>
 
-    <div class="botonesRecepcion">
-
-        <a href="<?= $base_url ?>recepcion/general" class="btnRecepcion btnGeneral">
-            📦 Recepción General
-        </a>
-
-        <a href="<?= $base_url ?>recepcion/tiktok" class="btnRecepcion btnTikTok">
-            🎵 Recepción TikTok
-        </a>
-
-    </div>
-
-    <button
-        class="btnWhatsapp"
-        data-whatsapp="<?= htmlspecialchars($numeroWhatsapp, ENT_QUOTES, "UTF-8") ?>"
-        data-mensaje="<?= htmlspecialchars($mensajeWhatsapp, ENT_QUOTES, "UTF-8") ?>">
-
-        📲 Compartir por WhatsApp
-
-    </button>
-
-</div>
-
-</div>
-
-</div>
-
-<script src="<?= $base_url ?>assets/js/modules/recepcion/comprobante_caja.js"></script>
+    <script src="<?= $base_url ?>assets/js/modules/recepcion/comprobante_caja.js"></script>
 <?php endif; ?>
