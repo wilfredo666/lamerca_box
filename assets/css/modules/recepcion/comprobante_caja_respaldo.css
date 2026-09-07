@@ -35,3 +35,19 @@ h1{
     font-size:18px;
 
 }
+
+.btnWhatsapp{
+  background:#25D366;
+  border:none;
+  border-radius:10px;
+  color:white;
+  cursor:pointer;
+  display:block;
+  font-size:18px;
+  margin:25px auto 0;
+  padding:15px 30px;
+}
+
+.btnWhatsapp:hover{
+  background:#1da851;
+}

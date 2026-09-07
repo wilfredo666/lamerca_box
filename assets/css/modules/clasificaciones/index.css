@@ -1,0 +1,10 @@
+.clasificaciones-contenedor { margin: 28px auto; max-width: 1100px; }
+.clasificaciones-encabezado { align-items: center; display: flex; justify-content: space-between; margin-bottom: 20px; }
+.clasificaciones-encabezado h1 { color: #14532d; font-size: 28px; margin: 0; }
+.clasificaciones-encabezado p { color: #64748b; margin: 5px 0 0; }
+.clasificaciones-card { border: 0; box-shadow: 0 3px 12px rgba(15, 23, 42, .12); }
+.clasificaciones-acciones { display: flex; gap: 5px; }
+.clasificaciones-acciones form { display: inline; }
+#tablaClasificaciones { width: 100% !important; }
+#tablaClasificaciones th { white-space: nowrap; }
+@media (max-width: 767px) { .clasificaciones-encabezado { align-items: flex-start; flex-direction: column; gap: 12px; } }

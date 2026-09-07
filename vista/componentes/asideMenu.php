@@ -31,6 +31,11 @@ $rutaActual = $_GET["ruta"] ?? "";
       <span>Almacenes</span>
     </a>
 
+    <a class="menu-enlace <?= $rutaActual === "clasificaciones" ? "menu-enlace-activo" : "" ?>" href="<?= $base_url ?>clasificaciones">
+      <i class="fas fa-tags" aria-hidden="true"></i>
+      <span>Clasificaciones</span>
+    </a>
+
     <a class="menu-enlace <?= $rutaActual === "usuarios" ? "menu-enlace-activo" : "" ?>" href="<?= $base_url ?>usuarios">
       <i class="fas fa-users-cog" aria-hidden="true"></i>
       <span>Usuarios</span>

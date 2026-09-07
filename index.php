@@ -9,6 +9,7 @@ require_once "controlador/cajaControlador.php"; */
 require_once "controlador/plantillaControlador.php";
 require_once "controlador/usuarioControlador.php";
 require_once "controlador/cajaControlador.php";
+require_once "controlador/clasificacionControlador.php";
 require_once "controlador/almacenControlador.php";
 require_once "controlador/recepcionControlador.php";
 require_once "controlador/cajasTikTokControlador.php";
@@ -23,9 +24,11 @@ require_once "modelo/categoriaModelo.php";
 require_once "modelo/salidaModelo.php";
 require_once "modelo/ingresoModelo.php";
 require_once "modelo/cajaModelo.php";
+require_once "modelo/clasificacionModelo.php";
 */
 require_once "modelo/usuarioModelo.php";
 require_once "modelo/cajaModelo.php";
+require_once "modelo/clasificacionModelo.php";
 require_once "modelo/almacenModelo.php";
 require_once "modelo/recepcionModelo.php";
 require_once "modelo/cajasTikTokModelo.php";

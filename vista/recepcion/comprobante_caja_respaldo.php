@@ -48,6 +48,13 @@
           </div>
         </article>
       <?php endforeach; ?>
+      <button
+        type="button"
+        class="btnWhatsapp"
+        data-whatsapp="<?= htmlspecialchars($numeroWhatsapp ?? "", ENT_QUOTES, "UTF-8") ?>"
+        data-mensaje="<?= htmlspecialchars($mensajeWhatsapp ?? "", ENT_QUOTES, "UTF-8") ?>">
+        📲 Compartir por WhatsApp
+      </button>
     </div>
   </div>
 <?php endif; ?>

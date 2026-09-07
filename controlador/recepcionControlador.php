@@ -136,6 +136,66 @@ class ControladorRecepcion
       exit;
     }
 
+    static public function ctrSubirFotoCaja()
+    {
+      if (($_SERVER["REQUEST_METHOD"] ?? "GET") !== "POST") {
+        throw new RuntimeException("Método no permitido.");
+      }
+
+      $id = filter_input(INPUT_POST, "id", FILTER_VALIDATE_INT);
+      try {
+        $token = $_POST["csrf_token"] ?? "";
+        if (!is_string($token) || !hash_equals($_SESSION["csrf_token"] ?? "", $token)) {
+          throw new InvalidArgumentException("La sesión del formulario expiró.");
+        }
+        if (!$id || !isset($_FILES["foto"]) || $_FILES["foto"]["error"] !== UPLOAD_ERR_OK) {
+          throw new InvalidArgumentException("Seleccione una fotografía válida.");
+        }
+
+        $archivo = $_FILES["foto"];
+        if ($archivo["size"] < 1 || $archivo["size"] > 5 * 1024 * 1024) {
+          throw new InvalidArgumentException("La fotografía debe pesar menos de 5 MB.");
+        }
+        $mime = (new finfo(FILEINFO_MIME_TYPE))->file($archivo["tmp_name"]);
+        $extensiones = [
+          "image/jpeg" => "jpg",
+          "image/png" => "png",
+          "image/gif" => "gif",
+          "image/webp" => "webp"
+        ];
+        if (!isset($extensiones[$mime]) || @getimagesize($archivo["tmp_name"]) === false) {
+          throw new InvalidArgumentException("El archivo debe ser una imagen JPG, PNG, GIF o WEBP.");
+        }
+
+        $directorio = dirname(__DIR__) . DIRECTORY_SEPARATOR . "assets" . DIRECTORY_SEPARATOR
+          . "img" . DIRECTORY_SEPARATOR . "recepciones";
+        if (!is_dir($directorio) && !mkdir($directorio, 0755, true)) {
+          throw new RuntimeException("No se pudo preparar el directorio de imágenes.");
+        }
+        $nombre = "recepcion_" . $id . "_" . bin2hex(random_bytes(12))
+          . "." . $extensiones[$mime];
+        $ruta = $directorio . DIRECTORY_SEPARATOR . $nombre;
+        if (!move_uploaded_file($archivo["tmp_name"], $ruta)) {
+          throw new RuntimeException("No se pudo guardar la fotografía.");
+        }
+
+        try {
+          ModeloRecepcion::mdlActualizarFoto($id, $nombre);
+        } catch (Throwable $error) {
+          @unlink($ruta);
+          throw $error;
+        }
+        header("Location: " . self::ctrUrlProyecto() . "recepcion/cajas-buscar");
+        exit;
+      } catch (InvalidArgumentException | RuntimeException $error) {
+        header(
+          "Location: " . self::ctrUrlProyecto()
+          . "recepcion/cajas-buscar?error=" . rawurlencode($error->getMessage())
+        );
+        exit;
+      }
+    }
+
   private static function ctrDatosRecepcionGeneral($tiposRecepcion)
   {
     $idCliente = filter_input(INPUT_POST, "id_cliente", FILTER_VALIDATE_INT);
@@ -293,16 +353,23 @@ class ControladorRecepcion
       "",
       $caja["whatsapp"] ?? ""
     );
-    $comprobante["mensajeWhatsapp"] = "TU MERCA ENCOMIENDAS\n\n"
-      . "COMPROBANTE DE RECEPCIÓN\n\n"
-      . "Empresa: " . ($caja["empresa"] ?? "") . "\n"
-      . "Propietaria: " . ($caja["propietaria"] ?? "") . "\n"
-      . "Código: " . ($caja["codigo"] ?? "") . "\n"
-      . "Fecha: " . date("d/m/Y", strtotime($caja["fecha"])) . "\n\n"
-      . "RECEPCIONES\n" . $textoLotes . "\n"
-      . "TOTAL ACUMULADO: " . $comprobante["resumen"]["total"] . " PAQUETES\n"
-      . "Pendientes: " . $comprobante["resumen"]["pendientes"] . "\n"
-      . "Entregados: " . $comprobante["resumen"]["entregados"];
+    $iconoCaja = json_decode('"\uD83D\uDCE6"');
+    $iconoEmpresa = json_decode('"\uD83C\uDFEA"');
+    $iconoPersona = json_decode('"\uD83D\uDC64"');
+    $iconoCodigo = json_decode('"\uD83D\uDD16"');
+    $iconoFecha = json_decode('"\uD83D\uDCC5"');
+    $iconoPendiente = json_decode('"\uD83D\uDFE1"');
+    $iconoEntregado = json_decode('"\u2705"');
+    $comprobante["mensajeWhatsapp"] = $iconoCaja . " *COMPROBANTE DE RECEPCIÓN*\n\n"
+      . $iconoEmpresa . " [EMPRESA] *" . ($caja["empresa"] ?? "") . "*\n"
+      . $iconoPersona . " [PROPIETARIA] *" . ($caja["propietaria"] ?? "") . "*\n"
+      . $iconoCodigo . " [CODIGO] *" . ($caja["codigo"] ?? "") . "*\n"
+      . $iconoFecha . " [FECHA] " . date("d/m/Y", strtotime($caja["fecha"])) . "\n\n"
+      . "*RECEPCIONES*\n" . $textoLotes . "\n"
+      . "*TOTAL ACUMULADO: " . $comprobante["resumen"]["total"] . " PAQUETES*\n"
+      . $iconoPendiente . " [PENDIENTES] " . $comprobante["resumen"]["pendientes"] . "\n"
+      . $iconoEntregado . " [ENTREGADOS] " . $comprobante["resumen"]["entregados"] . "\n\n"
+      . "Gracias por confiar en *Tu Merca Encomiendas*.";
 
     return $comprobante;
   }
@@ -315,6 +382,43 @@ class ControladorRecepcion
     }
 
     $comprobante = ModeloRecepcion::mdlComprobanteRecepcion($idRecepcion);
-    return $comprobante ?? ["errorVista" => "Recepción no encontrada."];
+    if ($comprobante === null) {
+      return ["errorVista" => "Recepción no encontrada."];
+    }
+
+    $paquetes = $comprobante["paquetes"];
+    $pendientes = count(array_filter($paquetes, function ($paquete) {
+      return $paquete["estado"] === "Pendiente";
+    }));
+    $entregados = count(array_filter($paquetes, function ($paquete) {
+      return $paquete["estado"] === "Entregado";
+    }));
+    $hora = date("H:i", strtotime($comprobante["recepcion"]["fecha_registro"]));
+    $cantidad = count($paquetes);
+    $empresa = $comprobante["recepcion"]["empresa"] ?: "Sin empresa registrada";
+    $comprobante["numeroWhatsapp"] = preg_replace(
+      "/[^0-9]/",
+      "",
+      $comprobante["recepcion"]["celular_cliente"] ?? ""
+    );
+    $iconoCaja = json_decode('"\uD83D\uDCE6"');
+    $iconoEmpresa = json_decode('"\uD83C\uDFEA"');
+    $iconoPersona = json_decode('"\uD83D\uDC64"');
+    $iconoCodigo = json_decode('"\uD83D\uDD16"');
+    $iconoFecha = json_decode('"\uD83D\uDCC5"');
+    $iconoPendiente = json_decode('"\uD83D\uDFE1"');
+    $iconoEntregado = json_decode('"\u2705"');
+    $comprobante["mensajeWhatsapp"] = $iconoCaja . " *COMPROBANTE DE RECEPCIÓN*\n\n"
+      . $iconoEmpresa . " [EMPRESA] *" . $empresa . "*\n"
+      . $iconoPersona . " [CLIENTE] *" . ($comprobante["recepcion"]["nombre_cliente"] ?? "") . "*\n"
+      . $iconoCodigo . " [CODIGO] *" . ($comprobante["recepcion"]["codigo"] ?? "") . "*\n"
+      . $iconoFecha . " [FECHA] " . date("d/m/Y", strtotime($comprobante["recepcion"]["fecha_registro"])) . "\n\n"
+      . "*RECEPCIONES*\n"
+      . "[RECEPCION 1] - {$hora} - {$cantidad} paquete" . ($cantidad === 1 ? "" : "s") . "\n\n"
+      . "*TOTAL ACUMULADO: {$cantidad} PAQUETES*\n"
+      . $iconoPendiente . " [PENDIENTES] {$pendientes}\n"
+      . $iconoEntregado . " [ENTREGADOS] {$entregados}\n\n"
+      . "Gracias por confiar en *Tu Merca Encomiendas*.";
+    return $comprobante;
   }
 }

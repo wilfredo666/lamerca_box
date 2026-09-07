@@ -14,6 +14,7 @@ $rutas_validas = [
   "recepcion/cajas-buscar" => ["vista" => "recepcion/cajas_buscar.php", "accion" => "ctrBuscarCajas"],
   "recepcion/caja-ver" => ["vista" => "recepcion/caja_ver.php", "accion" => "ctrVerCaja"],
   "recepcion/caja-editar" => ["vista" => "recepcion/caja_editar.php", "accion" => "ctrEditarCaja"],
+  "recepcion/caja-foto" => ["vista" => "recepcion/cajas_buscar.php", "accion" => "ctrSubirFotoCaja"],
   "recepcion/caja-eliminar" => ["vista" => "recepcion/cajas_buscar.php", "accion" => "ctrEliminarCaja"],
   "encomiendas/buscar" => ["vista" => "encomiendas/buscar.php", "controlador" => "ControladorEncomiendas", "accion" => "ctrBuscar"],
   "encomiendas/ver" => ["vista" => "encomiendas/ver.php", "controlador" => "ControladorEncomiendas", "accion" => "ctrVer"],
@@ -37,6 +38,10 @@ $rutas_validas = [
   "cajas-tiktok/editar" => ["vista" => "cajas_tiktok/editar.php", "controlador" => "ControladorCajasTikTok", "accion" => "ctrEditar"],
   "clientes" => ["vista" => "clientes/index.php", "controlador" => "ControladorCliente", "accion" => "ctrVistaClientes"],
   "almacenes" => ["vista" => "almacenes/index.php", "controlador" => "ControladorAlmacen", "accion" => "ctrVistaAlmacenes"],
+  "clasificaciones" => ["vista" => "clasificaciones/index.php", "controlador" => "ControladorClasificacion", "accion" => "ctrVistaClasificaciones"],
+  "clasificaciones/nuevo" => ["vista" => "clasificaciones/index.php", "controlador" => "ControladorClasificacion", "accion" => "ctrNuevo"],
+  "clasificaciones/editar" => ["vista" => "clasificaciones/index.php", "controlador" => "ControladorClasificacion", "accion" => "ctrEditar"],
+  "clasificaciones/eliminar" => ["vista" => "clasificaciones/index.php", "controlador" => "ControladorClasificacion", "accion" => "ctrEliminar"],
   "usuarios" => ["vista" => "usuarios/index.php", "controlador" => "ControladorUsuario", "accion" => "ctrVistaUsuarios"],
   "usuarios/permisos" => ["vista" => "usuarios/permisos.php", "controlador" => "ControladorUsuario", "accion" => "ctrPermisos"],
   "usuarios/nuevo" => ["vista" => "usuarios/index.php", "controlador" => "ControladorUsuario", "accion" => "ctrNuevo"],
@@ -102,6 +107,12 @@ $estilos_vista = [
     "assets/plugins/datatables-buttons/css/buttons.bootstrap4.min.css",
     "assets/plugins/sweetalert2/sweetalert2.min.css"
   ]
+  ,"clasificaciones" => [
+    "assets/css/modules/clasificaciones/index.css",
+    "assets/plugins/datatables-bs4/css/dataTables.bootstrap4.min.css",
+    "assets/plugins/datatables-responsive/css/responsive.bootstrap4.min.css",
+    "assets/plugins/sweetalert2/sweetalert2.min.css"
+  ]
 ];
 
 $scripts_vista = [
@@ -132,6 +143,9 @@ $scripts_vista = [
   ],
   "encomiendas/buscar" => [
     "assets/js/modules/encomiendas/buscar.js"
+  ],
+  "recepcion/comprobante-general" => [
+    "assets/js/modules/recepcion/comprobante_caja.js"
   ],
   "entrega/entregadas" => [
     "assets/js/jquery.min.js",
@@ -175,11 +189,23 @@ $scripts_vista = [
     "assets/plugins/datatables-buttons/js/buttons.print.min.js",
     "assets/plugins/sweetalert2/sweetalert2.all.min.js",
     "assets/js/modules/caja/index.js"
+  ],
+  "clasificaciones" => [
+    "assets/js/jquery.min.js",
+    "assets/js/bootstrap.bundle.min.js",
+    "assets/plugins/datatables/jquery.dataTables.min.js",
+    "assets/plugins/datatables-bs4/js/dataTables.bootstrap4.min.js",
+    "assets/plugins/datatables-responsive/js/dataTables.responsive.min.js",
+    "assets/plugins/sweetalert2/sweetalert2.all.min.js",
+    "assets/js/modules/clasificaciones/index.js"
   ]
 ];
 
 $ruta_solicitada = $_GET["ruta"] ?? null;
 $datos_vista = [];
+$ruta_activos = strpos((string) $ruta_solicitada, "clasificaciones") === 0
+  ? "clasificaciones"
+  : $ruta_solicitada;
 
 if (
   isset($_SESSION["ingreso"]) &&
@@ -231,7 +257,7 @@ if (
     <link rel="stylesheet" href="<?php echo $base_url; ?>assets/css/index.css">
     <link rel="stylesheet" href="<?php echo $base_url; ?>assets/css/adminlte.css">
     <link rel="stylesheet" href="<?php echo $base_url; ?>assets/css/componentes/aside-menu.css">
-    <?php foreach ((array) ($estilos_vista[$ruta_solicitada] ?? []) as $estilo) { ?>
+    <?php foreach ((array) ($estilos_vista[$ruta_activos] ?? []) as $estilo) { ?>
       <link rel="stylesheet" href="<?php echo $base_url . $estilo; ?>">
     <?php } ?>
 
@@ -261,7 +287,7 @@ if (
           echo "Ruta no válida.";
         }
 
-        foreach ($scripts_vista[$ruta_solicitada] ?? [] as $script) {
+        foreach ($scripts_vista[$ruta_activos] ?? [] as $script) {
           echo '<script src="' . htmlspecialchars($base_url . $script, ENT_QUOTES, "UTF-8") . '"></script>';
         }
         include __DIR__ . "/componentes/footer.php";

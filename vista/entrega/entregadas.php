@@ -9,7 +9,7 @@
             <th>Código</th>
             <th>Destinatario</th>
             <th>Descripción</th>
-            <th>Cliente</th>
+            <th>Remitente</th>
             <th>Total cobrado</th>
             <th>Método</th>
             <th>Fecha de entrega</th>

@@ -91,6 +91,15 @@ class ControladorEntrega
   {
     self::ctrSoloPost();
     $id = filter_input(INPUT_POST, "id", FILTER_VALIDATE_INT);
+    $retorno = $_POST["retorno"] ?? "entrega/fotos-pendientes";
+    $buscar = trim((string) ($_POST["buscar"] ?? ""));
+    if (!in_array($retorno, ["encomiendas/buscar", "entrega/fotos-pendientes"], true)) {
+      $retorno = "entrega/fotos-pendientes";
+    }
+    $rutaRetorno = $retorno;
+    if ($retorno === "encomiendas/buscar" && $buscar !== "") {
+      $rutaRetorno .= "?buscar=" . rawurlencode($buscar);
+    }
     try {
       self::ctrValidarCsrf($_POST["csrf_token"] ?? "");
       if (!$id || !isset($_FILES["foto"])) {
@@ -119,9 +128,9 @@ class ControladorEntrega
         @unlink($directorio . DIRECTORY_SEPARATOR . $nombre);
         throw $error;
       }
-      self::ctrRedirigir("entrega/fotos-pendientes", "Fotografía guardada.");
+      self::ctrRedirigir($rutaRetorno, "Fotografía guardada.");
     } catch (Throwable $error) {
-      self::ctrRedirigir("entrega/fotos-pendientes", $error->getMessage());
+      self::ctrRedirigir($rutaRetorno, $error->getMessage());
     }
   }
 

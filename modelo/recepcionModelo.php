@@ -8,8 +8,8 @@ class ModeloRecepcion
   {
     $stmt = Conexion::conectar()->prepare(
       "SELECT r.id, r.codigo, r.empresa, r.tipo_recepcion, r.estado,
-        r.fecha_registro, r.foto, r.observaciones,
-        c.nombre AS nombre_cliente, c.celular AS celular_cliente,
+        r.fecha_registro, r.foto, r.observaciones, c.celular AS celular,
+        c.nombre AS nombre_cliente,
         COUNT(e.id) AS total_encomiendas,
         SUM(e.estado = 'Pendiente') AS pendientes
       FROM recepciones r
@@ -154,6 +154,20 @@ class ModeloRecepcion
         $conexion->rollBack();
       }
       throw $error;
+    }
+  }
+
+  static public function mdlActualizarFoto($id, $foto)
+  {
+    $stmt = Conexion::conectar()->prepare(
+      "UPDATE recepciones SET foto = :foto WHERE id = :id"
+    );
+    $stmt->execute([
+      ":foto" => $foto,
+      ":id" => $id
+    ]);
+    if ($stmt->rowCount() !== 1) {
+      throw new InvalidArgumentException("La caja no existe o la fotografía no pudo guardarse.");
     }
   }
 
@@ -487,6 +501,7 @@ class ModeloRecepcion
     $stmtRecepcion = $conexion->prepare(
       "SELECT recepcion.*,
         cliente.nombre AS nombre_cliente,
+        cliente.celular AS celular_cliente,
         almacen.nombre_almacen,
         usuario.nombre AS nombre_usuario
       FROM recepciones recepcion

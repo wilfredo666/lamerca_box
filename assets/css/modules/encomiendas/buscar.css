@@ -220,6 +220,13 @@
 	background: #16a34a
 }
 
+.formulario-foto input[type="file"] {
+	position: absolute;
+	width: 1px;
+	height: 1px;
+	opacity: 0;
+}
+
 .sin-resultados {
 	padding: 28px;
 	text-align: center;

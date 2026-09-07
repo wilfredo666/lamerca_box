@@ -4,6 +4,7 @@ $h = static fn($valor) => htmlspecialchars((string) ($valor ?? ""), ENT_QUOTES, 
 <div class="busqueda-encomiendas">
   <div class="encabezado-busqueda">
     <h1>Encomiendas <span><?= count($encomiendas) ?></span> <button type="button" id="botonEntregarSeleccionadas" class="boton-entregar-seleccionadas" hidden>✅ Entregar</button> <button type="button" id="botonTraspasarSeleccionadas" class="boton-entregar-seleccionadas boton-traspasar-seleccionadas" hidden>↔ Traspasar</button></h1>
+    <?php if (!empty($_GET["mensaje"])): ?><p class="alerta"><?= $h($_GET["mensaje"]) ?></p><?php endif; ?>
     <form method="GET" action="<?= $base_url ?>encomiendas/buscar">
       <input type="hidden" name="ruta" value="encomiendas/buscar">
       <input type="search" name="buscar" value="<?= $h($buscar) ?>" placeholder="🔎 Buscar por nombre o celular..." autofocus>
@@ -90,7 +91,7 @@ $h = static fn($valor) => htmlspecialchars((string) ($valor ?? ""), ENT_QUOTES, 
               <?= $h($encomienda["clasificacion"]) ?>
             <?php endif; ?>
           </div>
-          <div>🏢 <b>Cliente:</b> <?= $h($encomienda["nombre_cliente"]) ?></div>
+          <div>🏢 <b>Remitente:</b> <?= $h($encomienda["nombre_cliente"]) ?></div>
           <div>📱 <b>Contacto:</b> <?= $h($encomienda["contacto"] ?: "Sin registrar") ?></div>
           <div>📦 <b>Recepción:</b> <?= $h($encomienda["tipo_recepcion"]) ?></div>
           <div>📅 <b>Fecha:</b> <?= $h(date("d/m/Y H:i", strtotime($encomienda["fecha_recepcion"]))) ?></div>
@@ -107,7 +108,16 @@ $h = static fn($valor) => htmlspecialchars((string) ($valor ?? ""), ENT_QUOTES, 
             <input type="hidden" name="id" value="<?= (int) $encomienda["id"] ?>">
             <button class="accion eliminar" type="submit">🗑 Eliminar</button>
           </form>
-          <a class="accion foto" href="<?= $base_url ?>entrega/detalle?id=<?= (int) $encomienda["id"] ?>">📷 Foto</a>
+          <form method="POST" action="<?= $base_url ?>entrega/foto" enctype="multipart/form-data" class="formulario-foto">
+            <input type="hidden" name="csrf_token" value="<?= $h($csrfToken) ?>">
+            <input type="hidden" name="id" value="<?= (int) $encomienda["id"] ?>">
+            <input type="hidden" name="retorno" value="encomiendas/buscar">
+            <input type="hidden" name="buscar" value="<?= $h($buscar) ?>">
+            <label class="accion foto">
+              📷 Foto
+              <input type="file" name="foto" accept="image/jpeg,image/png,image/gif,image/webp" capture="environment" required onchange="this.form.submit()">
+            </label>
+          </form>
         </div>
       </article>
     <?php endforeach; ?>

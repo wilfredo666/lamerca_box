@@ -22,7 +22,7 @@ $h = static fn($valor) => htmlspecialchars((string) ($valor ?? ""), ENT_QUOTES, 
         </div>
         <div class="datos-tarjeta">
           <div>📦 <b>Tipo:</b> <?= $h($caja["tipo_recepcion"]) ?></div>
-          <div>📱 <b>Celular:</b> <?= $h($caja["celular_cliente"] ?: "Sin registrar") ?></div>
+          <div>📱 <b>Celular:</b> <?= $h($caja["celular"] ?: "Sin registrar") ?></div>
           <div>📅 <b>Recepción:</b> <?= $h(date("d/m/Y H:i", strtotime($caja["fecha_registro"]))) ?></div>
           <div>📦 <b>Encomiendas:</b> <?= (int) $caja["total_encomiendas"] ?></div>
           <div>🟡 <b>Pendientes:</b> <?= (int) $caja["pendientes"] ?></div>
@@ -39,7 +39,14 @@ $h = static fn($valor) => htmlspecialchars((string) ($valor ?? ""), ENT_QUOTES, 
             <input type="hidden" name="id" value="<?= (int) $caja["id"] ?>">
             <button class="accion eliminar" type="submit">🗑 Eliminar</button>
           </form>
-          <a class="accion foto" href="<?= $base_url ?>recepcion/caja-editar?id=<?= (int) $caja["id"] ?>#foto">📷 Foto</a>
+          <form method="POST" action="<?= $base_url ?>recepcion/caja-foto" enctype="multipart/form-data" class="formulario-foto">
+            <input type="hidden" name="csrf_token" value="<?= $h($csrfToken) ?>">
+            <input type="hidden" name="id" value="<?= (int) $caja["id"] ?>">
+            <label class="accion foto">
+              📷 Foto
+              <input type="file" name="foto" accept="image/jpeg,image/png,image/gif,image/webp" capture="environment" required onchange="this.form.submit()">
+            </label>
+          </form>
         </div>
       </article>
     <?php endforeach; ?>
