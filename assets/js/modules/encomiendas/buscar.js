@@ -1,4 +1,29 @@
 document.addEventListener("DOMContentLoaded", function () {
+    const buscador = document.querySelector("[data-buscador-tiempo-real]");
+    const tarjetas = Array.from(document.querySelectorAll(".grid-encomiendas .tarjeta-encomienda"));
+    const contador = document.querySelector("[data-contador-resultados]");
+    const sinResultados = document.querySelector("[data-sin-resultados]");
+
+    if (buscador) {
+        buscador.addEventListener("input", function () {
+            const termino = buscador.value.trim().toLocaleLowerCase();
+            let visibles = 0;
+
+            tarjetas.forEach(function (tarjeta) {
+                const coincide = tarjeta.textContent.toLocaleLowerCase().includes(termino);
+                tarjeta.hidden = !coincide;
+                visibles += coincide ? 1 : 0;
+            });
+
+            if (contador) {
+                contador.textContent = visibles;
+            }
+            if (sinResultados) {
+                sinResultados.hidden = visibles !== 0;
+            }
+        });
+    }
+
     const boton = document.getElementById("botonEntregarSeleccionadas");
     const botonTraspasar = document.getElementById("botonTraspasarSeleccionadas");
     const selectores = document.querySelectorAll(".selectorEncomienda");
@@ -109,14 +134,43 @@ document.addEventListener("DOMContentLoaded", function () {
         if (ids.length === 0) return;
         let base = 0;
         detalle.replaceChildren();
+
+        const tabla = document.createElement("table");
+        tabla.className = "tabla-detalle-entrega";
+        const thead = document.createElement("thead");
+        thead.innerHTML = "<tr><th>Encomienda</th><th>Precio</th><th>Pago</th></tr>";
+        const tbody = document.createElement("tbody");
+
         ids.forEach(function (id) {
             const tarjeta = document.querySelector('.tarjeta-encomienda[data-id="' + id + '"]');
             if (!tarjeta) return;
-            base += Number(tarjeta.dataset.precio) || 2;
-            const item = document.createElement("div");
-            item.textContent = tarjeta.dataset.destinatario + " | " + tarjeta.dataset.descripcion + " | " + tarjeta.dataset.codigo;
-            detalle.appendChild(item);
+            const precio = Number(tarjeta.dataset.precio) || 2;
+            const pagaRemitente = tarjeta.dataset.quienPaga === "Remitente";
+            if (!pagaRemitente) {
+                base += precio;
+            }
+
+            const fila = document.createElement("tr");
+            const celdaEncomienda = document.createElement("td");
+            celdaEncomienda.textContent = tarjeta.dataset.destinatario + " | " + tarjeta.dataset.descripcion + " | " + tarjeta.dataset.codigo;
+            const celdaPrecio = document.createElement("td");
+            celdaPrecio.textContent = precio.toFixed(2) + " Bs";
+            const celdaPago = document.createElement("td");
+            if (pagaRemitente) {
+                celdaPago.innerHTML = '<span class="etiqueta-pagado">✅ Pagado (Remitente)</span>';
+            } else {
+                celdaPago.innerHTML = '<span class="etiqueta-por-cobrar">🟡 Por cobrar</span>';
+            }
+            fila.appendChild(celdaEncomienda);
+            fila.appendChild(celdaPrecio);
+            fila.appendChild(celdaPago);
+            tbody.appendChild(fila);
         });
+
+        tabla.appendChild(thead);
+        tabla.appendChild(tbody);
+        detalle.appendChild(tabla);
+
         costoBase.dataset.valor = base.toFixed(2);
         costoBase.textContent = base.toFixed(2);
         recargo.value = "0.00";

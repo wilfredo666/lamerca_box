@@ -90,10 +90,17 @@ class ModeloEncomiendas
   static public function mdlTotalCobradoHoy()
   {
     $stmt = Conexion::conectar()->prepare(
-      "SELECT COALESCE(SUM(total_cobrado), 0) AS total
-      FROM entrega
-      WHERE estado <> 'Anulado'
-      AND DATE(fecha_entrega) = CURDATE()"
+      "SELECT (
+        COALESCE((
+          SELECT SUM(total_cobrado) FROM entrega
+          WHERE estado <> 'Anulado' AND DATE(fecha_entrega) = CURDATE()
+        ), 0)
+        +
+        COALESCE((
+          SELECT SUM(precio) FROM encomiendas
+          WHERE quien_paga = 'Remitente' AND cobrado = 1 AND DATE(fecha_registro) = CURDATE()
+        ), 0)
+      ) AS total"
     );
     $stmt->execute();
     $resultado = $stmt->fetch();

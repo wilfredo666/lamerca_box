@@ -7,7 +7,7 @@ class ModeloCliente
   public static function mdlListar()
   {
     $stmt = Conexion::conectar()->prepare(
-      "SELECT id, nombre, celular, observaciones, pais, ciudad, activo, fecha_registro
+      "SELECT id, nombre, empresa, celular, observaciones, pais, ciudad, activo, fecha_registro
       FROM clientes
       ORDER BY nombre ASC, id ASC"
     );
@@ -17,11 +17,13 @@ class ModeloCliente
 
   public static function mdlCrear($datos)
   {
-    $stmt = Conexion::conectar()->prepare(
-      "INSERT INTO clientes (nombre, celular, observaciones, pais, ciudad, activo)
-      VALUES (:nombre, :celular, :observaciones, :pais, :ciudad, 1)"
+    $conexion = Conexion::conectar();
+    $stmt = $conexion->prepare(
+      "INSERT INTO clientes (nombre, empresa, celular, observaciones, pais, ciudad, activo)
+      VALUES (:nombre, :empresa, :celular, :observaciones, :pais, :ciudad, 1)"
     );
-    return $stmt->execute($datos);
+    $stmt->execute($datos);
+    return (int) $conexion->lastInsertId();
   }
 
   public static function mdlActualizar($id, $datos)
@@ -29,8 +31,8 @@ class ModeloCliente
     $datos[":id"] = $id;
     $stmt = Conexion::conectar()->prepare(
       "UPDATE clientes
-      SET nombre = :nombre, celular = :celular, observaciones = :observaciones,
-          pais = :pais, ciudad = :ciudad
+      SET nombre = :nombre, empresa = :empresa, celular = :celular,
+          observaciones = :observaciones, pais = :pais, ciudad = :ciudad
       WHERE id = :id"
     );
     return $stmt->execute($datos);

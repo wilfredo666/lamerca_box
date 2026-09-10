@@ -55,12 +55,31 @@
   width: 44px;
 }
 
+.menu-usuario-datos {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 0;
+}
+
 .menu-usuario-nombre {
   color: #ffffff;
   font-weight: 700;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+.menu-almacen-activo {
+  color: #bbf7d0;
+  font-size: 12px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.menu-almacen-activo i {
+  margin-right: 4px;
 }
 
 .menu-navegacion {

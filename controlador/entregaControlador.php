@@ -38,13 +38,19 @@ class ControladorEntrega
     if ($paquete === null) {
       return ["errorVista" => "Paquete no encontrado."];
     }
+    $pagaRemitente = $paquete["quien_paga"] === "Remitente";
     $precioBase = (float) ($paquete["precio_base"] ?: $paquete["precio"]);
     $precioBase = $precioBase > 0 ? $precioBase : 2;
     $dias = max(0, (new DateTime($paquete["fecha_registro"]))->diff(new DateTime())->days);
     $recargo = $dias > 7 ? 1 : 0;
+    if ($pagaRemitente) {
+      $precioBase = 0;
+      $recargo = 0;
+    }
     return [
       "paquete" => $paquete,
       "dias" => $dias,
+      "pagaRemitente" => $pagaRemitente,
       "precioBase" => $precioBase,
       "recargo" => $recargo,
       "totalCobrar" => $precioBase + $recargo,

@@ -26,7 +26,10 @@
               <td data-order="<?= number_format((float) $paquete["total_cobrado"], 2, ".", "") ?>">
                 Bs <?= number_format((float) $paquete["total_cobrado"], 2) ?>
               </td>
-              <td><?= $h($paquete["metodo_cobro"] ?: "No registrado") ?></td>
+              <td>
+                <?= $h($paquete["metodo_cobro"] ?: "No registrado") ?>
+                <?php if (!empty($paquete["observaciones"])): ?><br><small><?= $h($paquete["observaciones"]) ?></small><?php endif; ?>
+              </td>
               <td data-order="<?= $h($paquete["fecha_entrega"]) ?>">
                 <?= $h(date("d/m/Y H:i", strtotime($paquete["fecha_entrega"]))) ?>
               </td>

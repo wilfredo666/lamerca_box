@@ -3,10 +3,10 @@ $h = static fn($valor) => htmlspecialchars((string) ($valor ?? ""), ENT_QUOTES, 
 ?>
 <div class="busqueda-encomiendas">
   <div class="encabezado-busqueda">
-    <h1>Cajas recibidas <span><?= count($cajas) ?></span></h1>
+    <h1>Cajas recibidas <span data-contador-resultados><?= count($cajas) ?></span></h1>
     <form method="GET" action="<?= $base_url ?>recepcion/cajas-buscar">
       <input type="hidden" name="ruta" value="recepcion/cajas-buscar">
-      <input type="search" name="buscar" value="<?= $h($buscar) ?>" placeholder="🔎 Buscar por cliente, empresa, código o tipo..." autofocus>
+      <input type="search" name="buscar" value="<?= $h($buscar) ?>" placeholder="🔎 Buscar por cliente, empresa, código o tipo..." autofocus data-buscador-tiempo-real>
     </form>
   </div>
 
@@ -23,7 +23,13 @@ $h = static fn($valor) => htmlspecialchars((string) ($valor ?? ""), ENT_QUOTES, 
         <div class="datos-tarjeta">
           <div>📦 <b>Tipo:</b> <?= $h($caja["tipo_recepcion"]) ?></div>
           <div>📱 <b>Celular:</b> <?= $h($caja["celular"] ?: "Sin registrar") ?></div>
-          <div>📅 <b>Recepción:</b> <?= $h(date("d/m/Y H:i", strtotime($caja["fecha_registro"]))) ?></div>
+          <div>📅 <b>Recepción:</b>
+            <?php if (date("Y-m-d", strtotime($caja["fecha_registro"])) === date("Y-m-d")): ?>
+              <span class="etiqueta-hoy">Hoy</span>
+            <?php else: ?>
+              <?= $h(date("d/m/Y H:i", strtotime($caja["fecha_registro"]))) ?>
+            <?php endif; ?>
+          </div>
           <div>📦 <b>Encomiendas:</b> <?= (int) $caja["total_encomiendas"] ?></div>
           <div>🟡 <b>Pendientes:</b> <?= (int) $caja["pendientes"] ?></div>
           <div>🔵 <b>Estado:</b> <?= $h($caja["estado"]) ?></div>
@@ -51,5 +57,5 @@ $h = static fn($valor) => htmlspecialchars((string) ($valor ?? ""), ENT_QUOTES, 
       </article>
     <?php endforeach; ?>
   </div>
-  <?php if (empty($cajas)): ?><p class="sin-resultados">No se encontraron cajas TikTok o cajas generales.</p><?php endif; ?>
+  <p class="sin-resultados" data-sin-resultados <?= empty($cajas) ? "" : "hidden" ?>>No se encontraron cajas TikTok o cajas generales.</p>
 </div>

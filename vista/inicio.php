@@ -7,11 +7,14 @@ $cobradoHoy = ControladorEncomiendas::ctrTotalCobradoHoy();
 $encomiendasRegistradasHoy = ControladorEncomiendas::ctrCantidadEncomiendasHoy();
 $encomiendasPendientes = ControladorEncomiendas::ctrCantidadPendientes();
 $encomiendasEntregadasHoy = ControladorEncomiendas::ctrCantidadEntregadasHoy();
+$resumenCaja = ControladorCaja::ctrVistaCaja()["resumen"];
 
 $totalCobradoHoy = $cobradoHoy["total"];
 $encomiendasHoy = $encomiendasRegistradasHoy["total"];
 $pendientes = $encomiendasPendientes["total"];
 $entregadasHoy = $encomiendasEntregadasHoy["total"];
+$totalEnCaja = (float) $resumenCaja["saldo_actual"];
+$totalAmbos = $totalCobradoHoy + $totalEnCaja;
 ?>
 
 
@@ -44,16 +47,22 @@ $entregadasHoy = $encomiendasEntregadasHoy["total"];
 
         </div>
 
-        <div class="tarjeta">
+        <div class="tarjeta tarjeta-resumen">
 
-            Cobrado Hoy
-
-            <div class="numero">
-
-                Bs <?= number_format($totalCobradoHoy, 2) ?>
-
-            </div>
-
+            <table class="tabla-resumen">
+                <tr>
+                    <td>Cobrado Hoy</td>
+                    <td>Bs <?= number_format($totalCobradoHoy, 2) ?></td>
+                </tr>
+                <tr>
+                    <td>Total en Caja</td>
+                    <td>Bs <?= number_format($totalEnCaja, 2) ?></td>
+                </tr>
+                <tr class="fila-total">
+                    <td>Total</td>
+                    <td>Bs <?= number_format($totalAmbos, 2) ?></td>
+                </tr>
+            </table>
         </div>
 
         <div class="tarjeta">

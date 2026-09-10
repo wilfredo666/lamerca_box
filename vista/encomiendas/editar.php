@@ -8,7 +8,16 @@
       <input type="hidden" name="csrf_token" value="<?= $h($csrfToken) ?>">
       <label>Destinatario<input name="destinatario" required maxlength="150" value="<?= $h($encomienda["destinatario"]) ?>"></label>
       <label>Contacto<input name="contacto" maxlength="30" value="<?= $h($encomienda["contacto"]) ?>"></label>
-      <label>Clasificación<input name="clasificacion" required maxlength="50" value="<?= $h($encomienda["clasificacion"]) ?>"></label>
+      <label>Clasificación
+        <select name="clasificacion" required>
+          <option value="">Seleccione una clasificación</option>
+          <?php foreach ($clasificaciones as $clasificacion): ?>
+            <option value="<?= $h($clasificacion["descripcion"]) ?>" <?= $encomienda["clasificacion"] === $clasificacion["descripcion"] ? "selected" : "" ?>>
+              <?= $h($clasificacion["descripcion"]) ?><?= (int) ($clasificacion["estado"] ?? 1) === 0 ? " (inactiva)" : "" ?>
+            </option>
+          <?php endforeach; ?>
+        </select>
+      </label>
       <label>Descripción<textarea name="descripcion" maxlength="5000"><?= $h($encomienda["descripcion"]) ?></textarea></label>
       <label>Precio<input type="number" name="precio" min="0" step="0.01" required value="<?= $h($encomienda["precio"]) ?>"></label>
       <label>Quién paga<select name="quien_paga"><option <?= $encomienda["quien_paga"] === "Destinatario" ? "selected" : "" ?>>Destinatario</option><option <?= $encomienda["quien_paga"] === "Remitente" ? "selected" : "" ?>>Remitente</option></select></label>

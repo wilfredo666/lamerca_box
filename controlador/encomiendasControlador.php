@@ -33,6 +33,15 @@ class ControladorEncomiendas
     if ($encomienda === null) {
       return ["errorVista" => "Encomienda no encontrada."];
     }
+    $clasificaciones = ModeloRecepcion::mdlClasificacionesActivas();
+    $clasificacionesValidas = array_column($clasificaciones, "descripcion");
+    if (!in_array($encomienda["clasificacion"], $clasificacionesValidas, true)) {
+      $clasificaciones[] = [
+        "descripcion" => $encomienda["clasificacion"],
+        "estado" => 0
+      ];
+      $clasificacionesValidas[] = $encomienda["clasificacion"];
+    }
 
     if (($_SERVER["REQUEST_METHOD"] ?? "GET") === "POST") {
       self::ctrValidarCsrf($_POST["csrf_token"] ?? "");
@@ -46,6 +55,7 @@ class ControladorEncomiendas
       ];
       if (
         $datos[":destinatario"] === "" ||
+        !in_array($datos[":clasificacion"], $clasificacionesValidas, true) ||
         $datos[":precio"] === false ||
         $datos[":precio"] < 0 ||
         !in_array($datos[":quien_paga"], ["Destinatario", "Remitente"], true)
@@ -57,7 +67,10 @@ class ControladorEncomiendas
       exit;
     }
 
-    return ["encomienda" => $encomienda];
+    return [
+      "encomienda" => $encomienda,
+      "clasificaciones" => $clasificaciones
+    ];
   }
 
   static public function ctrEliminar()

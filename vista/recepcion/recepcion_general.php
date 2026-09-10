@@ -12,7 +12,8 @@
         Debe contar con clientes, tipos de recepción y clasificaciones activas antes de registrar una recepción.
       </div>
     <?php else: ?>
-      <form method="POST" id="formRecepcion" class="layout-recepcion">
+      <form method="POST" id="formRecepcion" class="layout-recepcion"
+        data-cliente-preseleccionado="<?= (int) ($clienteRecepcionSeleccionado["id"] ?? 0) ?>">
         <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($csrfToken, ENT_QUOTES, "UTF-8") ?>">
         <aside class="panel-lateral">
           <div class="campo-formulario">
@@ -24,8 +25,7 @@
               placeholder="Escriba el nombre o celular..."
               aria-controls="resultadosClientes"
               aria-expanded="false"
-              required
-            >
+              required>
             <input type="hidden" name="id_cliente" id="idClienteRecepcion">
             <div id="resultadosClientes" class="resultados-clientes" role="listbox" hidden>
               <?php foreach ($clientes as $cliente): ?>
@@ -36,10 +36,13 @@
                   data-id="<?= (int) $cliente["id"] ?>"
                   data-nombre="<?= htmlspecialchars($cliente["nombre"], ENT_QUOTES, "UTF-8") ?>"
                   data-celular="<?= htmlspecialchars($cliente["celular"] ?? "", ENT_QUOTES, "UTF-8") ?>"
-                >
-                  <strong><?= htmlspecialchars($cliente["nombre"], ENT_QUOTES, "UTF-8") ?></strong>
+                  data-empresa="<?= htmlspecialchars($cliente["empresa"] ?? "", ENT_QUOTES, "UTF-8") ?>">
+                  <strong>🧑 <?= htmlspecialchars($cliente["nombre"], ENT_QUOTES, "UTF-8") ?></strong>
                   <?php if (!empty($cliente["celular"])): ?>
-                    <span><?= htmlspecialchars($cliente["celular"], ENT_QUOTES, "UTF-8") ?></span>
+                    <span>📱 <?= htmlspecialchars($cliente["celular"], ENT_QUOTES, "UTF-8") ?></span>
+                  <?php endif; ?>
+                  <?php if (!empty($cliente["empresa"])): ?>
+                    <span>🏢 <?= htmlspecialchars($cliente["empresa"], ENT_QUOTES, "UTF-8") ?></span>
                   <?php endif; ?>
                 </button>
               <?php endforeach; ?>
@@ -51,9 +54,9 @@
           <div class="campo-formulario">
             <label for="tipoRecepcion" class="form-label">Tipo de recepción <span aria-hidden="true">*</span></label>
             <select name="tipo_recepcion" id="tipoRecepcion" required>
-              <option value="">Seleccione cómo llegó</option>
+              <option value="" title="Como se esta recepcionando y como se desea clasificar">Seleccione cómo llegó</option>
               <?php foreach ($tiposRecepcion as $tipo): ?>
-                <option value="<?= htmlspecialchars($tipo["descripcion"], ENT_QUOTES, "UTF-8") ?>">
+                <option value="<?= htmlspecialchars($tipo["descripcion"], ENT_QUOTES, "UTF-8") ?>" title="✅<?= htmlspecialchars($tipo["ayuda"], ENT_QUOTES, "UTF-8") ?>❗❗">
                   <?= htmlspecialchars($tipo["descripcion"], ENT_QUOTES, "UTF-8") ?>
                 </option>
               <?php endforeach; ?>
@@ -62,7 +65,8 @@
 
           <div class="campo-formulario">
             <label for="empresa">Empresa o tienda <small>(opcional)</small></label>
-            <input type="text" name="empresa" id="empresa" maxlength="50" placeholder="Nombre de la tienda">
+            <!-- Se completa al seleccionar un cliente que tiene empresa registrada. -->
+            <input type="text" name="empresa" id="empresa" maxlength="50" placeholder="Nombre de la tienda" value="<?= htmlspecialchars($empresa ?? "", ENT_QUOTES, "UTF-8") ?>">
           </div>
 
           <div class="campo-formulario">
@@ -78,7 +82,7 @@
           <div class="titulo-paquetes">
             <div>
               <h2>Encomiendas</h2>
-              <p><span id="contadorPaquetes">0</span> <span id="textoContador">encomiendas registrada</span></p>
+              <p><span id="contadorPaquetes">0</span> <span id="textoContador">Encomiendas registrada</span></p>
             </div>
             <button type="button" class="boton-secundario" id="agregarEncomienda">
               <i class="fas fa-plus" aria-hidden="true"></i> Agregar encomienda
@@ -92,8 +96,8 @@
                   <th>N°</th>
                   <th>Destinatario</th>
                   <th>Contacto</th>
-                  <th>Clasificación</th>
                   <th>Descripción</th>
+                  <th>Clasificación</th>
                   <th>Precio (Bs)</th>
                   <th>Paga</th>
                   <th><span class="sr-only">Quitar</span></th>
@@ -115,9 +119,9 @@
           <td class="numero-encomienda"></td>
           <td><input type="text" name="destinatario[]" maxlength="150" required></td>
           <td><input type="text" name="contacto[]" maxlength="30" inputmode="tel"></td>
+          <td><input type="text" name="descripcion[]" maxlength="5000"></td>
           <td>
             <select name="clasificacion[]" required>
-              <option value="">Seleccione</option>
               <?php foreach ($clasificaciones as $clasificacion): ?>
                 <option value="<?= htmlspecialchars($clasificacion["descripcion"], ENT_QUOTES, "UTF-8") ?>">
                   <?= htmlspecialchars($clasificacion["descripcion"], ENT_QUOTES, "UTF-8") ?>
@@ -125,8 +129,7 @@
               <?php endforeach; ?>
             </select>
           </td>
-          <td><input type="text" name="descripcion[]" maxlength="5000"></td>
-          <td><input type="number" name="precio[]" min="0" step="0.01" value="2.00" required></td>
+          <td><input type="number" name="precio[]" min="0" step="0.50" value="2.00" required></td>
           <td>
             <select name="quien_paga[]" required>
               <option value="Destinatario">Destinatario</option>
@@ -155,6 +158,10 @@
         <div class="form-group">
           <label for="nombreCliente">Nombre completo</label>
           <input type="text" class="form-control" name="nombre" id="nombreCliente" maxlength="150" required>
+        </div>
+        <div class="form-group">
+          <label for="empresaCliente">Empresa</label>
+          <input type="text" class="form-control" name="empresa" id="empresaCliente" maxlength="150">
         </div>
         <div class="form-group">
           <label for="celularCliente">Celular</label>

@@ -7,10 +7,15 @@
       <input type="text" id="buscar" placeholder="Buscar por nombre o celular...">
       <div id="resultados" style="margin-top:25px;">
         <?php foreach ($paquetes as $paquete):
+          $pagaRemitente = $paquete["quien_paga"] === "Remitente";
           $precioBase = (float) ($paquete["precio"] ?? 2);
           $precioBase = $precioBase > 0 ? $precioBase : 2;
           $dias = max(0, (new DateTime($paquete["fecha_registro"]))->diff(new DateTime())->days);
           $recargo = $dias > 7 ? 1 : 0;
+          if ($pagaRemitente) {
+            $precioBase = 0;
+            $recargo = 0;
+          }
           $total = $precioBase + $recargo;
           $tipo = trim((string) $paquete["tipo"]);
           $etiqueta = strtolower($tipo) === "alfabeto" ? mb_strtoupper(mb_substr(trim($paquete["cliente"]), 0, 1, "UTF-8"), "UTF-8") : (strtolower($tipo) === "tiktok" ? ($paquete["codigo"] ?? "") : mb_strtoupper($tipo, "UTF-8"));
@@ -29,6 +34,7 @@
               🏷️ <b>Tipo:</b> <?= $h($tipo) ?>
               <?php if (strtolower($tipo) === "tiktok"): ?><br>🏢 <b>Empresa:</b> <?= $h($paquete["empresa"]) ?><?php if (!empty($paquete["nota_caja"])): ?><br>📝 <b>Nota:</b> <?= $h($paquete["nota_caja"]) ?><?php endif; ?><?php endif; ?>
               <br>📱 <b>Celular:</b> <?= $h($paquete["celular"] ?: "Sin registrar") ?><br>📅 <b>Recepción:</b> <?= date("d/m/Y H:i", strtotime($paquete["fecha_registro"])) ?><br>🟡 <b>Estado:</b> Pendiente
+              <?php if ($pagaRemitente): ?><br>✅ <b>Pago:</b> Ya pagado (Remitente)<?php endif; ?>
             </div>
             <?php if (date("Y-m-d", strtotime($paquete["fecha_registro"])) === date("Y-m-d")): ?><div class="etiquetaHoy">HOY</div><?php endif; ?>
             <div class="fotoPaquete"><?php if ($foto): ?><img src="<?= $h($foto) ?>" alt="Foto del paquete" style="width:100%;height:100%;object-fit:cover;border-radius:10px;"><?php else: ?>📷 Foto pendiente<?php endif; ?></div>

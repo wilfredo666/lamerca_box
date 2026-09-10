@@ -3,11 +3,11 @@ $h = static fn($valor) => htmlspecialchars((string) ($valor ?? ""), ENT_QUOTES, 
 ?>
 <div class="busqueda-encomiendas">
   <div class="encabezado-busqueda">
-    <h1>Encomiendas <span><?= count($encomiendas) ?></span> <button type="button" id="botonEntregarSeleccionadas" class="boton-entregar-seleccionadas" hidden>✅ Entregar</button> <button type="button" id="botonTraspasarSeleccionadas" class="boton-entregar-seleccionadas boton-traspasar-seleccionadas" hidden>↔ Traspasar</button></h1>
+    <h1>Encomiendas <span data-contador-resultados><?= count($encomiendas) ?></span> <button type="button" id="botonEntregarSeleccionadas" class="boton-entregar-seleccionadas" hidden>✅ Entregar</button> <button type="button" id="botonTraspasarSeleccionadas" class="boton-entregar-seleccionadas boton-traspasar-seleccionadas" hidden>↔ Traspasar</button></h1>
     <?php if (!empty($_GET["mensaje"])): ?><p class="alerta"><?= $h($_GET["mensaje"]) ?></p><?php endif; ?>
     <form method="GET" action="<?= $base_url ?>encomiendas/buscar">
       <input type="hidden" name="ruta" value="encomiendas/buscar">
-      <input type="search" name="buscar" value="<?= $h($buscar) ?>" placeholder="🔎 Buscar por nombre o celular..." autofocus>
+      <input type="search" name="buscar" value="<?= $h($buscar) ?>" placeholder="🔎 Buscar por nombre o celular..." autofocus data-buscador-tiempo-real>
     </form>
   </div>
   <div id="modalTraspasoSeleccionadas" class="modal-entrega-lista" hidden>
@@ -58,7 +58,7 @@ $h = static fn($valor) => htmlspecialchars((string) ($valor ?? ""), ENT_QUOTES, 
         ? $base_url . "assets/img/paquetes/" . rawurlencode(basename($encomienda["foto"]))
         : "";
       ?>
-      <article class="tarjeta-encomienda" data-id="<?= (int) $encomienda["id"] ?>" data-destinatario="<?= $h($encomienda["destinatario"]) ?>" data-descripcion="<?= $h($encomienda["descripcion"] ?: "Sin descripción") ?>" data-codigo="<?= $h($encomienda["codigo"]) ?>" data-precio="<?= number_format((float) ($encomienda["precio"] ?? 2), 2, ".", "") ?>">
+      <article class="tarjeta-encomienda" data-id="<?= (int) $encomienda["id"] ?>" data-destinatario="<?= $h($encomienda["destinatario"]) ?>" data-descripcion="<?= $h($encomienda["descripcion"] ?: "Sin descripción") ?>" data-codigo="<?= $h($encomienda["codigo"]) ?>" data-precio="<?= number_format((float) ($encomienda["precio"] ?? 2), 2, ".", "") ?>" data-quien-paga="<?= $h($encomienda["quien_paga"]) ?>">
         <div class="encabezado-tarjeta">
           <div class="identidad-encomienda">
             <label class="selector-encomienda" aria-label="Seleccionar encomienda">
@@ -91,11 +91,17 @@ $h = static fn($valor) => htmlspecialchars((string) ($valor ?? ""), ENT_QUOTES, 
               <?= $h($encomienda["clasificacion"]) ?>
             <?php endif; ?>
           </div>
-          <div>🏢 <b>Remitente:</b> <?= $h($encomienda["nombre_cliente"]) ?></div>
+          <div>🧑 <b>Remitente:</b> <?= $h($encomienda["nombre_cliente"]) ?></div>
           <div>📱 <b>Contacto:</b> <?= $h($encomienda["contacto"] ?: "Sin registrar") ?></div>
           <div>📦 <b>Recepción:</b> <?= $h($encomienda["tipo_recepcion"]) ?></div>
-          <div>📅 <b>Fecha:</b> <?= $h(date("d/m/Y H:i", strtotime($encomienda["fecha_recepcion"]))) ?></div>
-          <div>🟡 <b>Estado:</b> <?= $h($encomienda["estado"]) ?></div>
+          <div>🏢 <b>Empresa:</b> <?= $h($encomienda["empresa"] ?: "Sin empresa registrada") ?></div>
+          <div>📅 <b>Fecha:</b>
+            <?php if (date("Y-m-d", strtotime($encomienda["fecha_recepcion"])) === date("Y-m-d")): ?>
+              <span class="etiqueta-hoy">Hoy</span>
+            <?php else: ?>
+              <?= $h(date("d/m/Y H:i", strtotime($encomienda["fecha_recepcion"]))) ?>
+            <?php endif; ?>
+          </div>
         </div>
         <div class="foto-tarjeta">
           <?= $foto ? '<img src="' . $h($foto) . '" alt="Foto de la encomienda">' : "📷 Foto pendiente" ?>
@@ -122,5 +128,5 @@ $h = static fn($valor) => htmlspecialchars((string) ($valor ?? ""), ENT_QUOTES, 
       </article>
     <?php endforeach; ?>
   </div>
-  <?php if (empty($encomiendas)): ?><p class="sin-resultados">No se encontraron encomiendas.</p><?php endif; ?>
+  <p class="sin-resultados" data-sin-resultados <?= empty($encomiendas) ? "" : "hidden" ?>>No se encontraron encomiendas.</p>
 </div>

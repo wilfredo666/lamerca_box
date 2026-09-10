@@ -27,7 +27,7 @@ class ModeloEntrega
       "SELECT en.id, en.codigo, en.destinatario, en.descripcion,
           r.tipo_recepcion AS tipo, c.nombre AS cliente,
           et.fecha_entrega, et.recargo, et.descuento,
-          et.total_cobrado, et.metodo_cobro, et.estado
+          et.total_cobrado, et.metodo_cobro, et.observaciones, et.estado
        FROM entrega et
        INNER JOIN encomiendas en ON en.id = et.id_encomienda
        INNER JOIN recepciones r ON r.id = en.id_recepcion
@@ -88,10 +88,12 @@ class ModeloEntrega
       if (!$idUsuario || !$idAlmacen) {
         throw new RuntimeException("No se encontró el usuario o almacén de la sesión.");
       }
+      $pagaRemitente = $paquete["quien_paga"] === "Remitente";
+      $observaciones = $pagaRemitente ? "Ya pagado (Remitente)" : null;
       $stmt = $conexion->prepare(
         "INSERT INTO entrega
-         (id_encomienda, id_usuario, id_almacen, recargo, descuento, total_cobrado, metodo_cobro, estado)
-         VALUES (:id_encomienda, :id_usuario, :id_almacen, :recargo, 0, :total, :medio, 'Entregado')"
+         (id_encomienda, id_usuario, id_almacen, recargo, descuento, total_cobrado, metodo_cobro, observaciones, estado)
+         VALUES (:id_encomienda, :id_usuario, :id_almacen, :recargo, 0, :total, :medio, :observaciones, 'Entregado')"
       );
       $stmt->execute([
         ":id_encomienda" => $id,
@@ -99,7 +101,8 @@ class ModeloEntrega
         ":id_almacen" => $idAlmacen,
         ":recargo" => $cobro["recargo"],
         ":total" => $cobro["total"],
-        ":medio" => $medioCobro
+        ":medio" => $medioCobro,
+        ":observaciones" => $observaciones
       ]);
       $stmt = $conexion->prepare("UPDATE encomiendas SET estado = 'Entregado', cobrado = 1 WHERE id = :id AND estado = 'Pendiente'");
       $stmt->execute([":id" => $id]);
@@ -170,8 +173,8 @@ class ModeloEntrega
       }
       $stmtEntrega = $conexion->prepare(
         "INSERT INTO entrega
-         (id_encomienda, id_usuario, id_almacen, recargo, descuento, total_cobrado, metodo_cobro, estado)
-         VALUES (:id_encomienda, :id_usuario, :id_almacen, :recargo, :descuento, :total, :medio, 'Entregado')"
+         (id_encomienda, id_usuario, id_almacen, recargo, descuento, total_cobrado, metodo_cobro, observaciones, estado)
+         VALUES (:id_encomienda, :id_usuario, :id_almacen, :recargo, :descuento, :total, :medio, :observaciones, 'Entregado')"
       );
       $stmtEstado = $conexion->prepare(
         "UPDATE encomiendas SET estado = 'Entregado', cobrado = 1
@@ -183,13 +186,16 @@ class ModeloEntrega
       $subtotalRestante = $subtotalCentavos;
       foreach ($paquetes as $indice => $paquete) {
         $cobro = $cobros[$indice];
-        $recargoPaquete = $indice === count($paquetes) - 1
+        $esUltimo = $indice === count($paquetes) - 1;
+        $recargoPaquete = $esUltimo || $subtotalRestante <= 0
           ? $recargoRestante
           : (int) floor($recargoRestante * $cobro["centavos"] / $subtotalRestante);
-        $descuentoPaquete = $indice === count($paquetes) - 1
+        $descuentoPaquete = $esUltimo || $subtotalRestante <= 0
           ? $descuentoRestante
           : (int) floor($descuentoRestante * $cobro["centavos"] / $subtotalRestante);
         $totalCentavos = $cobro["centavos"] + $recargoPaquete - $descuentoPaquete;
+        $pagaRemitente = $paquete["quien_paga"] === "Remitente";
+        $observaciones = $pagaRemitente ? "Ya pagado (Remitente)" : null;
         $stmtEntrega->execute([
           ":id_encomienda" => $paquete["id"],
           ":id_usuario" => $idUsuario,
@@ -197,7 +203,8 @@ class ModeloEntrega
           ":recargo" => $recargoPaquete / 100,
           ":descuento" => $descuentoPaquete / 100,
           ":total" => $totalCentavos / 100,
-          ":medio" => $medioCobro
+          ":medio" => $medioCobro,
+          ":observaciones" => $observaciones
         ]);
         $stmtEstado->execute([":id" => $paquete["id"]]);
         if ($stmtEstado->rowCount() !== 1) {
@@ -226,6 +233,9 @@ class ModeloEntrega
 
   private static function mdlCobroPaquete($paquete, $aplicarRecargo = true)
   {
+    if (($paquete["quien_paga"] ?? "") === "Remitente") {
+      return ["precio_base" => 0.0, "recargo" => 0.0, "total" => 0.0, "centavos" => 0];
+    }
     $precioBase = (float) ($paquete["precio_base"] ?? 0);
     if ($precioBase <= 0) {
       $precioBase = (float) ($paquete["precio"] ?? 2);

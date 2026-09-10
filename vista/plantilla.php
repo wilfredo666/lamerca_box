@@ -144,6 +144,9 @@ $scripts_vista = [
   "encomiendas/buscar" => [
     "assets/js/modules/encomiendas/buscar.js"
   ],
+  "recepcion/cajas-buscar" => [
+    "assets/js/modules/recepcion/cajas_buscar.js"
+  ],
   "recepcion/comprobante-general" => [
     "assets/js/modules/recepcion/comprobante_caja.js"
   ],

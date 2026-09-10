@@ -9,6 +9,7 @@ document.addEventListener("DOMContentLoaded", function () {
     const campoCliente = document.getElementById("idClienteRecepcion");
     const resultadosClientes = document.getElementById("resultadosClientes");
     const clienteSeleccionado = document.getElementById("clienteSeleccionado");
+    const campoEmpresa = document.getElementById("empresa");
 
     if (!formulario || !tabla || !plantilla || !botonAgregar) {
         return;
@@ -29,6 +30,9 @@ document.addEventListener("DOMContentLoaded", function () {
         campoCliente.value = boton.dataset.id;
         buscadorCliente.value = boton.dataset.nombre;
         buscadorCliente.setCustomValidity("");
+        if (campoEmpresa && boton.dataset.empresa) {
+            campoEmpresa.value = boton.dataset.empresa;
+        }
         clienteSeleccionado.replaceChildren();
 
         const nombre = document.createElement("strong");
@@ -128,6 +132,20 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     }
     actualizarNumeros();
+
+    const idClientePreseleccionado = formulario.dataset.clientePreseleccionado;
+    if (idClientePreseleccionado) {
+        const clienteNuevo = document.querySelector(
+            '.resultado-cliente[data-id="' + idClientePreseleccionado + '"]'
+        );
+        if (clienteNuevo) {
+            seleccionarCliente(clienteNuevo);
+            const destinatario = tabla.querySelector('input[name="destinatario[]"]');
+            if (destinatario) {
+                destinatario.focus();
+            }
+        }
+    }
 });
 
 /* Manejo del modal de cliente */
@@ -144,6 +162,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
     if (esEdicion) {
       $("#nombreCliente").val(button.data("nombre"));
+      $("#empresaCliente").val(button.data("empresa"));
       $("#celularCliente").val(button.data("celular"));
       $("#paisCliente").val(button.data("pais"));
       $("#ciudadCliente").val(button.data("ciudad"));

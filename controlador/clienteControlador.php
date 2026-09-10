@@ -24,7 +24,16 @@ class ControladorCliente
     $id = filter_input(INPUT_POST, "id", FILTER_VALIDATE_INT);
 
     if ($accion === "crear") {
-      ModeloCliente::mdlCrear(self::ctrDatosCliente());
+      $datos = self::ctrDatosCliente();
+      $idCliente = ModeloCliente::mdlCrear($datos);
+      if (($_POST["retorno"] ?? "") === "recepcion/general") {
+        $_SESSION["cliente_recepcion_seleccionado"] = [
+          "id" => $idCliente,
+          "nombre" => $datos[":nombre"],
+          "celular" => $datos[":celular"] ?? "",
+          "empresa" => $datos[":empresa"] ?? ""
+        ];
+      }
       self::ctrRedirigir("Cliente registrado correctamente.");
     }
 
@@ -56,6 +65,7 @@ class ControladorCliente
     $pais = trim((string) ($_POST["pais"] ?? ""));
     $ciudad = trim((string) ($_POST["ciudad"] ?? ""));
     $celular = trim((string) ($_POST["celular"] ?? ""));
+    $empresa = trim((string) ($_POST["empresa"] ?? ""));
     $observaciones = trim((string) ($_POST["observaciones"] ?? ""));
 
     if ($nombre === "" || $pais === "" || $ciudad === "") {
@@ -71,13 +81,14 @@ class ControladorCliente
       throw new InvalidArgumentException("La ciudad seleccionada no es válida.");
     }
 
-    if (mb_strlen($nombre) > 150 || mb_strlen($pais) > 100 || mb_strlen($ciudad) > 100
+    if (mb_strlen($nombre) > 150 || mb_strlen($empresa) > 150 || mb_strlen($pais) > 100 || mb_strlen($ciudad) > 100
       || mb_strlen($celular) > 30 || mb_strlen($observaciones) > 5000) {
       throw new InvalidArgumentException("Uno o más campos superan el tamaño permitido.");
     }
 
     return [
       ":nombre" => $nombre,
+      ":empresa" => $empresa !== "" ? $empresa : null,
       ":celular" => $celular !== "" ? $celular : null,
       ":observaciones" => $observaciones !== "" ? $observaciones : null,
       ":pais" => $pais,

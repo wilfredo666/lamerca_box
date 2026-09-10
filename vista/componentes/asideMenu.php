@@ -1,6 +1,7 @@
 <?php
 $base_url = $base_url ?? rtrim(dirname($_SERVER["SCRIPT_NAME"]), "/") . "/";
 $nombreUsuario = $_SESSION["nombre"] ?? "Usuario";
+$nombreAlmacen = $_SESSION["nomAlmacen"] ?? "Almacén no seleccionado";
 $rutaActual = $_GET["ruta"] ?? "";
 ?>
 
@@ -12,7 +13,13 @@ $rutaActual = $_GET["ruta"] ?? "";
 
   <div class="menu-usuario">
     <img class="menu-usuario-imagen" src="<?= $base_url ?>assets/img/user.jpg" alt="Usuario">
-    <span class="menu-usuario-nombre"><?= htmlspecialchars($nombreUsuario, ENT_QUOTES, "UTF-8") ?></span>
+    <div class="menu-usuario-datos">
+      <span class="menu-usuario-nombre"><?= htmlspecialchars($nombreUsuario, ENT_QUOTES, "UTF-8") ?></span>
+      <span class="menu-almacen-activo" title="<?= htmlspecialchars($nombreAlmacen, ENT_QUOTES, "UTF-8") ?>">
+        <i class="fas fa-warehouse" aria-hidden="true"></i>
+        <?= htmlspecialchars($nombreAlmacen, ENT_QUOTES, "UTF-8") ?>
+      </span>
+    </div>
   </div>
 
   <nav class="menu-navegacion" aria-label="Navegación principal">

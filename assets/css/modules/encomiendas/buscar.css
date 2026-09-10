@@ -29,6 +29,16 @@
 	vertical-align: middle
 }
 
+.etiqueta-hoy {
+	display: inline-block;
+	padding: 2px 10px;
+	border-radius: 20px;
+	background: #fde047;
+	color: #713f12;
+	font-size: 14px;
+	font-weight: 700
+}
+
 .boton-entregar-seleccionadas {
 	margin-left: 10px;
 	padding: 7px 14px;
@@ -327,6 +337,45 @@
 	padding: 10px;
 	border-bottom: 1px solid #e5e7eb;
 	font-size: 18px
+}
+
+.tabla-detalle-entrega {
+	width: 100%;
+	border-collapse: collapse;
+	font-size: 16px
+}
+
+.tabla-detalle-entrega th,
+.tabla-detalle-entrega td {
+	padding: 10px 8px;
+	border-bottom: 1px solid #e5e7eb;
+	text-align: left
+}
+
+.tabla-detalle-entrega th {
+	color: #64748b;
+	font-size: 14px;
+	text-transform: uppercase
+}
+
+.etiqueta-pagado {
+	display: inline-block;
+	padding: 2px 10px;
+	border-radius: 20px;
+	background: #dcfce7;
+	color: #14733a;
+	font-size: 14px;
+	font-weight: 700
+}
+
+.etiqueta-por-cobrar {
+	display: inline-block;
+	padding: 2px 10px;
+	border-radius: 20px;
+	background: #fef9c3;
+	color: #854d0e;
+	font-size: 14px;
+	font-weight: 700
 }
 
 .resumen-cobro-entrega {

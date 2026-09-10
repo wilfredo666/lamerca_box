@@ -21,6 +21,7 @@
           <thead>
             <tr>
               <th>Nombre</th>
+              <th>Empresa</th>
               <th>Celular</th>
               <th>País</th>
               <th>Ciudad</th>
@@ -33,6 +34,7 @@
             <?php foreach($clientes as $cliente): ?>
               <tr>
                 <td><?= htmlspecialchars($cliente["nombre"], ENT_QUOTES, "UTF-8") ?></td>
+                <td><?= htmlspecialchars($cliente["empresa"] ?: "Sin registrar", ENT_QUOTES, "UTF-8") ?></td>
                 <td><?= htmlspecialchars($cliente["celular"] ?: "Sin registrar", ENT_QUOTES, "UTF-8") ?></td>
                 <td><?= htmlspecialchars($cliente["pais"], ENT_QUOTES, "UTF-8") ?></td>
                 <td><?= htmlspecialchars($cliente["ciudad"], ENT_QUOTES, "UTF-8") ?></td>
@@ -47,6 +49,7 @@
                     data-toggle="modal" data-target="#modalCliente"
                     data-id="<?= $cliente["id"] ?>"
                     data-nombre="<?= htmlspecialchars($cliente["nombre"], ENT_QUOTES, "UTF-8") ?>"
+                    data-empresa="<?= htmlspecialchars($cliente["empresa"] ?? "", ENT_QUOTES, "UTF-8") ?>"
                     data-celular="<?= htmlspecialchars($cliente["celular"] ?? "", ENT_QUOTES, "UTF-8") ?>"
                     data-pais="<?= htmlspecialchars($cliente["pais"], ENT_QUOTES, "UTF-8") ?>"
                     data-ciudad="<?= htmlspecialchars($cliente["ciudad"], ENT_QUOTES, "UTF-8") ?>"
@@ -96,6 +99,10 @@
         <div class="form-group">
           <label for="nombreCliente">Nombre completo</label>
           <input type="text" class="form-control" name="nombre" id="nombreCliente" maxlength="150" required>
+        </div>
+        <div class="form-group">
+          <label for="empresaCliente">Empresa</label>
+          <input type="text" class="form-control" name="empresa" id="empresaCliente" maxlength="150">
         </div>
         <div class="form-group">
           <label for="celularCliente">Celular</label>

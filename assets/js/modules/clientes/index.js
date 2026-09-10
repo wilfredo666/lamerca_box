@@ -36,6 +36,7 @@ $(function () {
 
     if (esEdicion) {
       $("#nombreCliente").val(button.data("nombre"));
+      $("#empresaCliente").val(button.data("empresa"));
       $("#celularCliente").val(button.data("celular"));
       $("#paisCliente").val(button.data("pais"));
       $("#ciudadCliente").val(button.data("ciudad"));

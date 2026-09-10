@@ -98,10 +98,11 @@ class ModeloRecepcion
       $stmt = $conexion->prepare(
         "INSERT INTO encomiendas
         (codigo, id_recepcion, id_almacen_actual, clasificacion, descripcion, precio, destinatario, contacto, quien_paga, estado, cobrado)
-        VALUES ('', :id_recepcion, (SELECT id_almacen FROM recepciones WHERE id = :id_recepcion_almacen), :clasificacion, :descripcion, :precio, :destinatario, :contacto, :quien_paga, 'Pendiente', 0)"
+        VALUES ('', :id_recepcion, (SELECT id_almacen FROM recepciones WHERE id = :id_recepcion_almacen), :clasificacion, :descripcion, :precio, :destinatario, :contacto, :quien_paga, 'Pendiente', :cobrado)"
       );
       $stmtCodigo = $conexion->prepare("UPDATE encomiendas SET codigo = :codigo WHERE id = :id");
       foreach ($paquetes as $paquete) {
+        $pagaRemitente = $paquete["quien_paga"] === "Remitente";
         $stmt->execute([
           ":id_recepcion" => $id,
           ":id_recepcion_almacen" => $id,
@@ -110,11 +111,13 @@ class ModeloRecepcion
           ":precio" => $paquete["precio"],
           ":destinatario" => $paquete["destinatario"],
           ":contacto" => $paquete["contacto"],
-          ":quien_paga" => $paquete["quien_paga"]
+          ":quien_paga" => $paquete["quien_paga"],
+          ":cobrado" => $pagaRemitente ? 1 : 0
         ]);
         $idEncomienda = (int) $conexion->lastInsertId();
+        $codigo = "ENC-" . str_pad((string) $idEncomienda, 6, "0", STR_PAD_LEFT);
         $stmtCodigo->execute([
-          ":codigo" => "ENC-" . str_pad((string) $idEncomienda, 6, "0", STR_PAD_LEFT),
+          ":codigo" => $codigo,
           ":id" => $idEncomienda
         ]);
       }
@@ -174,7 +177,7 @@ class ModeloRecepcion
   static public function mdlTiposRecepcionActivos()
   {
     $stmt = Conexion::conectar()->prepare(
-      "SELECT descripcion
+      "SELECT descripcion, ayuda
       FROM tipo_recepcion
       WHERE estado = 1
       ORDER BY descripcion ASC"
@@ -188,8 +191,7 @@ class ModeloRecepcion
     $stmt = Conexion::conectar()->prepare(
       "SELECT descripcion
       FROM clasificacion
-      WHERE estado = 1
-      ORDER BY descripcion ASC"
+      WHERE estado = 1"
     );
     $stmt->execute();
     return $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -234,11 +236,12 @@ class ModeloRecepcion
       $stmtEncomienda = $conexion->prepare(
         "INSERT INTO encomiendas
         (codigo, id_recepcion, id_almacen_actual, clasificacion, descripcion, precio, destinatario, contacto, quien_paga, estado, cobrado)
-        VALUES ('', :id_recepcion, :id_almacen_actual, :clasificacion, :descripcion, :precio, :destinatario, :contacto, :quien_paga, 'Pendiente', 0)"
+        VALUES ('', :id_recepcion, :id_almacen_actual, :clasificacion, :descripcion, :precio, :destinatario, :contacto, :quien_paga, 'Pendiente', :cobrado)"
       );
       $stmtCodigo = $conexion->prepare("UPDATE encomiendas SET codigo = :codigo WHERE id = :id");
 
       foreach ($paquetes as $paquete) {
+        $pagaRemitente = $paquete["quien_paga"] === "Remitente";
         $stmtEncomienda->execute([
           ":id_recepcion" => $idRecepcion,
           ":id_almacen_actual" => $recepcion["id_almacen"],
@@ -247,11 +250,13 @@ class ModeloRecepcion
           ":precio" => $paquete["precio"],
           ":destinatario" => $paquete["destinatario"],
           ":contacto" => $paquete["contacto"],
-          ":quien_paga" => $paquete["quien_paga"]
+          ":quien_paga" => $paquete["quien_paga"],
+          ":cobrado" => $pagaRemitente ? 1 : 0
         ]);
         $idEncomienda = (int) $conexion->lastInsertId();
+        $codigo = "ENC-" . str_pad((string) $idEncomienda, 6, "0", STR_PAD_LEFT);
         $stmtCodigo->execute([
-          ":codigo" => "ENC-" . str_pad((string) $idEncomienda, 6, "0", STR_PAD_LEFT),
+          ":codigo" => $codigo,
           ":id" => $idEncomienda
         ]);
       }

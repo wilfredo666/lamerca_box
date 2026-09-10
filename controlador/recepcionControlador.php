@@ -38,9 +38,11 @@ class ControladorRecepcion
       )),
       "tiposRecepcion" => $tiposRecepcion,
       "clasificaciones" => $clasificaciones,
-      "mensajeCliente" => $_SESSION["mensaje_cliente"] ?? ""
+      "mensajeCliente" => $_SESSION["mensaje_cliente"] ?? "",
+      "clienteRecepcionSeleccionado" => $_SESSION["cliente_recepcion_seleccionado"] ?? null
     ];
     unset($_SESSION["mensaje_cliente"]);
+    unset($_SESSION["cliente_recepcion_seleccionado"]);
 
     if (($_SERVER["REQUEST_METHOD"] ?? "GET") === "POST") {
       $token = $_POST["csrf_token"] ?? "";
