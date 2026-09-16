@@ -27,37 +27,56 @@ $rutaActual = $_GET["ruta"] ?? "";
       <i class="fas fa-home" aria-hidden="true"></i>
       <span>Inicio</span>
     </a>
-
-    <a class="menu-enlace <?= $rutaActual === "clientes" ? "menu-enlace-activo" : "" ?>" href="<?= $base_url ?>clientes">
-      <i class="fas fa-user-friends" aria-hidden="true"></i>
-      <span>Clientes</span>
-    </a>
-
-    <a class="menu-enlace <?= $rutaActual === "almacenes" ? "menu-enlace-activo" : "" ?>" href="<?= $base_url ?>almacenes">
-      <i class="fas fa-warehouse" aria-hidden="true"></i>
-      <span>Almacenes</span>
-    </a>
-
-    <a class="menu-enlace <?= $rutaActual === "clasificaciones" ? "menu-enlace-activo" : "" ?>" href="<?= $base_url ?>clasificaciones">
-      <i class="fas fa-tags" aria-hidden="true"></i>
-      <span>Clasificaciones</span>
-    </a>
-
-    <a class="menu-enlace <?= $rutaActual === "usuarios" ? "menu-enlace-activo" : "" ?>" href="<?= $base_url ?>usuarios">
-      <i class="fas fa-users-cog" aria-hidden="true"></i>
-      <span>Usuarios</span>
-    </a>
-
-    <a class="menu-enlace <?= $rutaActual === "caja" ? "menu-enlace-activo" : "" ?>" href="<?= $base_url ?>caja">
-      <i class="fas fa-cash-register" aria-hidden="true"></i>
-      <span>Caja</span>
-    </a>
-
-    <a class="menu-enlace <?= $rutaActual === "traspasos" ? "menu-enlace-activo" : "" ?>" href="<?= $base_url ?>traspasos">
-      <i class="fas fa-exchange-alt" aria-hidden="true"></i>
-      <span>Traspasos</span>
-    </a>
-
+    <?php
+    if (ControladorUsuario::ctrUsuarioPermiso($_SESSION["idUsuario"], 4)) {
+    ?>
+      <a class="menu-enlace <?= $rutaActual === "clientes" ? "menu-enlace-activo" : "" ?>" href="<?= $base_url ?>clientes">
+        <i class="fas fa-user-friends" aria-hidden="true"></i>
+        <span>Clientes</span>
+      </a>
+    <?php
+    }
+    ?>
+    <?php
+    if (ControladorUsuario::ctrUsuarioPermiso($_SESSION["idUsuario"], 20)) {
+    ?>
+      <a class="menu-enlace <?= $rutaActual === "almacenes" ? "menu-enlace-activo" : "" ?>" href="<?= $base_url ?>almacenes">
+        <i class="fas fa-warehouse" aria-hidden="true"></i>
+        <span>Almacenes</span>
+      </a>
+    <?php
+    }
+    ?>
+    <?php
+    if (ControladorUsuario::ctrUsuarioPermiso($_SESSION["idUsuario"], 19)) {
+    ?>
+      <a class="menu-enlace <?= $rutaActual === "clasificaciones" ? "menu-enlace-activo" : "" ?>" href="<?= $base_url ?>clasificaciones">
+        <i class="fas fa-tags" aria-hidden="true"></i>
+        <span>Clasificaciones</span>
+      </a>
+    <?php
+    }
+    ?>
+    <?php
+    if (ControladorUsuario::ctrUsuarioPermiso($_SESSION["idUsuario"], 1)) {
+    ?>
+      <a class="menu-enlace <?= $rutaActual === "usuarios" ? "menu-enlace-activo" : "" ?>" href="<?= $base_url ?>usuarios">
+        <i class="fas fa-users-cog" aria-hidden="true"></i>
+        <span>Usuarios</span>
+      </a>
+    <?php
+    }
+    ?>
+    <?php
+    if (ControladorUsuario::ctrUsuarioPermiso($_SESSION["idUsuario"], 15)) {
+    ?>
+      <a class="menu-enlace <?= $rutaActual === "caja" ? "menu-enlace-activo" : "" ?>" href="<?= $base_url ?>caja">
+        <i class="fas fa-cash-register" aria-hidden="true"></i>
+        <span>Caja</span>
+      </a>
+    <?php
+    }
+    ?>
   </nav>
 
   <div class="menu-salir">

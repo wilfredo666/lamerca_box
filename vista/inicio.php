@@ -49,20 +49,43 @@ $totalAmbos = $totalCobradoHoy + $totalEnCaja;
 
         <div class="tarjeta tarjeta-resumen">
 
-            <table class="tabla-resumen">
-                <tr>
-                    <td>Cobrado Hoy</td>
-                    <td>Bs <?= number_format($totalCobradoHoy, 2) ?></td>
-                </tr>
-                <tr>
-                    <td>Total en Caja</td>
-                    <td>Bs <?= number_format($totalEnCaja, 2) ?></td>
-                </tr>
-                <tr class="fila-total">
-                    <td>Total</td>
-                    <td>Bs <?= number_format($totalAmbos, 2) ?></td>
-                </tr>
-            </table>
+            <?php
+            if (ControladorUsuario::ctrUsuarioPermiso($_SESSION["idUsuario"], 18)) {
+            ?>
+                <table class="tabla-resumen">
+                    <tr>
+                        <td>Cobrado Hoy</td>
+                        <td>Bs <?= number_format($totalCobradoHoy, 2) ?></td>
+                    </tr>
+                    <tr>
+                        <td>Total en Caja</td>
+                        <td>Bs <?= number_format($totalEnCaja, 2) ?></td>
+                    </tr>
+                    <tr class="fila-total">
+                        <td>Total</td>
+                        <td>Bs <?= number_format($totalAmbos, 2) ?></td>
+                    </tr>
+                </table>
+            <?php
+            } else {
+            ?>
+                <table class="tabla-resumen">
+                    <tr>
+                        <td>Cobrado Hoy</td>
+                        <td>Bs ***</td>
+                    </tr>
+                    <tr>
+                        <td>Total en Caja</td>
+                        <td>Bs ***</td>
+                    </tr>
+                    <tr class="fila-total">
+                        <td>Total</td>
+                        <td>Bs ***</td>
+                    </tr>
+                </table>
+            <?php
+            }
+            ?>
         </div>
 
         <div class="tarjeta">

@@ -3,7 +3,20 @@ $h = static fn($valor) => htmlspecialchars((string) ($valor ?? ""), ENT_QUOTES, 
 ?>
 <div class="busqueda-encomiendas">
   <div class="encabezado-busqueda">
-    <h1>Encomiendas <span data-contador-resultados><?= count($encomiendas) ?></span> <button type="button" id="botonEntregarSeleccionadas" class="boton-entregar-seleccionadas" hidden>✅ Entregar</button> <button type="button" id="botonTraspasarSeleccionadas" class="boton-entregar-seleccionadas boton-traspasar-seleccionadas" hidden>↔ Traspasar</button></h1>
+    <h1>Encomiendas <span data-contador-resultados><?= count($encomiendas) ?></span>
+      <button type="button" id="botonEntregarSeleccionadas" class="boton-entregar-seleccionadas" hidden>✅ Entregar</button>
+      <?php
+      if (ControladorUsuario::ctrUsuarioPermiso($_SESSION["idUsuario"], 14)) {
+      ?>
+        <button type="button" id="botonTraspasarSeleccionadas" class="boton-entregar-seleccionadas boton-traspasar-seleccionadas" hidden>↔ Traspasar</button>
+      <?php
+      } else {
+      ?>
+        <span id="botonTraspasarSeleccionadas" style="display:none;"></span>
+      <?php
+      }
+      ?>
+    </h1>
     <?php if (!empty($_GET["mensaje"])): ?><p class="alerta"><?= $h($_GET["mensaje"]) ?></p><?php endif; ?>
     <form method="GET" action="<?= $base_url ?>encomiendas/buscar">
       <input type="hidden" name="ruta" value="encomiendas/buscar">
@@ -31,7 +44,10 @@ $h = static fn($valor) => htmlspecialchars((string) ($valor ?? ""), ENT_QUOTES, 
       <button type="button" id="registrarTraspasoSeleccionadas" class="boton-cobrar-entrega">↔ Registrar traspaso</button>
     </div>
   </div>
-  <script>window.traspasoMultipleUrl = <?= json_encode($base_url . "traspaso/multiple") ?>; window.traspasoCsrfToken = <?= json_encode($csrfToken) ?>;</script>
+  <script>
+    window.traspasoMultipleUrl = <?= json_encode($base_url . "traspaso/multiple") ?>;
+    window.traspasoCsrfToken = <?= json_encode($csrfToken) ?>;
+  </script>
   <div id="modalEntregaSeleccionadas" class="modal-entrega-lista" hidden>
     <div class="modal-entrega-lista-contenido" role="dialog" aria-modal="true" aria-labelledby="tituloModalEntrega">
       <button type="button" class="cerrar-modal-entrega" id="cerrarModalEntrega" aria-label="Cerrar">&times;</button>
@@ -39,17 +55,23 @@ $h = static fn($valor) => htmlspecialchars((string) ($valor ?? ""), ENT_QUOTES, 
       <div id="detalleEntregaSeleccionadas" class="detalle-entrega-seleccionadas"></div>
       <div class="resumen-cobro-entrega">
         <div><span>Costo total:</span><strong><span id="costoBaseEntrega">0.00</span> Bs</strong></div>
-        <label>Recargo <input type="number" id="recargoEntrega" min="0" step="0.01" value="0.00"></label>
-        <label>Descuento <input type="number" id="descuentoEntrega" min="0" step="0.01" value="0.00"></label>
+        <label>Recargo <input type="number" id="recargoEntrega" min="0" step="0.50" value="0.00"></label>
+        <label>Descuento <input type="number" id="descuentoEntrega" min="0" step="0.50" value="0.00"></label>
         <div class="total-final-entrega"><span>Total a cobrar:</span><strong><span id="totalFinalEntrega">0.00</span> Bs</strong></div>
         <label>Método de cobro
-          <select id="metodoCobroEntrega"><option value="Efectivo">Efectivo</option><option value="QR">QR</option></select>
+          <select id="metodoCobroEntrega">
+            <option value="Efectivo">Efectivo</option>
+            <option value="QR">QR</option>
+          </select>
         </label>
       </div>
       <button type="button" id="cobrarEntregarSeleccionadas" class="boton-cobrar-entrega">💵 Cobrar y entregar</button>
     </div>
   </div>
-  <script>window.entregaMultipleUrl = <?= json_encode($base_url . "entrega/multiple") ?>; window.entregaCsrfToken = <?= json_encode($csrfToken) ?>;</script>
+  <script>
+    window.entregaMultipleUrl = <?= json_encode($base_url . "entrega/multiple") ?>;
+    window.entregaCsrfToken = <?= json_encode($csrfToken) ?>;
+  </script>
 
   <div class="grid-encomiendas">
     <?php foreach ($encomiendas as $encomienda): ?>
@@ -58,7 +80,7 @@ $h = static fn($valor) => htmlspecialchars((string) ($valor ?? ""), ENT_QUOTES, 
         ? $base_url . "assets/img/paquetes/" . rawurlencode(basename($encomienda["foto"]))
         : "";
       ?>
-      <article class="tarjeta-encomienda" data-id="<?= (int) $encomienda["id"] ?>" data-destinatario="<?= $h($encomienda["destinatario"]) ?>" data-descripcion="<?= $h($encomienda["descripcion"] ?: "Sin descripción") ?>" data-codigo="<?= $h($encomienda["codigo"]) ?>" data-precio="<?= number_format((float) ($encomienda["precio"] ?? 2), 2, ".", "") ?>" data-quien-paga="<?= $h($encomienda["quien_paga"]) ?>">
+      <article class="tarjeta-encomienda" data-id="<?= (int) $encomienda["id"] ?>" data-destinatario="<?= $h($encomienda["destinatario"]) ?>" data-descripcion="<?= $h($encomienda["descripcion"] ?: "Sin descripción") ?>" data-codigo="<?= $h($encomienda["codigo"]) ?>" data-precio="<?= number_format((float) ($encomienda["precio"] ?? 2), 2, ".", "") ?>" data-quien-paga="<?= $h($encomienda["quien_paga"]) ?>" data-fecha-registro="<?= $h($encomienda["fecha_registro"]) ?>">
         <div class="encabezado-tarjeta">
           <div class="identidad-encomienda">
             <label class="selector-encomienda" aria-label="Seleccionar encomienda">
@@ -66,21 +88,21 @@ $h = static fn($valor) => htmlspecialchars((string) ($valor ?? ""), ENT_QUOTES, 
             </label>
             <div>
               <strong>👤 <?= $h($encomienda["destinatario"]) ?></strong>
-            <small>📦 <?= $h($encomienda["descripcion"] ?: "Sin descripción") ?></small>
+              <small>📦 <?= $h($encomienda["descripcion"] ?: "Sin descripción") ?></small>
+            </div>
+            <div class="etiquetas-encomienda">
+              <?php
+              $tipoRecepcion = mb_strtolower(trim((string) $encomienda["tipo_recepcion"]), "UTF-8");
+              $codigoClase = in_array($tipoRecepcion, ["otro", "alfabeto"], true)
+                ? "etiqueta-codigo"
+                : "etiqueta-codigo etiqueta-codigo-verde";
+              ?>
+              <?php if ($tipoRecepcion === "alfabeto"): ?>
+                <span class="etiqueta-inicial"><?= $h(mb_strtoupper(mb_substr(trim((string) $encomienda["destinatario"]), 0, 1, "UTF-8"), "UTF-8")) ?></span>
+              <?php endif; ?>
+              <b class="<?= $codigoClase ?>"><?= $h($encomienda["codigo"]) ?></b>
+            </div>
           </div>
-          <div class="etiquetas-encomienda">
-            <?php
-            $tipoRecepcion = mb_strtolower(trim((string) $encomienda["tipo_recepcion"]), "UTF-8");
-            $codigoClase = in_array($tipoRecepcion, ["otro", "alfabeto"], true)
-              ? "etiqueta-codigo"
-              : "etiqueta-codigo etiqueta-codigo-verde";
-            ?>
-            <?php if ($tipoRecepcion === "alfabeto"): ?>
-              <span class="etiqueta-inicial"><?= $h(mb_strtoupper(mb_substr(trim((string) $encomienda["destinatario"]), 0, 1, "UTF-8"), "UTF-8")) ?></span>
-            <?php endif; ?>
-            <b class="<?= $codigoClase ?>"><?= $h($encomienda["codigo"]) ?></b>
-          </div>
-        </div>
         </div>
         <div class="datos-tarjeta">
           <div>

@@ -55,9 +55,11 @@ document.addEventListener("DOMContentLoaded", function () {
     const metodo = document.getElementById("metodoCobroEntrega");
 
     function recalcular() {
-        const base = Number(costoBase.dataset.valor || 0);
+        
+        const base = Number(costoBase.dataset.valor || 0) + 0;
+
         const extra = Math.max(0, Number(recargo.value) || 0);
-        const rebaja = Math.min(base + extra, Math.max(0, Number(descuento.value) || 0));
+        const rebaja = Math.min(base, Math.max(0, Number(descuento.value) || 0));
         totalFinal.textContent = (base + extra - rebaja).toFixed(2);
     }
 
@@ -138,9 +140,9 @@ document.addEventListener("DOMContentLoaded", function () {
         const tabla = document.createElement("table");
         tabla.className = "tabla-detalle-entrega";
         const thead = document.createElement("thead");
-        thead.innerHTML = "<tr><th>Encomienda</th><th>Precio</th><th>Pago</th></tr>";
+        thead.innerHTML = "<tr><th>Encomienda</th><th>Precio</th><th>Recargo</th><th>Pago</th></tr>";
         const tbody = document.createElement("tbody");
-
+        let totalRecargo = 0;
         ids.forEach(function (id) {
             const tarjeta = document.querySelector('.tarjeta-encomienda[data-id="' + id + '"]');
             if (!tarjeta) return;
@@ -155,24 +157,43 @@ document.addEventListener("DOMContentLoaded", function () {
             celdaEncomienda.textContent = tarjeta.dataset.destinatario + " | " + tarjeta.dataset.descripcion + " | " + tarjeta.dataset.codigo;
             const celdaPrecio = document.createElement("td");
             celdaPrecio.textContent = precio.toFixed(2) + " Bs";
+            const celdaRecargo = document.createElement("td");
+            //calcular la fecha de registro de la encomienda con la fecha actual para determinar el recargo
+            const fechaRegistro = new Date(tarjeta.dataset.fechaRegistro);
+            const fechaActual = new Date();
+            const semanasTranscurridas = Math.floor((fechaActual - fechaRegistro) / (7 * 24 * 60 * 60 * 1000));
+            //si ha transcurrido al menos una semana desde la fecha de registro, se aplica un recargo de 1.00 Bs. por cada semana
+            //si ha transcurrido menos de una semana, no se aplica recargo
+            let recargo;
+            if (semanasTranscurridas < 1) {
+                recargo = 0.00;
+            } else {
+                recargo = semanasTranscurridas * 1.00;
+            }
+            
+            celdaRecargo.textContent = recargo.toFixed(2) + " Bs"; // Inicialmente en 0.00 Bs
             const celdaPago = document.createElement("td");
             if (pagaRemitente) {
                 celdaPago.innerHTML = '<span class="etiqueta-pagado">✅ Pagado (Remitente)</span>';
+                
             } else {
                 celdaPago.innerHTML = '<span class="etiqueta-por-cobrar">🟡 Por cobrar</span>';
             }
             fila.appendChild(celdaEncomienda);
             fila.appendChild(celdaPrecio);
+            fila.appendChild(celdaRecargo);
             fila.appendChild(celdaPago);
             tbody.appendChild(fila);
+            //total de recargos
+            totalRecargo += recargo;
         });
 
         tabla.appendChild(thead);
         tabla.appendChild(tbody);
         detalle.appendChild(tabla);
 
-        costoBase.dataset.valor = base.toFixed(2);
-        costoBase.textContent = base.toFixed(2);
+        costoBase.dataset.valor = (base + totalRecargo).toFixed(2);
+        costoBase.textContent = (base + totalRecargo).toFixed(2);
         recargo.value = "0.00";
         descuento.value = "0.00";
         recalcular();
