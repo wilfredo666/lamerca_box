@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Demo - Campo Foto en Encomiendas</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f5f5f5;
+            padding: 20px;
+        }
+        
+        .contenedor {
+            max-width: 900px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 8px;
+            padding: 30px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        
+        h1 {
+            color: #14733a;
+            margin-bottom: 10px;
+            font-size: 28px;
+        }
+        
+        .subtitle {
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 14px;
+        }
+        
+        .demo-section {
+            margin-bottom: 40px;
+        }
+        
+        .demo-section h2 {
+            color: #333;
+            font-size: 18px;
+            margin-bottom: 15px;
+            border-bottom: 2px solid #14733a;
+            padding-bottom: 10px;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+        
+        th {
+            background: #14733a;
+            color: white;
+            padding: 12px;
+            text-align: left;
+            font-weight: 600;
+        }
+        
+        td {
+            padding: 12px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        tr:hover {
+            background: #f9f9f9;
+        }
+        
+        .campo-foto-encomienda {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+            cursor: pointer;
+            font-size: 20px;
+            border-radius: 4px;
+            background: #f0fdf4;
+            border: 2px dashed #16a34a;
+            transition: all 0.2s ease;
+        }
+        
+        .campo-foto-encomienda:hover {
+            background: #dcfce7;
+            border-color: #14733a;
+        }
+        
+        .campo-foto-encomienda[data-foto-seleccionada="true"] {
+            background: #16a34a;
+            border-color: #14733a;
+            color: #fff;
+            font-size: 24px;
+        }
+        
+        .input-foto-encomienda {
+            display: none;
+        }
+        
+        .feature-list {
+            list-style: none;
+            margin-bottom: 20px;
+        }
+        
+        .feature-list li {
+            padding: 10px 0;
+            padding-left: 30px;
+            position: relative;
+            color: #333;
+        }
+        
+        .feature-list li:before {
+            content: "✓";
+            position: absolute;
+            left: 0;
+            color: #16a34a;
+            font-weight: bold;
+        }
+        
+        .code-block {
+            background: #f5f5f5;
+            border-left: 4px solid #14733a;
+            padding: 15px;
+            margin: 15px 0;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            overflow-x: auto;
+            border-radius: 4px;
+        }
+        
+        .highlight {
+            background: #fffacd;
+            padding: 2px 6px;
+            border-radius: 3px;
+        }
+    </style>
+</head>
+<body>
+    <div class="contenedor">
+        <h1>🎉 Implementación: Campo Foto en Registro de Encomiendas</h1>
+        <p class="subtitle">Documento demostrativo de la nueva funcionalidad</p>
+        
+        <!-- Demo Visual -->
+        <div class="demo-section">
+            <h2>📋 Vista Previa del Formulario</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>N°</th>
+                        <th>Destinatario</th>
+                        <th>Contacto</th>
+                        <th>Descripción</th>
+                        <th>Clasificación</th>
+                        <th>Precio (Bs)</th>
+                        <th>Paga</th>
+                        <th>Foto</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>1</td>
+                        <td><input type="text" placeholder="Nombre..." style="width: 100%; padding: 5px;"></td>
+                        <td><input type="text" placeholder="Teléfono..." style="width: 100%; padding: 5px;"></td>
+                        <td><input type="text" placeholder="Descripción..." style="width: 100%; padding: 5px;"></td>
+                        <td>
+                            <select style="width: 100%; padding: 5px;">
+                                <option>Documento</option>
+                                <option>Ropa</option>
+                                <option>Otros</option>
+                            </select>
+                        </td>
+                        <td><input type="number" value="2.00" style="width: 100%; padding: 5px;"></td>
+                        <td>
+                            <select style="width: 100%; padding: 5px;">
+                                <option>Destinatario</option>
+                                <option>Remitente</option>
+                            </select>
+                        </td>
+                        <td>
+                            <label class="campo-foto-encomienda" title="Subir foto de la encomienda">
+                                📷
+                                <input type="file" name="foto" class="input-foto-encomienda" accept="image/*">
+                            </label>
+                        </td>
+                        <td>
+                            <button style="background: #fee2e2; color: #b91c1c; border: none; padding: 6px 8px; border-radius: 3px; cursor: pointer;">✕</button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        
+        <!-- Características -->
+        <div class="demo-section">
+            <h2>✨ Características Implementadas</h2>
+            <ul class="feature-list">
+                <li>Campo de foto opcional para cada encomienda</li>
+                <li>Captura desde cámara (PC o móvil) con <span class="highlight">capture="environment"</span></li>
+                <li>Validación de formato: JPEG, PNG, GIF, WEBP</li>
+                <li>Validación de tamaño: máximo 5MB</li>
+                <li>Feedback visual: emoji cambia de 📷 a ✅ al seleccionar</li>
+                <li>Nombres de archivo únicos: <span class="highlight">paquete_identificador-aleatorio.ext</span></li>
+                <li>Almacenamiento en <span class="highlight">assets/img/paquetes/</span>, como las demás fotos de encomiendas</li>
+                <li>Validación de formato real y tamaño en el servidor antes de guardar</li>
+                <li>Validación en cliente (JavaScript) y servidor (PHP)</li>
+            </ul>
+        </div>
+        
+        <!-- Archivos Modificados -->
+        <div class="demo-section">
+            <h2>📝 Archivos Modificados</h2>
+            
+            <h3 style="margin-top: 15px; color: #14733a;">Vista (recepcion_general.php)</h3>
+            <div class="code-block">
+&lt;form method="POST" id="formRecepcion" <span class="highlight">enctype="multipart/form-data"</span>&gt;
+    ...
+    &lt;th&gt;Foto&lt;/th&gt;
+    ...
+    &lt;td&gt;
+        &lt;label class="campo-foto-encomienda"&gt;
+            📷
+            &lt;input type="file" name="foto_encomienda[]" 
+                   accept="image/jpeg,image/png,image/gif,image/webp"&gt;
+        &lt;/label&gt;
+    &lt;/td&gt;
+</div>
+            
+            <h3 style="margin-top: 15px; color: #14733a;">Estilos (recepcion_general.css)</h3>
+            <div class="code-block">
+.campo-foto-encomienda {
+    display: inline-flex;
+    width: 40px;
+    height: 40px;
+    background: #f0fdf4;
+    border: 2px dashed #16a34a;
+    transition: all 0.2s ease;
+}
+
+.campo-foto-encomienda[data-foto-seleccionada="true"] {
+    background: #16a34a;
+    color: #fff;
+}
+</div>
+            
+            <h3 style="margin-top: 15px; color: #14733a;">JavaScript (recepcion_general.js)</h3>
+            <div class="code-block">
+tabla.addEventListener("change", function (evento) {
+    if (evento.target.matches(".input-foto-encomienda")) {
+        const archivo = evento.target.files[0];
+        // Validación de tipo y tamaño
+        // Cambio visual del botón
+    }
+});
+</div>
+            
+            <h3 style="margin-top: 15px; color: #14733a;">Controlador (recepcionControlador.php)</h3>
+            <div class="code-block">
+private static function ctrGuardarFotoEncomienda($fotosEncomienda, $indice)
+{
+    // Validación MIME type
+    // Verificación de tamaño (5MB max)
+    // Generación de nombre único
+    // Move uploaded file y retorno de URL
+}
+</div>
+            
+            <h3 style="margin-top: 15px; color: #14733a;">Modelo (recepcionModelo.php)</h3>
+            <div class="code-block">
+INSERT INTO encomiendas
+(codigo, ..., contacto, <span class="highlight">foto</span>, quien_paga, ...)
+VALUES ('', ..., :contacto, <span class="highlight">:foto</span>, :quien_paga, ...)
+</div>
+        </div>
+        
+        <!-- Base de Datos -->
+        <div class="demo-section">
+            <h2>🗄️ Estructura de Base de Datos</h2>
+            <div class="code-block">
+ALTER TABLE encomiendas ADD COLUMN <span class="highlight">foto VARCHAR(255)</span> NULL DEFAULT NULL AFTER contacto;
+
+Ejemplo de valor:
+"assets/img/paquetes/paquete_identificador-aleatorio.jpg"
+</div>
+        </div>
+        
+        <!-- Validaciones -->
+        <div class="demo-section">
+            <h2>🔒 Validaciones Implementadas</h2>
+            <h3 style="margin-top: 15px; color: #14733a;">Cliente (JavaScript)</h3>
+            <ul class="feature-list">
+                <li>Validación de tipo MIME (image/jpeg, image/png, image/gif, image/webp)</li>
+                <li>Validación de tamaño máximo (5MB)</li>
+                <li>Mensajes de error al usuario</li>
+                <li>Confirmación visual al seleccionar la foto sin retirar el campo del formulario</li>
+            </ul>
+            
+            <h3 style="margin-top: 15px; color: #14733a;">Servidor (PHP)</h3>
+            <ul class="feature-list">
+                <li>Validación is_uploaded_file()</li>
+                <li>Validación de tipo MIME con in_array()</li>
+                <li>Validación de tamaño de archivo</li>
+                <li>Sanitización de nombre de archivo</li>
+                <li>Verificación de permisos de directorio</li>
+                <li>Manejo seguro de errores de subida</li>
+            </ul>
+            
+            <h3 style="margin-top: 15px; color: #14733a;">Seguridad de la carga</h3>
+            <ul class="feature-list">
+                <li>El servidor comprueba MIME y contenido de imagen</li>
+                <li>Los archivos se guardan con extensión determinada por MIME verificado</li>
+                <li>Los nombres aleatorios evitan sobrescribir fotos existentes</li>
+            </ul>
+        </div>
+        
+        <!-- Casos de Uso -->
+        <div class="demo-section">
+            <h2>💡 Casos de Uso</h2>
+            <ul class="feature-list">
+                <li>Documentar el estado físico de la encomienda al recibirla</li>
+                <li>Evidencia de contenido para reclamaciones</li>
+                <li>Verificación de código de barras o etiqueta</li>
+                <li>Foto de la envoltura o empaque</li>
+                <li>Registro visual para auditoría</li>
+            </ul>
+        </div>
+        
+        <!-- Status -->
+        <div class="demo-section" style="background: #f0fdf4; border: 2px solid #16a34a; padding: 20px; border-radius: 8px;">
+            <h2 style="border: none; color: #14733a;">✅ Estado de Implementación</h2>
+            <ul class="feature-list">
+                <li>Todos los archivos validados (PHP, JS, CSS)</li>
+                <li>Directorio de fotos creado y protegido</li>
+                <li>Formularios con enctype correcto</li>
+                <li>Validaciones cliente y servidor implementadas</li>
+                <li>Base de datos lista para recibir fotos</li>
+                <li>Listo para usar en producción</li>
+            </ul>
+        </div>
+    </div>
+</body>
+</html>

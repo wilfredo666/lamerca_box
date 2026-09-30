@@ -1,0 +1,200 @@
+.lista-encomiendas-eliminadas {
+	display: grid;
+	gap: 14px;
+	margin-top: 20px;
+}
+
+.tarjeta-encomienda-eliminada[hidden] {
+	display: none;
+}
+
+.estado-encomienda-eliminada {
+	height: max-content;
+	padding: 6px 10px;
+	border-radius: 999px;
+	background: #fee2e2;
+	color: #991b1b;
+	font-size: 13px;
+	font-weight: 700;
+	white-space: nowrap;
+}
+
+.tarjeta-encomienda-eliminada .motivoRetiro {
+	max-width: 720px;
+	margin-top: 10px;
+	overflow-wrap: anywhere;
+}
+
+.sin-encomiendas-eliminadas {
+	margin: 24px 0;
+	color: #64748b;
+	text-align: center;
+}
+
+.sin-encomiendas-eliminadas[hidden] {
+	display: none;
+}
+
+.boton-volver-encomiendas {
+	display: inline-block;
+	margin-top: 20px;
+	padding: 10px 14px;
+	border-radius: 7px;
+	background: #14733a;
+	color: #fff;
+	font-weight: 700;
+	text-decoration: none;
+}
+
+.boton-volver-encomiendas:hover {
+	background: #105d2f;
+	color: #fff;
+	text-decoration: none;
+}
+
+#tablaEncomiendasEliminadas {
+	width: 100% !important;
+	font-size: 15px;
+}
+
+#tablaEncomiendasEliminadas th {
+	background: #16a34a;
+	color: #fff;
+	white-space: nowrap;
+}
+
+#tablaEncomiendasEliminadas td {
+	vertical-align: middle;
+}
+
+.boton-ver-detalle-eliminada {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	gap: 6px;
+	padding: 8px 11px;
+	border-radius: 6px;
+	background: #14733a;
+	color: #fff;
+	font-size: 13px;
+	font-weight: 700;
+	text-decoration: none;
+	white-space: nowrap;
+}
+
+.boton-ver-detalle-eliminada:hover {
+	background: #105d2f;
+	color: #fff;
+	text-decoration: none;
+}
+
+.detalle-encomienda-eliminada {
+	margin-bottom: 28px;
+}
+
+.detalle-eliminada-cabecera {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 16px;
+	margin-bottom: 22px;
+	padding-bottom: 16px;
+	border-bottom: 1px solid #e5e7eb;
+}
+
+.detalle-eliminada-cabecera h1 {
+	margin: 0 0 8px;
+	color: #14733a;
+	font-size: 25px;
+}
+
+.estado-encomienda-eliminada {
+	padding: 6px 11px;
+	border-radius: 999px;
+	background: #fee2e2;
+	color: #991b1b;
+	font-size: 13px;
+	font-weight: 700;
+	white-space: nowrap;
+}
+
+.detalle-eliminada-contenido {
+	display: grid;
+	grid-template-columns: repeat(2, minmax(0, 1fr));
+	gap: 18px;
+	margin-bottom: 20px;
+}
+
+.detalle-eliminada-contenido section {
+	padding: 18px;
+	border: 1px solid #e5e7eb;
+	border-radius: 10px;
+}
+
+.detalle-eliminada-contenido h2 {
+	margin: 0 0 12px;
+	color: #14733a;
+	font-size: 18px;
+}
+
+.detalle-eliminada-contenido dl {
+	margin: 0;
+}
+
+.detalle-eliminada-contenido dl > div {
+	display: grid;
+	grid-template-columns: minmax(130px, .8fr) minmax(0, 1.2fr);
+	gap: 12px;
+	padding: 8px 0;
+	border-bottom: 1px solid #f1f5f9;
+}
+
+.detalle-eliminada-contenido dl > div:last-child {
+	border-bottom: 0;
+}
+
+.detalle-eliminada-contenido dt {
+	color: #64748b;
+	font-weight: 600;
+}
+
+.detalle-eliminada-contenido dd {
+	margin: 0;
+	color: #1e293b;
+	overflow-wrap: anywhere;
+}
+
+.detalle-eliminada-foto {
+	grid-column: 1 / -1;
+	display: flex;
+	min-height: 180px;
+	align-items: center;
+	justify-content: center;
+	overflow: hidden;
+	border: 1px solid #e2e8f0;
+	border-radius: 10px;
+	background: #f8fafc;
+	color: #64748b;
+}
+
+.detalle-eliminada-foto img {
+	display: block;
+	max-width: 100%;
+	max-height: 480px;
+	object-fit: contain;
+}
+
+@media (max-width: 700px) {
+	.detalle-eliminada-contenido {
+		grid-template-columns: 1fr;
+	}
+
+	.detalle-eliminada-foto {
+		grid-column: auto;
+	}
+
+	.detalle-eliminada-contenido dl > div {
+		grid-template-columns: 1fr;
+		gap: 3px;
+	}
+}

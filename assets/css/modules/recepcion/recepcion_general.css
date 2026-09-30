@@ -287,6 +287,36 @@
   color: #b91c1c;
 }
 
+.campo-foto-encomienda {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  cursor: pointer;
+  font-size: 20px;
+  border-radius: 4px;
+  background: #f0fdf4;
+  border: 2px dashed #16a34a;
+  transition: all 0.2s ease;
+}
+
+.campo-foto-encomienda:hover {
+  background: #dcfce7;
+  border-color: #14733a;
+}
+
+.campo-foto-encomienda[data-foto-seleccionada="true"] {
+  background: #16a34a;
+  border-color: #14733a;
+  color: #fff;
+  font-size: 24px;
+}
+
+.input-foto-encomienda {
+  display: none;
+}
+
 .alerta-error {
   width: 95%;
   max-width: 1240px;

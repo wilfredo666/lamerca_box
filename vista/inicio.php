@@ -121,6 +121,10 @@ $totalAmbos = $totalCobradoHoy + $totalEnCaja;
         🔍 Buscar Encomienda
     </a>
 
+    <a href="<?= $base_url ?? '' ?>encomiendas/eliminadas" class="boton">
+        🗑️ Encomiendas Eliminadas
+    </a>
+
     <a href="<?= $base_url ?? '' ?>entrega/entregadas" class="boton">
 
         ✅ Listado de Entregas
@@ -130,6 +134,39 @@ $totalAmbos = $totalCobradoHoy + $totalEnCaja;
     <a href="<?= $base_url ?? '' ?>recepcion/cajas-buscar" class="boton">
         📦 Buscar Cajas
     </a>
+
+    <?php
+    if (ControladorUsuario::ctrUsuarioPermiso($_SESSION["idUsuario"], 20)) {
+    ?>
+      <a class="boton" href="<?= $base_url ?>almacenes">
+        <i class="fas fa-warehouse" aria-hidden="true"></i>
+        <span>Almacenes</span>
+      </a>
+    <?php
+    }
+    ?>
+
+        <?php
+    if (ControladorUsuario::ctrUsuarioPermiso($_SESSION["idUsuario"], 1)) {
+    ?>
+      <a class="boton" href="<?= $base_url ?>usuarios">
+        <i class="fas fa-users-cog" aria-hidden="true"></i>
+        <span>Usuarios</span>
+      </a>
+    <?php
+    }
+    ?>
+
+    <?php
+    if (ControladorUsuario::ctrUsuarioPermiso($_SESSION["idUsuario"], 19)) {
+    ?>
+      <a class="boton" href="<?= $base_url ?>clasificaciones">
+        <i class="fas fa-tags" aria-hidden="true"></i>
+        <span>Clasificaciones</span>
+      </a>
+    <?php
+    }
+    ?>
 
 
 </div>

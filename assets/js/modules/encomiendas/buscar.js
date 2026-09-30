@@ -1,25 +1,78 @@
 document.addEventListener("DOMContentLoaded", function () {
+
     const buscador = document.querySelector("[data-buscador-tiempo-real]");
     const tarjetas = Array.from(document.querySelectorAll(".grid-encomiendas .tarjeta-encomienda"));
     const contador = document.querySelector("[data-contador-resultados]");
     const sinResultados = document.querySelector("[data-sin-resultados]");
+    const filtroSinImagen = document.querySelector("[data-filtro-sin-imagen]");
+    let soloSinImagen = false;
+
+    function actualizarFiltroEncomiendas() {
+        const termino = buscador ? buscador.value.trim().toLocaleLowerCase() : "";
+        let visibles = 0;
+
+        tarjetas.forEach(function (tarjeta) {
+            const coincideTexto = tarjeta.textContent.toLocaleLowerCase().includes(termino);
+            const coincideFoto = !soloSinImagen || tarjeta.dataset.sinImagen === "true";
+            tarjeta.hidden = !(coincideTexto && coincideFoto);
+            visibles += tarjeta.hidden ? 0 : 1;
+        });
+
+        if (contador) {
+            contador.textContent = visibles;
+        }
+        if (sinResultados) {
+            sinResultados.hidden = visibles !== 0;
+        }
+    }
 
     if (buscador) {
-        buscador.addEventListener("input", function () {
-            const termino = buscador.value.trim().toLocaleLowerCase();
-            let visibles = 0;
+        buscador.addEventListener("input", actualizarFiltroEncomiendas);
+    }
 
-            tarjetas.forEach(function (tarjeta) {
-                const coincide = tarjeta.textContent.toLocaleLowerCase().includes(termino);
-                tarjeta.hidden = !coincide;
-                visibles += coincide ? 1 : 0;
+    if (filtroSinImagen) {
+        filtroSinImagen.addEventListener("click", function () {
+            soloSinImagen = !soloSinImagen;
+            filtroSinImagen.setAttribute("aria-pressed", soloSinImagen ? "true" : "false");
+            actualizarFiltroEncomiendas();
+        });
+    }
+
+    const modalEliminar = document.getElementById("modalEliminarEncomienda");
+    const campoIdEliminar = document.getElementById("idEncomiendaEliminar");
+    const campoMotivoEliminar = document.getElementById("motivoEliminacionEncomienda");
+    const textoConfirmacionEliminar = document.getElementById("textoConfirmacionEliminacion");
+
+    if (modalEliminar && campoIdEliminar && campoMotivoEliminar) {
+        document.querySelectorAll("[data-abrir-modal-eliminacion]").forEach(function (botonEliminar) {
+            botonEliminar.addEventListener("click", function () {
+                campoIdEliminar.value = botonEliminar.dataset.id;
+                campoMotivoEliminar.value = "";
+                if (textoConfirmacionEliminar) {
+                    textoConfirmacionEliminar.textContent =
+                        "Se conservará el registro " + (botonEliminar.dataset.codigo || "")
+                        + " con estado Eliminado. Indique el motivo para continuar.";
+                }
+                modalEliminar.hidden = false;
+                campoMotivoEliminar.focus();
             });
+        });
 
-            if (contador) {
-                contador.textContent = visibles;
+        document.querySelectorAll("[data-cerrar-modal-eliminacion]").forEach(function (botonCerrar) {
+            botonCerrar.addEventListener("click", function () {
+                modalEliminar.hidden = true;
+            });
+        });
+
+        modalEliminar.addEventListener("click", function (evento) {
+            if (evento.target === modalEliminar) {
+                modalEliminar.hidden = true;
             }
-            if (sinResultados) {
-                sinResultados.hidden = visibles !== 0;
+        });
+
+        document.addEventListener("keydown", function (evento) {
+            if (evento.key === "Escape" && !modalEliminar.hidden) {
+                modalEliminar.hidden = true;
             }
         });
     }
@@ -207,7 +260,15 @@ document.addEventListener("DOMContentLoaded", function () {
     modal.addEventListener("click", function (evento) {
         if (evento.target === modal) cerrarModal();
     });
+
     cobrar.addEventListener("click", function () {
+    var Toast = Swal.mixin({
+      toast: true,
+      position: 'top-end',
+      showConfirmButton: false,
+      timer: 3000
+    });
+
         const ids = Array.from(document.querySelectorAll(".selectorEncomienda:checked")).map(function (selector) {
             return Number(selector.value);
         });
@@ -223,11 +284,31 @@ document.addEventListener("DOMContentLoaded", function () {
                 csrf_token: window.entregaCsrfToken
             })
         }).then(function (respuesta) {
-            return respuesta.json().then(function (datos) {
-                if (!respuesta.ok || !datos.ok) throw new Error(datos.error || "No se pudo completar la entrega.");
-                window.location.reload();
-            });
-        }).catch(function (error) {
+        return respuesta.json().then(function (datos) {
+
+            if (!respuesta.ok || !datos.ok) {
+                throw new Error(
+                    datos.error || "No se pudo completar la entrega."
+                );
+            }
+
+            return datos;
+        });
+    })
+         .then(function (datos) {
+
+        // Aquí sabemos que el servidor respondió correctamente
+        Toast.fire({
+            icon: 'success',
+            title: 'Entrega realizada correctamente.'
+        });
+
+        // Esperamos un poco para que el usuario vea el Toast
+        setTimeout(function () {
+            window.location.href = "buscar";
+        }, 1000);
+    })
+        .catch(function (error) {
             cobrar.disabled = false;
             alert(error.message);
         });

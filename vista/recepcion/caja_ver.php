@@ -17,8 +17,22 @@
           <?= $h($paquete["clasificacion"]) ?> -
           <?= $h($paquete["estado"]) ?></p>
       <?php endforeach; ?>
+<div class="row">
+  <div class="col-6">
+      <button
+        type="button"
+        class="accion whatsapp btnWhatsapp"
+        data-whatsapp="<?= $h($numeroWhatsapp ?? "") ?>"
+        data-mensaje="<?= $h($mensajeWhatsapp ?? "") ?>">
+        📲 Compartir por WhatsApp
+      </button>
+  </div>
+  <div class="col-6">
       <a class="accion editar" href="<?= $base_url ?>recepcion/caja-editar?id=<?= (int) $recepcion["id"] ?>">✏ Editar y agregar</a>
       <a class="accion ver" href="<?= $base_url ?>recepcion/cajas-buscar">← Volver</a>
+  </div>
+</div>
+
     </div>
   <?php endif; ?>
 </div>

@@ -37,36 +37,7 @@ $rutaActual = $_GET["ruta"] ?? "";
     <?php
     }
     ?>
-    <?php
-    if (ControladorUsuario::ctrUsuarioPermiso($_SESSION["idUsuario"], 20)) {
-    ?>
-      <a class="menu-enlace <?= $rutaActual === "almacenes" ? "menu-enlace-activo" : "" ?>" href="<?= $base_url ?>almacenes">
-        <i class="fas fa-warehouse" aria-hidden="true"></i>
-        <span>Almacenes</span>
-      </a>
-    <?php
-    }
-    ?>
-    <?php
-    if (ControladorUsuario::ctrUsuarioPermiso($_SESSION["idUsuario"], 19)) {
-    ?>
-      <a class="menu-enlace <?= $rutaActual === "clasificaciones" ? "menu-enlace-activo" : "" ?>" href="<?= $base_url ?>clasificaciones">
-        <i class="fas fa-tags" aria-hidden="true"></i>
-        <span>Clasificaciones</span>
-      </a>
-    <?php
-    }
-    ?>
-    <?php
-    if (ControladorUsuario::ctrUsuarioPermiso($_SESSION["idUsuario"], 1)) {
-    ?>
-      <a class="menu-enlace <?= $rutaActual === "usuarios" ? "menu-enlace-activo" : "" ?>" href="<?= $base_url ?>usuarios">
-        <i class="fas fa-users-cog" aria-hidden="true"></i>
-        <span>Usuarios</span>
-      </a>
-    <?php
-    }
-    ?>
+
     <?php
     if (ControladorUsuario::ctrUsuarioPermiso($_SESSION["idUsuario"], 15)) {
     ?>
@@ -77,6 +48,16 @@ $rutaActual = $_GET["ruta"] ?? "";
     <?php
     }
     ?>
+
+    <a class="menu-enlace <?= $rutaActual === "recepcion/general" ? "menu-enlace-activo" : "" ?>" href="<?= $base_url ?? '' ?>recepcion/general">
+        <i class="fas fa-box" aria-hidden="true"></i>
+        <span>Nueva Recepción</span>
+      </a>
+
+      <a class="menu-enlace <?= $rutaActual === "encomiendas/buscar" ? "menu-enlace-activo" : "" ?>" href="<?= $base_url ?? '' ?>encomiendas/buscar">
+        <i class="fas fa-search" aria-hidden="true"></i>
+        <span>Buscar Encomienda</span>
+      </a>
   </nav>
 
   <div class="menu-salir">

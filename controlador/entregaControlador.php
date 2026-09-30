@@ -20,6 +20,16 @@ class ControladorEntrega
     return ["paquetes" => ModeloEntrega::mdlEntregasRegistradas()];
   }
 
+  public static function ctrVistaDetalleEntregada()
+  {
+    $id = filter_input(INPUT_GET, "id", FILTER_VALIDATE_INT);
+    $entrega = $id ? ModeloEntrega::mdlDetalleEntregaRegistrada($id) : null;
+    if ($entrega === null) {
+      return ["errorVista" => "No se encontró el detalle de la encomienda entregada."];
+    }
+    return ["entrega" => $entrega];
+  }
+
   public static function ctrVistaRetirados()
   {
     return ["paquetes" => ModeloEntrega::mdlPaquetesPorEstado("Retirado")];

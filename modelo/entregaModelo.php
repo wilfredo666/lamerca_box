@@ -39,6 +39,33 @@ class ModeloEntrega
     return $stmt->fetchAll(PDO::FETCH_ASSOC);
   }
 
+  public static function mdlDetalleEntregaRegistrada($id)
+  {
+    $stmt = Conexion::conectar()->prepare(
+      "SELECT en.id, en.codigo, en.destinatario, en.contacto, en.descripcion,
+          en.clasificacion, en.precio, en.quien_paga, en.foto,
+          en.fecha_registro AS fecha_encomienda,
+          r.codigo AS codigo_recepcion, r.tipo_recepcion, r.empresa,
+          r.fecha_registro AS fecha_recepcion, r.observaciones AS observaciones_recepcion,
+          c.nombre AS cliente, c.celular AS celular_cliente,
+          et.fecha_entrega, et.recargo, et.descuento, et.total_cobrado,
+          et.metodo_cobro, et.observaciones AS observaciones_entrega,
+          et.estado AS estado_entrega,
+          u.nombre AS usuario_entrega, a.nombre_almacen AS almacen_entrega
+       FROM entrega et
+       INNER JOIN encomiendas en ON en.id = et.id_encomienda
+       INNER JOIN recepciones r ON r.id = en.id_recepcion
+       LEFT JOIN clientes c ON c.id = r.id_cliente
+       LEFT JOIN usuario u ON u.id_usuario = et.id_usuario
+       LEFT JOIN almacen a ON a.id_almacen = et.id_almacen
+       WHERE en.id = :id AND et.estado = 'Entregado'
+       ORDER BY et.fecha_entrega DESC, et.id DESC
+       LIMIT 1"
+    );
+    $stmt->execute([":id" => $id]);
+    return $stmt->fetch(PDO::FETCH_ASSOC) ?: null;
+  }
+
   public static function mdlFotosPendientes()
   {
     $stmt = Conexion::conectar()->prepare(
@@ -109,6 +136,7 @@ class ModeloEntrega
       if ($stmt->rowCount() !== 1) {
         throw new RuntimeException("No se pudo actualizar el paquete.");
       }
+      ModeloRecepcion::mdlCerrarRecepcionSiNoTienePendientes($conexion, $paquete["id_recepcion"]);
       $conexion->commit();
       return $cobro;
     } catch (Throwable $error) {
@@ -213,6 +241,10 @@ class ModeloEntrega
         $recargoRestante -= $recargoPaquete;
         $descuentoRestante -= $descuentoPaquete;
         $subtotalRestante -= $cobro["centavos"];
+      }
+      $recepcionesActualizadas = array_unique(array_column($paquetes, "id_recepcion"));
+      foreach ($recepcionesActualizadas as $idRecepcion) {
+        ModeloRecepcion::mdlCerrarRecepcionSiNoTienePendientes($conexion, $idRecepcion);
       }
       $conexion->commit();
       return true;

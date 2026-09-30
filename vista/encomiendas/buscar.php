@@ -3,7 +3,16 @@ $h = static fn($valor) => htmlspecialchars((string) ($valor ?? ""), ENT_QUOTES, 
 ?>
 <div class="busqueda-encomiendas">
   <div class="encabezado-busqueda">
+    <?php $cantidadSinImagen = count(array_filter($encomiendas, static fn($encomienda) => empty($encomienda["foto"]))); ?>
     <h1>Encomiendas <span data-contador-resultados><?= count($encomiendas) ?></span>
+      <button
+        type="button"
+        class="filtro-sin-imagen"
+        data-filtro-sin-imagen
+        aria-pressed="false"
+        <?= $cantidadSinImagen === 0 ? "disabled" : "" ?>>
+        Sin imagen <span data-contador-sin-imagen><?= $cantidadSinImagen ?></span>
+      </button>
       <button type="button" id="botonEntregarSeleccionadas" class="boton-entregar-seleccionadas" hidden>✅ Entregar</button>
       <?php
       if (ControladorUsuario::ctrUsuarioPermiso($_SESSION["idUsuario"], 14)) {
@@ -80,7 +89,7 @@ $h = static fn($valor) => htmlspecialchars((string) ($valor ?? ""), ENT_QUOTES, 
         ? $base_url . "assets/img/paquetes/" . rawurlencode(basename($encomienda["foto"]))
         : "";
       ?>
-      <article class="tarjeta-encomienda" data-id="<?= (int) $encomienda["id"] ?>" data-destinatario="<?= $h($encomienda["destinatario"]) ?>" data-descripcion="<?= $h($encomienda["descripcion"] ?: "Sin descripción") ?>" data-codigo="<?= $h($encomienda["codigo"]) ?>" data-precio="<?= number_format((float) ($encomienda["precio"] ?? 2), 2, ".", "") ?>" data-quien-paga="<?= $h($encomienda["quien_paga"]) ?>" data-fecha-registro="<?= $h($encomienda["fecha_registro"]) ?>">
+      <article class="tarjeta-encomienda" data-id="<?= (int) $encomienda["id"] ?>" data-destinatario="<?= $h($encomienda["destinatario"]) ?>" data-descripcion="<?= $h($encomienda["descripcion"] ?: "Sin descripción") ?>" data-codigo="<?= $h($encomienda["codigo"]) ?>" data-precio="<?= number_format((float) ($encomienda["precio"] ?? 2), 2, ".", "") ?>" data-quien-paga="<?= $h($encomienda["quien_paga"]) ?>" data-fecha-registro="<?= $h($encomienda["fecha_registro"]) ?>" data-sin-imagen="<?= empty($encomienda["foto"]) ? "true" : "false" ?>">
         <div class="encabezado-tarjeta">
           <div class="identidad-encomienda">
             <label class="selector-encomienda" aria-label="Seleccionar encomienda">
@@ -131,11 +140,31 @@ $h = static fn($valor) => htmlspecialchars((string) ($valor ?? ""), ENT_QUOTES, 
         <div class="acciones-tarjeta">
           <a class="accion ver" href="<?= $base_url ?>encomiendas/ver?id=<?= (int) $encomienda["id"] ?>">👁 Ver</a>
           <a class="accion editar" href="<?= $base_url ?>encomiendas/editar?id=<?= (int) $encomienda["id"] ?>">✏ Editar</a>
-          <form method="POST" action="<?= $base_url ?>encomiendas/eliminar" onsubmit="return confirm('¿Eliminar esta encomienda?');">
-            <input type="hidden" name="csrf_token" value="<?= $h($csrfToken) ?>">
-            <input type="hidden" name="id" value="<?= (int) $encomienda["id"] ?>">
-            <button class="accion eliminar" type="submit">🗑 Eliminar</button>
-          </form>
+          <?php
+    if (ControladorUsuario::ctrUsuarioPermiso($_SESSION["idUsuario"], 21)) {
+    ?>
+          <button
+            type="button"
+            class="accion eliminar"
+            style="height: 47px;"
+            data-abrir-modal-eliminacion
+            data-id="<?= (int) $encomienda["id"] ?>"
+            data-codigo="<?= $h($encomienda["codigo"]) ?>">
+            🗑 Eliminar
+          </button>
+          <?php
+    }else{
+    ?>
+          <!-- El usuario no tiene permiso para eliminar -->
+       <button
+            type="button"
+            class="accion eliminar"
+            style="height: 47px; background-color: #ccc; cursor: not-allowed;"  disabled>
+            🗑 Eliminar
+          </button>
+      <?php
+    }
+    ?>
           <form method="POST" action="<?= $base_url ?>entrega/foto" enctype="multipart/form-data" class="formulario-foto">
             <input type="hidden" name="csrf_token" value="<?= $h($csrfToken) ?>">
             <input type="hidden" name="id" value="<?= (int) $encomienda["id"] ?>">
@@ -151,4 +180,28 @@ $h = static fn($valor) => htmlspecialchars((string) ($valor ?? ""), ENT_QUOTES, 
     <?php endforeach; ?>
   </div>
   <p class="sin-resultados" data-sin-resultados <?= empty($encomiendas) ? "" : "hidden" ?>>No se encontraron encomiendas.</p>
+</div>
+
+<div class="modal-eliminar-encomienda" id="modalEliminarEncomienda" hidden>
+  <section class="modal-eliminar-contenido" role="dialog" aria-modal="true" aria-labelledby="tituloModalEliminar">
+    <button type="button" class="modal-eliminar-cerrar" data-cerrar-modal-eliminacion aria-label="Cerrar">&times;</button>
+    <h2 id="tituloModalEliminar">Eliminar encomienda</h2>
+    <p id="textoConfirmacionEliminacion">El registro se conservará y cambiará a estado Eliminado.</p>
+    <form method="POST" action="<?= $h($base_url . "encomiendas/eliminar") ?>" id="formEliminarEncomienda">
+      <input type="hidden" name="csrf_token" value="<?= $h($csrfToken) ?>">
+      <input type="hidden" name="id" id="idEncomiendaEliminar">
+      <label for="motivoEliminacionEncomienda">Motivo de eliminación</label>
+      <textarea
+        id="motivoEliminacionEncomienda"
+        name="observacion"
+        maxlength="250"
+        rows="4"
+        required
+        placeholder="Escriba el motivo (máximo 250 caracteres)"></textarea>
+      <div class="modal-eliminar-acciones">
+        <button type="button" class="boton-cancelar-eliminacion" data-cerrar-modal-eliminacion>Cancelar</button>
+        <button type="submit" class="boton-confirmar-eliminacion">Confirmar eliminación</button>
+      </div>
+    </form>
+  </section>
 </div>

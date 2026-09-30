@@ -14,6 +14,7 @@
             <th>Método</th>
             <th>Fecha de entrega</th>
             <th>Estado</th>
+            <th>Detalle</th>
           </tr>
         </thead>
         <tbody>
@@ -34,6 +35,11 @@
                 <?= $h(date("d/m/Y H:i", strtotime($paquete["fecha_entrega"]))) ?>
               </td>
               <td><span class="estadoEntregado"><?= $h($paquete["estado"]) ?></span></td>
+              <td>
+                <a class="boton-ver-detalle-entrega" href="<?= $h($base_url . "entrega/ver-entregada?id=" . (int) $paquete["id"]) ?>">
+                  <i class="fas fa-eye" aria-hidden="true"></i> Detalle
+                </a>
+              </td>
             </tr>
           <?php endforeach; ?>
         </tbody>

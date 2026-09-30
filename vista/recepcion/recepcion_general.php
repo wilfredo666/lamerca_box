@@ -12,7 +12,7 @@
         Debe contar con clientes, tipos de recepción y clasificaciones activas antes de registrar una recepción.
       </div>
     <?php else: ?>
-      <form method="POST" id="formRecepcion" class="layout-recepcion"
+      <form method="POST" id="formRecepcion" class="layout-recepcion" enctype="multipart/form-data"
         data-cliente-preseleccionado="<?= (int) ($clienteRecepcionSeleccionado["id"] ?? 0) ?>">
         <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($csrfToken, ENT_QUOTES, "UTF-8") ?>">
         <aside class="panel-lateral">
@@ -22,7 +22,7 @@
               type="search"
               id="buscarCliente"
               autocomplete="off"
-              placeholder="Escriba el nombre o celular..."
+              placeholder="Escriba el nombre, celular o empresa ..."
               aria-controls="resultadosClientes"
               aria-expanded="false"
               required>
@@ -100,6 +100,7 @@
                   <th>Clasificación</th>
                   <th>Precio (Bs)</th>
                   <th>Paga</th>
+                  <th>Foto</th>
                   <th><span class="sr-only">Quitar</span></th>
                 </tr>
               </thead>
@@ -129,12 +130,18 @@
               <?php endforeach; ?>
             </select>
           </td>
-          <td><input type="number" name="precio[]" min="0" step="0.50" value="2.00" required></td>
+          <td style="width: 100px;"><input type="number" name="precio[]" min="0" step="0.50" value="2.00" required></td>
           <td>
             <select name="quien_paga[]" required>
               <option value="Destinatario">Destinatario</option>
               <option value="Remitente">Remitente</option>
             </select>
+          </td>
+          <td>
+            <label class="campo-foto-encomienda" title="Subir foto de la encomienda">
+              <span class="icono-foto-encomienda" aria-hidden="true">📷</span>
+              <input type="file" name="foto_encomienda[]" accept="image/jpeg,image/png,image/gif,image/webp" capture="environment" class="input-foto-encomienda" aria-label="Foto de la encomienda">
+            </label>
           </td>
           <td><button type="button" class="boton-quitar" aria-label="Quitar encomienda"><i class="fas fa-times" aria-hidden="true"></i></button></td>
         </tr>

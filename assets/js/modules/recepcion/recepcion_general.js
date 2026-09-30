@@ -54,7 +54,7 @@ document.addEventListener("DOMContentLoaded", function () {
         let resultadosVisibles = 0;
 
         document.querySelectorAll(".resultado-cliente").forEach(function (boton) {
-            const contenido = `${boton.dataset.nombre} ${boton.dataset.celular}`.toLocaleLowerCase();
+            const contenido = `${boton.dataset.nombre} ${boton.dataset.celular} ${boton.dataset.empresa || ""}`.toLocaleLowerCase();
             const coincide = termino !== "" && contenido.includes(termino);
             boton.hidden = !coincide;
             resultadosVisibles += coincide ? 1 : 0;
@@ -132,6 +132,32 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     }
     actualizarNumeros();
+
+    tabla.addEventListener("change", function (evento) {
+        if (evento.target.matches(".input-foto-encomienda")) {
+            const archivo = evento.target.files[0];
+            if (!archivo) return;
+
+            const tiposPermitidos = ["image/jpeg", "image/png", "image/gif", "image/webp"];
+            if (!tiposPermitidos.includes(archivo.type)) {
+                alert("Solo se permiten imágenes (JPEG, PNG, GIF, WEBP)");
+                evento.target.value = "";
+                return;
+            }
+
+            if (archivo.size > 5 * 1024 * 1024) {
+                alert("La imagen no debe superar 5MB");
+                evento.target.value = "";
+                return;
+            }
+
+            const label = evento.target.closest(".campo-foto-encomienda");
+            const icono = label.querySelector(".icono-foto-encomienda");
+            icono.textContent = "✅";
+            label.title = archivo.name;
+            label.dataset.fotoSeleccionada = "true";
+        }
+    });
 
     const idClientePreseleccionado = formulario.dataset.clientePreseleccionado;
     if (idClientePreseleccionado) {

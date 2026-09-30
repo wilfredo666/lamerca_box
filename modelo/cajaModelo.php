@@ -3,16 +3,22 @@ require_once "conexion.php";
 
 class ModeloCaja
 {
-  public static function mdlMovimientos($idAlmacen)
+  public static function mdlMovimientos($idAlmacen, $fechaDesde, $fechaHasta)
   {
     $stmt = Conexion::conectar()->prepare(
       "SELECT c.*, u.nombre AS nombre_usuario
        FROM caja c
        INNER JOIN usuario u ON u.id_usuario = c.id_usuario
        WHERE c.id_almacen = :id_almacen
+         AND c.fecha_movimiento >= :fecha_desde
+         AND c.fecha_movimiento < DATE_ADD(:fecha_hasta, INTERVAL 1 DAY)
        ORDER BY c.fecha_movimiento DESC, c.id_caja DESC"
     );
-    $stmt->execute([":id_almacen" => $idAlmacen]);
+    $stmt->execute([
+      ":id_almacen" => $idAlmacen,
+      ":fecha_desde" => $fechaDesde . " 00:00:00",
+      ":fecha_hasta" => $fechaHasta
+    ]);
     return $stmt->fetchAll(PDO::FETCH_ASSOC);
   }
 

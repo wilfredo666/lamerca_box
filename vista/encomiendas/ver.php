@@ -1,4 +1,13 @@
-<?php $h = static fn($valor) => htmlspecialchars((string) ($valor ?? ""), ENT_QUOTES, "UTF-8"); ?>
+<?php $h = static fn($valor) => htmlspecialchars((string) ($valor ?? ""), ENT_QUOTES, "UTF-8");
+$codigoSeguimiento = $encomienda["codigo_recepcion"] ?? $encomienda["codigo"] ?? "";
+$mensajeWhatsapp = "📦 *TU MERCA ENCOMIENDAS*\n\n"
+  . "Hola, te informamos que recibimos tu encomienda.\n"
+  . "🔖 Código de encomienda: *" . ($encomienda["codigo"] ?? "") . "*\n"
+  . "👤 Destinatario: " . ($encomienda["destinatario"] ?? "") . "\n"
+  . "📝 Detalle: " . (($encomienda["descripcion"] ?? "") ?: "Sin descripción") . "\n\n"
+  . "Revisa el seguimiento aquí: https://info.lamercabolivia.com/"
+  . rawurlencode((string) $codigoSeguimiento) . "\n\n"
+  . "Gracias por confiar en *Tu Merca Encomiendas*."; ?>
 <div class="busqueda-encomiendas">
   <?php if (!$encomienda): ?>
   <p class="sin-resultados">Encomienda no encontrada.</p>
@@ -49,8 +58,17 @@
             <a class="btn btn-warning me-2" href="<?= $base_url ?>encomiendas/editar?id=<?= (int) $encomienda["id"] ?>">✏ Editar</a>
             <button type="button" id="botonEntregarSeleccionadas" class="btn btn-success">✅ Entregar</button>
             <button type="button" id="botonTraspasarSeleccionadas" class="btn btn-primary">↔ Traspasar</button>
-            <a class="btn btn-secondary" href="<?= $base_url ?>encomiendas/buscar">← Volver</a>
+            <a class="btn btn-secondary" href="<?= $base_url ?>encomiendas/buscar">← Volver</a>            
+            <button
+              type="button"
+              class="btn btn-success btnWhatsapp"
+              style="margin-top: 5px;"
+              data-whatsapp="<?= $h($encomienda["celular_remitente"] ?? "") ?>"
+              data-mensaje="<?= $h($mensajeWhatsapp) ?>">
+              📲 Compartir por WhatsApp
+            </button>
           </div>
+
         </div>
       </div>
 

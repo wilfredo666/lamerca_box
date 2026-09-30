@@ -14,6 +14,28 @@ class ControladorEncomiendas
     ];
   }
 
+  static public function ctrEliminadas()
+  {
+    return [
+      "encomiendasEliminadas" => ModeloEncomiendas::mdlEliminadas(
+        (int) ($_SESSION["idAlmacen"] ?? 0)
+      )
+    ];
+  }
+
+  static public function ctrDetalleEliminada()
+  {
+    $id = filter_input(INPUT_GET, "id", FILTER_VALIDATE_INT);
+    $idAlmacen = filter_var($_SESSION["idAlmacen"] ?? null, FILTER_VALIDATE_INT);
+    $encomienda = $id && $idAlmacen
+      ? ModeloEncomiendas::mdlDetalleEliminada($id, $idAlmacen)
+      : null;
+
+    return $encomienda
+      ? ["encomiendaEliminada" => $encomienda]
+      : ["errorVista" => "No se encontró la encomienda eliminada en este almacén."];
+  }
+
   static public function ctrVer()
   {
     $id = filter_input(INPUT_GET, "id", FILTER_VALIDATE_INT);
@@ -78,14 +100,31 @@ class ControladorEncomiendas
     if (($_SERVER["REQUEST_METHOD"] ?? "GET") !== "POST") {
       throw new RuntimeException("Método no permitido.");
     }
-    self::ctrValidarCsrf($_POST["csrf_token"] ?? "");
-    $id = filter_input(INPUT_POST, "id", FILTER_VALIDATE_INT);
-    if (!$id) {
-      throw new InvalidArgumentException("Encomienda no válida.");
+    try {
+      self::ctrValidarCsrf($_POST["csrf_token"] ?? "");
+      $id = filter_input(INPUT_POST, "id", FILTER_VALIDATE_INT);
+      $motivoEntrada = $_POST["observacion"] ?? null;
+      if (!$id) {
+        throw new InvalidArgumentException("Encomienda no válida.");
+      }
+      if (!is_string($motivoEntrada)) {
+        throw new InvalidArgumentException("Indique un motivo de eliminación válido.");
+      }
+      $motivo = trim($motivoEntrada);
+      if ($motivo === "" || mb_strlen($motivo) > 250) {
+        throw new InvalidArgumentException("Escriba un motivo de eliminación de 1 a 250 caracteres.");
+      }
+      $idAlmacen = filter_var($_SESSION["idAlmacen"] ?? null, FILTER_VALIDATE_INT);
+      if (!$idAlmacen) {
+        throw new RuntimeException("No se encontró el almacén de la sesión.");
+      }
+      ModeloEncomiendas::mdlEliminar($id, $motivo, $idAlmacen);
+      header("Location: " . self::ctrUrlProyecto() . "encomiendas/buscar?mensaje=" . rawurlencode("Encomienda eliminada lógicamente."));
+      exit;
+    } catch (InvalidArgumentException | RuntimeException $error) {
+      header("Location: " . self::ctrUrlProyecto() . "encomiendas/buscar?mensaje=" . rawurlencode($error->getMessage()));
+      exit;
     }
-    ModeloEncomiendas::mdlEliminar($id);
-    header("Location: " . self::ctrUrlProyecto() . "encomiendas/buscar");
-    exit;
   }
 
   private static function ctrValidarCsrf($token)

@@ -10,6 +10,12 @@ $h = static fn($valor) => htmlspecialchars((string) ($valor ?? ""), ENT_QUOTES, 
     </form>
   </div>
 
+  <?php if (!empty($_GET["mensaje"])): ?>
+    <div class="alert alert-<?= ($_GET["tipo"] ?? "") === "error" ? "warning" : "success" ?>" role="alert">
+      <?= $h($_GET["mensaje"]) ?>
+    </div>
+  <?php endif; ?>
+
   <div class="grid-encomiendas">
     <?php foreach ($cajas as $caja): ?>
       <article class="tarjeta-encomienda">
@@ -32,6 +38,7 @@ $h = static fn($valor) => htmlspecialchars((string) ($valor ?? ""), ENT_QUOTES, 
           </div>
           <div>📦 <b>Encomiendas:</b> <?= (int) $caja["total_encomiendas"] ?></div>
           <div>🟡 <b>Pendientes:</b> <?= (int) $caja["pendientes"] ?></div>
+          <div>🔵 <b>Entregadas:</b> <?= (int) $caja["entregados"] ?></div>
           <div>🔵 <b>Estado:</b> <?= $h($caja["estado"]) ?></div>
         </div>
         <div class="foto-tarjeta">
@@ -43,8 +50,39 @@ $h = static fn($valor) => htmlspecialchars((string) ($valor ?? ""), ENT_QUOTES, 
           <form method="POST" action="<?= $base_url ?>recepcion/caja-eliminar" onsubmit="return confirm('¿Eliminar esta caja y sus encomiendas?');">
             <input type="hidden" name="csrf_token" value="<?= $h($csrfToken) ?>">
             <input type="hidden" name="id" value="<?= (int) $caja["id"] ?>">
-            <button class="accion eliminar" type="submit">🗑 Eliminar</button>
+            <?php
+            if (ControladorUsuario::ctrUsuarioPermiso($_SESSION["idUsuario"], 21)) {
+            ?>
+              <?php if ((int) $caja["entregados"] > 0): ?>
+                <button
+                  class="accion eliminar"
+                  type="button"
+                  title="No se puede eliminar una caja que contiene encomiendas entregadas."
+                  aria-label="Eliminación bloqueada: la caja contiene encomiendas entregadas"
+                  style="height: 47px; background-color: #ccc; cursor: not-allowed;"
+                  disabled>
+                  🗑 Eliminar
+                </button>
+              <?php else: ?>
+                <button class="accion eliminar" type="submit">🗑 Eliminar</button>
+              <?php endif; ?>
+            <?php
+            } else {
+            ?>
+              <!-- El usuario no tiene permiso para eliminar -->
+              <button
+                type="button"
+                class="accion eliminar"
+                style="height: 47px; background-color: #ccc; cursor: not-allowed;" disabled>
+                🗑 Eliminar
+              </button>
+            <?php
+            }
+            ?>
           </form>
+          <?php if ((int) $caja["entregados"] > 0): ?>
+            <!--mensaje opcional si la caja tiene encomiendas entregadas.-->
+          <?php endif; ?>
           <form method="POST" action="<?= $base_url ?>recepcion/caja-foto" enctype="multipart/form-data" class="formulario-foto">
             <input type="hidden" name="csrf_token" value="<?= $h($csrfToken) ?>">
             <input type="hidden" name="id" value="<?= (int) $caja["id"] ?>">

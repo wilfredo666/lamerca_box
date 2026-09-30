@@ -6,16 +6,34 @@ class ModeloRecepcion
 {
   static public function mdlBuscarRecepciones($termino = "")
   {
-    $stmt = Conexion::conectar()->prepare(
+    $conexion = Conexion::conectar();
+    $conexion->exec(
+      "UPDATE recepciones
+       SET estado = 'Cerrada'
+       WHERE estado = 'Abierta'
+         AND tipo_recepcion IN ('Caja TikTok', 'Caja general')
+         AND EXISTS (
+           SELECT 1 FROM encomiendas
+           WHERE id_recepcion = recepciones.id
+         )
+         AND NOT EXISTS (
+           SELECT 1 FROM encomiendas
+           WHERE id_recepcion = recepciones.id
+             AND estado NOT IN ('Entregado', 'Eliminado')
+         )"
+    );
+    $stmt = $conexion->prepare(
       "SELECT r.id, r.codigo, r.empresa, r.tipo_recepcion, r.estado,
         r.fecha_registro, r.foto, r.observaciones, c.celular AS celular,
         c.nombre AS nombre_cliente,
         COUNT(e.id) AS total_encomiendas,
-        SUM(e.estado = 'Pendiente') AS pendientes
+        COALESCE(SUM(e.estado = 'Pendiente'), 0) AS pendientes,
+        COALESCE(SUM(e.estado = 'Entregado'), 0) AS entregados
       FROM recepciones r
       INNER JOIN clientes c ON c.id = r.id_cliente
       LEFT JOIN encomiendas e ON e.id_recepcion = r.id
-      WHERE r.tipo_recepcion IN ('Caja TikTok', 'Caja general')
+      WHERE r.estado = 'Abierta'
+        AND r.tipo_recepcion IN ('Caja TikTok', 'Caja general')
         AND (
           r.codigo LIKE :termino_codigo
           OR r.empresa LIKE :termino_empresa
@@ -97,8 +115,8 @@ class ModeloRecepcion
 
       $stmt = $conexion->prepare(
         "INSERT INTO encomiendas
-        (codigo, id_recepcion, id_almacen_actual, clasificacion, descripcion, precio, destinatario, contacto, quien_paga, estado, cobrado)
-        VALUES ('', :id_recepcion, (SELECT id_almacen FROM recepciones WHERE id = :id_recepcion_almacen), :clasificacion, :descripcion, :precio, :destinatario, :contacto, :quien_paga, 'Pendiente', :cobrado)"
+        (codigo, id_recepcion, id_almacen_actual, clasificacion, descripcion, precio, destinatario, contacto, foto, quien_paga, estado, cobrado)
+        VALUES ('', :id_recepcion, (SELECT id_almacen FROM recepciones WHERE id = :id_recepcion_almacen), :clasificacion, :descripcion, :precio, :destinatario, :contacto, :foto, :quien_paga, 'Pendiente', :cobrado)"
       );
       $stmtCodigo = $conexion->prepare("UPDATE encomiendas SET codigo = :codigo WHERE id = :id");
       foreach ($paquetes as $paquete) {
@@ -111,6 +129,7 @@ class ModeloRecepcion
           ":precio" => $paquete["precio"],
           ":destinatario" => $paquete["destinatario"],
           ":contacto" => $paquete["contacto"],
+          ":foto" => $paquete["foto"],
           ":quien_paga" => $paquete["quien_paga"],
           ":cobrado" => $pagaRemitente ? 1 : 0
         ]);
@@ -130,21 +149,55 @@ class ModeloRecepcion
     }
   }
 
+  static public function mdlCerrarRecepcionSiNoTienePendientes($conexion, $idRecepcion)
+  {
+    $stmt = $conexion->prepare(
+      "UPDATE recepciones
+       SET estado = 'Cerrada'
+       WHERE id = :id_recepcion
+         AND estado = 'Abierta'
+         AND EXISTS (
+           SELECT 1 FROM encomiendas
+           WHERE id_recepcion = :id_recepcion_con_encomiendas
+         )
+         AND NOT EXISTS (
+           SELECT 1 FROM encomiendas
+           WHERE id_recepcion = :id_recepcion_pendientes
+             AND estado NOT IN ('Entregado', 'Eliminado')
+         )"
+    );
+    $stmt->execute([
+      ":id_recepcion" => $idRecepcion,
+      ":id_recepcion_con_encomiendas" => $idRecepcion,
+      ":id_recepcion_pendientes" => $idRecepcion
+    ]);
+  }
+
   static public function mdlEliminarRecepcion($id)
   {
     $conexion = Conexion::conectar();
-    $stmt = $conexion->prepare(
-      "SELECT COUNT(*) FROM entrega e
-      INNER JOIN encomiendas en ON en.id = e.id_encomienda
-      WHERE en.id_recepcion = :id"
-    );
-    $stmt->execute([":id" => $id]);
-    if ((int) $stmt->fetchColumn() > 0) {
-      throw new InvalidArgumentException("No se puede eliminar una caja que ya tiene entregas.");
-    }
-
     $conexion->beginTransaction();
     try {
+      $stmtRecepcion = $conexion->prepare(
+        "SELECT id FROM recepciones WHERE id = :id FOR UPDATE"
+      );
+      $stmtRecepcion->execute([":id" => $id]);
+      if ($stmtRecepcion->fetchColumn() === false) {
+        throw new InvalidArgumentException("La caja no existe o ya fue eliminada.");
+      }
+
+      $stmtEntregados = $conexion->prepare(
+        "SELECT COUNT(*)
+         FROM encomiendas en
+         LEFT JOIN entrega e ON e.id_encomienda = en.id
+         WHERE en.id_recepcion = :id
+           AND (en.estado = 'Entregado' OR e.id IS NOT NULL)"
+      );
+      $stmtEntregados->execute([":id" => $id]);
+      if ((int) $stmtEntregados->fetchColumn() > 0) {
+        throw new InvalidArgumentException("No se puede eliminar la caja porque contiene encomiendas entregadas.");
+      }
+
       $conexion->prepare("DELETE FROM encomiendas WHERE id_recepcion = :id")->execute([":id" => $id]);
       $stmt = $conexion->prepare("DELETE FROM recepciones WHERE id = :id");
       $stmt->execute([":id" => $id]);
@@ -235,8 +288,8 @@ class ModeloRecepcion
 
       $stmtEncomienda = $conexion->prepare(
         "INSERT INTO encomiendas
-        (codigo, id_recepcion, id_almacen_actual, clasificacion, descripcion, precio, destinatario, contacto, quien_paga, estado, cobrado)
-        VALUES ('', :id_recepcion, :id_almacen_actual, :clasificacion, :descripcion, :precio, :destinatario, :contacto, :quien_paga, 'Pendiente', :cobrado)"
+        (codigo, id_recepcion, id_almacen_actual, clasificacion, descripcion, precio, destinatario, contacto, foto, quien_paga, estado, cobrado)
+        VALUES ('', :id_recepcion, :id_almacen_actual, :clasificacion, :descripcion, :precio, :destinatario, :contacto, :foto, :quien_paga, 'Pendiente', :cobrado)"
       );
       $stmtCodigo = $conexion->prepare("UPDATE encomiendas SET codigo = :codigo WHERE id = :id");
 
@@ -250,6 +303,7 @@ class ModeloRecepcion
           ":precio" => $paquete["precio"],
           ":destinatario" => $paquete["destinatario"],
           ":contacto" => $paquete["contacto"],
+          ":foto" => $paquete["foto"],
           ":quien_paga" => $paquete["quien_paga"],
           ":cobrado" => $pagaRemitente ? 1 : 0
         ]);

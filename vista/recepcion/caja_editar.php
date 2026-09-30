@@ -41,7 +41,7 @@
         </div>
         <button type="button" class="boton-secundario" id="agregarEncomienda"><i class="fas fa-plus"></i> Agregar encomienda</button>
       </div>
-      <form method="POST" id="formRecepcion">
+      <form method="POST" id="formRecepcion" enctype="multipart/form-data">
         <input type="hidden" name="csrf_token" value="<?= $h($csrfToken) ?>">
         <input type="hidden" name="id_cliente" value="<?= (int) $recepcion["id_cliente"] ?>">
         <input type="hidden" name="empresa" value="<?= $h($recepcion["empresa"]) ?>">
@@ -49,7 +49,7 @@
         <input type="hidden" name="observaciones" value="<?= $h($recepcion["observaciones"]) ?>">
         <div class="tabla-responsive">
           <table>
-            <thead><tr><th>N°</th><th>Destinatario</th><th>Contacto</th><th>Clasificación</th><th>Descripción</th><th>Precio (Bs)</th><th>Paga</th><th></th></tr></thead>
+            <thead><tr><th>N°</th><th>Destinatario</th><th>Contacto</th><th>Clasificación</th><th>Descripción</th><th>Precio (Bs)</th><th>Paga</th><th>Foto</th><th></th></tr></thead>
             <tbody id="tablaPaquetes">
               <tr>
                 <td class="numero-encomienda">1</td>
@@ -59,6 +59,7 @@
                 <td><input type="text" name="descripcion[]" maxlength="5000"></td>
                 <td><input type="number" name="precio[]" min="0" step="0.01" value="2.00" required></td>
                 <td><select name="quien_paga[]" required><option value="Destinatario">Destinatario</option><option value="Remitente">Remitente</option></select></td>
+                <td><label class="campo-foto-encomienda" title="Subir foto de la encomienda"><span class="icono-foto-encomienda" aria-hidden="true">📷</span><input type="file" name="foto_encomienda[]" accept="image/jpeg,image/png,image/gif,image/webp" capture="environment" class="input-foto-encomienda" aria-label="Foto de la encomienda"></label></td>
                 <td><button type="button" class="boton-quitar" aria-label="Quitar encomienda"><i class="fas fa-times"></i></button></td>
               </tr>
             </tbody>
@@ -74,6 +75,7 @@
           <td><input type="text" name="descripcion[]" maxlength="5000"></td>
           <td><input type="number" name="precio[]" min="0" step="0.01" value="2.00" required></td>
           <td><select name="quien_paga[]" required><option>Destinatario</option><option>Remitente</option></select></td>
+          <td><label class="campo-foto-encomienda" title="Subir foto de la encomienda"><span class="icono-foto-encomienda" aria-hidden="true">📷</span><input type="file" name="foto_encomienda[]" accept="image/jpeg,image/png,image/gif,image/webp" capture="environment" class="input-foto-encomienda" aria-label="Foto de la encomienda"></label></td>
           <td><button type="button" class="boton-quitar" aria-label="Quitar encomienda"><i class="fas fa-times"></i></button></td>
         </tr>
       </template>

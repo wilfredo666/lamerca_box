@@ -61,7 +61,12 @@ class ControladorRecepcion
         return $datosVista + ["errorVista" => "Registre al menos una encomienda completa."];
       }
 
-      $idRecepcion = ModeloRecepcion::mdlRegistrarRecepcionGeneral($recepcion, $paquetes);
+      try {
+        $idRecepcion = ModeloRecepcion::mdlRegistrarRecepcionGeneral($recepcion, $paquetes);
+      } catch (Throwable $error) {
+        self::ctrEliminarFotosPaquetes($paquetes);
+        throw $error;
+      }
       header("Location: " . self::ctrUrlProyecto() . "recepcion/comprobante-general?id=" . $idRecepcion);
       exit;
     }
@@ -81,7 +86,34 @@ class ControladorRecepcion
     {
       $id = filter_input(INPUT_GET, "id", FILTER_VALIDATE_INT);
       $detalle = $id ? ModeloRecepcion::mdlDetalleRecepcion($id) : null;
-      return $detalle ?? ["errorVista" => "Caja no encontrada."];
+      if ($detalle === null) {
+        return ["errorVista" => "Caja no encontrada."];
+      }
+
+      $recepcion = $detalle["recepcion"];
+      $paquetes = $detalle["paquetes"];
+      $numeroWhatsapp = preg_replace("/[^0-9]/", "", $recepcion["celular_cliente"] ?? "");
+      $mensajeWhatsapp = "📦 *COMPROBANTE DE RECEPCIÓN*\n\n"
+        . "👤 Cliente: *" . ($recepcion["nombre_cliente"] ?? "") . "*\n"
+        . "🏢 Empresa: *" . ($recepcion["empresa"] ?: "Sin empresa registrada") . "*\n"
+        . "🔖 Código: *" . ($recepcion["codigo"] ?? "") . "*\n"
+        . "📅 Fecha: " . date("d/m/Y", strtotime($recepcion["fecha_registro"])) . "\n\n"
+        . "*ENCOMIENDAS*\n";
+      foreach ($paquetes as $paquete) {
+        $mensajeWhatsapp .= "• " . ($paquete["codigo"] ?? "")
+          . " - " . ($paquete["destinatario"] ?? "")
+          . " (" . ($paquete["estado"] ?? "") . ")\n";
+      }
+      $mensajeWhatsapp .= "\n*TOTAL: " . count($paquetes) . " ENCOMIENDA"
+        . (count($paquetes) === 1 ? "" : "S") . "*\n"
+        . "Revisa el seguimiento aquí: https://info.lamercabolivia.com/"
+        . rawurlencode((string) ($recepcion["codigo"] ?? "")) . "\n\n"
+        . "Gracias por confiar en *Tu Merca Encomiendas*.";
+
+      return $detalle + [
+        "numeroWhatsapp" => $numeroWhatsapp,
+        "mensajeWhatsapp" => $mensajeWhatsapp
+      ];
     }
 
     static public function ctrEditarCaja()
@@ -110,7 +142,12 @@ class ControladorRecepcion
           if (empty($paquetes)) {
             throw new InvalidArgumentException("Registre al menos una nueva encomienda.");
           }
-          ModeloRecepcion::mdlActualizarRecepcionYAgregar($id, $recepcion, $paquetes);
+          try {
+            ModeloRecepcion::mdlActualizarRecepcionYAgregar($id, $recepcion, $paquetes);
+          } catch (Throwable $error) {
+            self::ctrEliminarFotosPaquetes($paquetes);
+            throw $error;
+          }
           header("Location: " . self::ctrUrlProyecto() . "recepcion/caja-ver?id=" . $id);
           exit;
         } catch (InvalidArgumentException | RuntimeException $error) {
@@ -125,15 +162,23 @@ class ControladorRecepcion
       if (($_SERVER["REQUEST_METHOD"] ?? "GET") !== "POST") {
         throw new RuntimeException("Método no permitido.");
       }
-      $token = $_POST["csrf_token"] ?? "";
-      if (!is_string($token) || !hash_equals($_SESSION["csrf_token"] ?? "", $token)) {
-        throw new InvalidArgumentException("La sesión del formulario expiró.");
+      try {
+        $token = $_POST["csrf_token"] ?? "";
+        if (!is_string($token) || !hash_equals($_SESSION["csrf_token"] ?? "", $token)) {
+          throw new InvalidArgumentException("La sesión del formulario expiró.");
+        }
+        $id = filter_input(INPUT_POST, "id", FILTER_VALIDATE_INT);
+        if (!$id) {
+          throw new InvalidArgumentException("Caja no válida.");
+        }
+        ModeloRecepcion::mdlEliminarRecepcion($id);
+      } catch (InvalidArgumentException $error) {
+        header(
+          "Location: " . self::ctrUrlProyecto() . "recepcion/cajas-buscar?tipo=error&mensaje="
+          . rawurlencode($error->getMessage())
+        );
+        exit;
       }
-      $id = filter_input(INPUT_POST, "id", FILTER_VALIDATE_INT);
-      if (!$id) {
-        throw new InvalidArgumentException("Caja no válida.");
-      }
-      ModeloRecepcion::mdlEliminarRecepcion($id);
       header("Location: " . self::ctrUrlProyecto() . "recepcion/cajas-buscar");
       exit;
     }
@@ -239,6 +284,10 @@ class ControladorRecepcion
     $precios = $_POST["precio"] ?? [];
     $quienesPagan = $_POST["quien_paga"] ?? [];
     $clasificacionesPaquete = $_POST["clasificacion"] ?? [];
+    $fotosEncomienda = $_FILES["foto_encomienda"] ?? ["name" => [], "tmp_name" => [], "size" => [], "error" => []];
+    if (!is_array($fotosEncomienda) || !is_array($fotosEncomienda["error"] ?? null)) {
+      throw new InvalidArgumentException("La información de las fotos de encomiendas no es válida.");
+    }
     $clasificacionesValidas = array_column($clasificaciones, "descripcion");
     $paquetes = [];
 
@@ -276,8 +325,22 @@ class ControladorRecepcion
         "descripcion" => $descripcion !== "" ? $descripcion : null,
         "clasificacion" => $clasificacion,
         "precio" => $precio,
-        "quien_paga" => $quienPaga
+        "quien_paga" => $quienPaga,
+        "foto" => null,
+        "indice_foto" => $indice
       ];
+    }
+
+    try {
+      foreach ($paquetes as &$paquete) {
+        $paquete["foto"] = self::ctrGuardarFotoEncomienda($fotosEncomienda, $paquete["indice_foto"]);
+        unset($paquete["indice_foto"]);
+      }
+      unset($paquete);
+    } catch (Throwable $error) {
+      unset($paquete);
+      self::ctrEliminarFotosPaquetes($paquetes);
+      throw $error;
     }
 
     return $paquetes;
@@ -308,6 +371,56 @@ class ControladorRecepcion
     }
 
     return $paquetes;
+  }
+
+  private static function ctrGuardarFotoEncomienda($fotosEncomienda, $indice)
+  {
+    $error = (int) ($fotosEncomienda["error"][$indice] ?? UPLOAD_ERR_NO_FILE);
+    if ($error === UPLOAD_ERR_NO_FILE) {
+      return null;
+    }
+    if ($error !== UPLOAD_ERR_OK) {
+      throw new InvalidArgumentException("No se pudo subir una de las fotos de las encomiendas.");
+    }
+
+    $tmpName = $fotosEncomienda["tmp_name"][$indice] ?? "";
+    if ($tmpName === "" || !is_uploaded_file($tmpName)) {
+      throw new InvalidArgumentException("La foto subida no es válida.");
+    }
+    $tamaño = filesize($tmpName);
+    if ($tamaño === false || $tamaño < 1 || $tamaño > 5 * 1024 * 1024) {
+      throw new InvalidArgumentException("Cada foto debe pesar como máximo 5 MB.");
+    }
+
+    $extensiones = ["image/jpeg" => "jpg", "image/png" => "png", "image/gif" => "gif", "image/webp" => "webp"];
+    $tipo = (new finfo(FILEINFO_MIME_TYPE))->file($tmpName);
+    if (!isset($extensiones[$tipo]) || @getimagesize($tmpName) === false) {
+      throw new InvalidArgumentException("La foto debe ser una imagen JPG, PNG, GIF o WEBP válida.");
+    }
+
+    $directorioFotos = dirname(__DIR__) . DIRECTORY_SEPARATOR . "assets" . DIRECTORY_SEPARATOR . "img" . DIRECTORY_SEPARATOR . "paquetes";
+    if (!is_dir($directorioFotos) && !mkdir($directorioFotos, 0755, true) && !is_dir($directorioFotos)) {
+      throw new RuntimeException("No se pudo preparar el directorio de fotos de encomiendas.");
+    }
+
+    $nombreArchivo = "paquete_" . bin2hex(random_bytes(16)) . "." . $extensiones[$tipo];
+    $rutaDestino = $directorioFotos . DIRECTORY_SEPARATOR . $nombreArchivo;
+    if (!move_uploaded_file($tmpName, $rutaDestino)) {
+      throw new RuntimeException("No se pudo guardar la foto de la encomienda.");
+    }
+
+    return $nombreArchivo;
+  }
+
+  private static function ctrEliminarFotosPaquetes($paquetes)
+  {
+    $directorioFotos = dirname(__DIR__) . DIRECTORY_SEPARATOR . "assets" . DIRECTORY_SEPARATOR . "img" . DIRECTORY_SEPARATOR . "paquetes";
+    foreach ($paquetes as $paquete) {
+      $nombreArchivo = basename((string) ($paquete["foto"] ?? ""));
+      if (str_starts_with($nombreArchivo, "paquete_") && is_file($directorioFotos . DIRECTORY_SEPARATOR . $nombreArchivo)) {
+        unlink($directorioFotos . DIRECTORY_SEPARATOR . $nombreArchivo);
+      }
+    }
   }
 
   private static function ctrUrlProyecto()

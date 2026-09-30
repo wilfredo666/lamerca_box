@@ -17,6 +17,8 @@ $rutas_validas = [
   "recepcion/caja-foto" => ["vista" => "recepcion/cajas_buscar.php", "accion" => "ctrSubirFotoCaja"],
   "recepcion/caja-eliminar" => ["vista" => "recepcion/cajas_buscar.php", "accion" => "ctrEliminarCaja"],
   "encomiendas/buscar" => ["vista" => "encomiendas/buscar.php", "controlador" => "ControladorEncomiendas", "accion" => "ctrBuscar"],
+  "encomiendas/eliminadas" => ["vista" => "encomiendas/eliminadas.php", "controlador" => "ControladorEncomiendas", "accion" => "ctrEliminadas"],
+  "encomiendas/eliminadas/ver" => ["vista" => "encomiendas/eliminada_ver.php", "controlador" => "ControladorEncomiendas", "accion" => "ctrDetalleEliminada"],
   "encomiendas/ver" => ["vista" => "encomiendas/ver.php", "controlador" => "ControladorEncomiendas", "accion" => "ctrVer"],
   "encomiendas/editar" => ["vista" => "encomiendas/editar.php", "controlador" => "ControladorEncomiendas", "accion" => "ctrEditar"],
   "encomiendas/eliminar" => ["vista" => "encomiendas/buscar.php", "controlador" => "ControladorEncomiendas", "accion" => "ctrEliminar"],
@@ -24,6 +26,7 @@ $rutas_validas = [
   "traspasos" => ["vista" => "traspaso/index.php", "controlador" => "ControladorTraspaso", "accion" => "ctrVistaTraspasos"],
   "entrega" => ["vista" => "entrega/entregar.php", "controlador" => "ControladorEntrega", "accion" => "ctrVistaEntrega"],
   "entrega/entregadas" => ["vista" => "entrega/entregadas.php", "controlador" => "ControladorEntrega", "accion" => "ctrVistaEntregadas"],
+  "entrega/ver-entregada" => ["vista" => "entrega/detalle_entrega_registrada.php", "controlador" => "ControladorEntrega", "accion" => "ctrVistaDetalleEntregada"],
   "entrega/retirados" => ["vista" => "entrega/retirados.php", "controlador" => "ControladorEntrega", "accion" => "ctrVistaRetirados"],
   "entrega/fotos-pendientes" => ["vista" => "entrega/fotos_pendientes.php", "controlador" => "ControladorEntrega", "accion" => "ctrVistaFotosPendientes"],
   "entrega/detalle" => ["vista" => "entrega/detalle_entrega.php", "controlador" => "ControladorEntrega", "accion" => "ctrVistaDetalle"],
@@ -64,7 +67,17 @@ $estilos_vista = [
   ,"recepcion/caja-ver" => "assets/css/modules/encomiendas/buscar.css"
   ,"recepcion/caja-editar" => "assets/css/modules/recepcion/recepcion_general.css"
   ,"encomiendas/buscar" => "assets/css/modules/encomiendas/buscar.css"
-  ,"encomiendas/ver" => "assets/css/modules/encomiendas/buscar.css"
+  ,"encomiendas/eliminadas" => [
+    "assets/css/modules/entrega/entregadas.css",
+    "assets/plugins/datatables-bs4/css/dataTables.bootstrap4.min.css",
+    "assets/plugins/datatables-responsive/css/responsive.bootstrap4.min.css"
+  ]
+  ,"encomiendas/eliminadas/ver" => [
+    "assets/css/modules/entrega/retirados.css",
+    "assets/css/modules/encomiendas/eliminadas.css"
+  ]
+  ,"encomiendas/ver" => ["assets/plugins/sweetalert2/sweetalert2.min.css",
+                          "assets/css/modules/encomiendas/buscar.css"]
   ,"encomiendas/editar" => "assets/css/modules/encomiendas/buscar.css"
   ,"entrega" => "assets/css/modules/entrega/entregar.css"
   ,"entrega/entregadas" => [
@@ -80,6 +93,7 @@ $estilos_vista = [
   ,"entrega/retirados" => "assets/css/modules/entrega/retirados.css"
   ,"entrega/fotos-pendientes" => "assets/css/modules/entrega/fotos_pendientes.css"
   ,"entrega/detalle" => "assets/css/modules/entrega/detalle_entrega.css"
+  ,"entrega/ver-entregada" => "assets/css/modules/entrega/entregadas.css"
   ,"cajas-tiktok/nueva" => "assets/css/modules/cajas_tiktok/nuevo.css"
   ,"cajas-tiktok/editar" => "assets/css/modules/cajas_tiktok/editar.css"
   ,"clientes" => [
@@ -144,11 +158,24 @@ $scripts_vista = [
   "encomiendas/buscar" => [
     "assets/js/modules/encomiendas/buscar.js"
   ],
+  "encomiendas/eliminadas" => [
+    "assets/js/jquery.min.js",
+    "assets/plugins/datatables/jquery.dataTables.min.js",
+    "assets/plugins/datatables-bs4/js/dataTables.bootstrap4.min.js",
+    "assets/plugins/datatables-responsive/js/dataTables.responsive.min.js",
+    "assets/plugins/datatables-responsive/js/responsive.bootstrap4.min.js",
+    "assets/js/modules/encomiendas/eliminadas.js"
+  ],
   "encomiendas/ver" => [
-    "assets/js/modules/encomiendas/buscar.js"
+    "assets/js/modules/encomiendas/buscar.js",
+    "assets/plugins/sweetalert2/sweetalert2.all.min.js",
+    "assets/js/modules/recepcion/comprobante_caja.js"
   ],
   "recepcion/cajas-buscar" => [
     "assets/js/modules/recepcion/cajas_buscar.js"
+  ],
+  "recepcion/caja-ver" => [
+    "assets/js/modules/recepcion/comprobante_caja.js"
   ],
   "recepcion/comprobante-general" => [
     "assets/js/modules/recepcion/comprobante_caja.js"

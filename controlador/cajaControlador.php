@@ -4,9 +4,42 @@ class ControladorCaja
   public static function ctrVistaCaja()
   {
     $idAlmacen = self::idAlmacenSesion();
+    $hoy = new DateTimeImmutable("today");
+    $fechaInicioPredeterminada = $hoy->modify("first day of this month")->format("Y-m-d");
+    $fechaFinPredeterminada = $hoy->format("Y-m-d");
+    $fechaDesdeEntrada = $_GET["fecha_desde"] ?? null;
+    $fechaHastaEntrada = $_GET["fecha_hasta"] ?? null;
+    $errorFiltroFecha = null;
+
+    if ($fechaDesdeEntrada === null && $fechaHastaEntrada === null) {
+      $fechaDesde = $fechaInicioPredeterminada;
+      $fechaHasta = $fechaFinPredeterminada;
+    } elseif (
+      !is_string($fechaDesdeEntrada) ||
+      !is_string($fechaHastaEntrada) ||
+      !self::fechaValida($fechaDesdeEntrada) ||
+      !self::fechaValida($fechaHastaEntrada)
+    ) {
+      $fechaDesde = $fechaInicioPredeterminada;
+      $fechaHasta = $fechaFinPredeterminada;
+      $errorFiltroFecha = "Seleccione un rango de fechas válido.";
+    } elseif ($fechaDesdeEntrada > $fechaHastaEntrada) {
+      $fechaDesde = $fechaDesdeEntrada;
+      $fechaHasta = $fechaHastaEntrada;
+      $errorFiltroFecha = "La fecha inicial no puede ser posterior a la fecha final.";
+    } else {
+      $fechaDesde = $fechaDesdeEntrada;
+      $fechaHasta = $fechaHastaEntrada;
+    }
+
     return [
-      "movimientos" => ModeloCaja::mdlMovimientos($idAlmacen),
-      "resumen" => ModeloCaja::mdlResumen($idAlmacen)
+      "movimientos" => $errorFiltroFecha === null
+        ? ModeloCaja::mdlMovimientos($idAlmacen, $fechaDesde, $fechaHasta)
+        : [],
+      "resumen" => ModeloCaja::mdlResumen($idAlmacen),
+      "fechaDesde" => $fechaDesde,
+      "fechaHasta" => $fechaHasta,
+      "errorFiltroFecha" => $errorFiltroFecha
     ];
   }
 
@@ -79,6 +112,15 @@ class ControladorCaja
     if (!is_string($token) || !hash_equals($_SESSION["csrf_token"] ?? "", $token)) {
       throw new InvalidArgumentException("La sesión del formulario expiró.");
     }
+  }
+
+  private static function fechaValida($fecha)
+  {
+    if (!preg_match('/^\d{4}-\d{2}-\d{2}$/', $fecha)) {
+      return false;
+    }
+    [$anio, $mes, $dia] = array_map("intval", explode("-", $fecha));
+    return checkdate($mes, $dia, $anio);
   }
 
   private static function redirigir($ruta)
