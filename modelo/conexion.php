@@ -25,7 +25,10 @@ class Conexion{
     $link = new PDO("mysql:host=" . $host . ";" . "dbname=" . $db, $userDB, $passDB);
 
 
-    $link->exec("set names utf8");
+    $link->exec("set names utf8mb4");
+
+    // Zona horaria de Bolivia (UTC-4)
+    $link->exec("SET time_zone = '-04:00'");
     return $link;
   }
 }
