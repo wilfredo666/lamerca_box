@@ -1,40 +1,34 @@
 document.addEventListener("DOMContentLoaded", function () {
 
     const buscador = document.querySelector("[data-buscador-tiempo-real]");
-    const tarjetas = Array.from(document.querySelectorAll(".grid-encomiendas .tarjeta-encomienda"));
-    const contador = document.querySelector("[data-contador-resultados]");
-    const sinResultados = document.querySelector("[data-sin-resultados]");
     const filtroSinImagen = document.querySelector("[data-filtro-sin-imagen]");
-    let soloSinImagen = false;
+    const formularioBusqueda = buscador ? buscador.closest("form") : null;
+    const campoSinImagen = document.querySelector("[data-campo-sin-imagen]");
+    let temporizadorBusqueda;
 
-    function actualizarFiltroEncomiendas() {
-        const termino = buscador ? buscador.value.trim().toLocaleLowerCase() : "";
-        let visibles = 0;
-
-        tarjetas.forEach(function (tarjeta) {
-            const coincideTexto = tarjeta.textContent.toLocaleLowerCase().includes(termino);
-            const coincideFoto = !soloSinImagen || tarjeta.dataset.sinImagen === "true";
-            tarjeta.hidden = !(coincideTexto && coincideFoto);
-            visibles += tarjeta.hidden ? 0 : 1;
+    function enviarBusqueda() {
+        if (!formularioBusqueda) return;
+        formularioBusqueda.querySelectorAll('input[name="pagina"]').forEach(function (campo) {
+            campo.remove();
         });
-
-        if (contador) {
-            contador.textContent = visibles;
-        }
-        if (sinResultados) {
-            sinResultados.hidden = visibles !== 0;
-        }
+        formularioBusqueda.submit();
     }
 
     if (buscador) {
-        buscador.addEventListener("input", actualizarFiltroEncomiendas);
+        buscador.addEventListener("input", function () {
+            window.clearTimeout(temporizadorBusqueda);
+            temporizadorBusqueda = window.setTimeout(enviarBusqueda, 350);
+        });
     }
 
     if (filtroSinImagen) {
         filtroSinImagen.addEventListener("click", function () {
-            soloSinImagen = !soloSinImagen;
+            const soloSinImagen = filtroSinImagen.getAttribute("aria-pressed") !== "true";
             filtroSinImagen.setAttribute("aria-pressed", soloSinImagen ? "true" : "false");
-            actualizarFiltroEncomiendas();
+            if (campoSinImagen) {
+                campoSinImagen.value = soloSinImagen ? "1" : "0";
+            }
+            enviarBusqueda();
         });
     }
 

@@ -4,10 +4,60 @@ require_once "conexion.php";
 
 class ModeloRecepcion
 {
-  static public function mdlBuscarRecepciones($termino = "")
+  static public function mdlBuscarRecepciones($termino = "", $pagina = 1, $limite = 12)
   {
     $conexion = Conexion::conectar();
-    $conexion->exec(
+    $stmt = $conexion->prepare(
+      "SELECT r.*,
+        COUNT(e.id) AS total_encomiendas,
+        COALESCE(SUM(e.estado = 'Pendiente'), 0) AS pendientes,
+        COALESCE(SUM(e.estado = 'Entregado'), 0) AS entregados
+      FROM (
+        SELECT r.id, r.codigo, r.empresa, r.tipo_recepcion, r.estado,
+          r.fecha_registro, r.foto, r.observaciones, c.celular,
+          c.nombre AS nombre_cliente
+        FROM recepciones r
+        INNER JOIN clientes c ON c.id = r.id_cliente
+        WHERE r.estado = 'Abierta'
+          AND r.tipo_recepcion IN ('Caja TikTok', 'Caja general')
+          AND (
+            r.codigo LIKE :termino_codigo
+            OR r.empresa LIKE :termino_empresa
+            OR r.tipo_recepcion LIKE :termino_tipo
+            OR c.nombre LIKE :termino_nombre
+            OR c.celular LIKE :termino_celular
+          )
+        ORDER BY r.fecha_registro DESC, r.id DESC
+        LIMIT :limite OFFSET :desplazamiento
+      ) r
+      LEFT JOIN encomiendas e ON e.id_recepcion = r.id
+      GROUP BY r.id, r.codigo, r.empresa, r.tipo_recepcion, r.estado,
+        r.fecha_registro, r.foto, r.observaciones, r.nombre_cliente, r.celular
+      ORDER BY r.fecha_registro DESC, r.id DESC"
+    );
+    $pagina = max(1, (int) $pagina);
+    $limite = max(1, (int) $limite);
+    $desplazamiento = ($pagina - 1) * $limite;
+    $valor = "%" . trim($termino) . "%";
+    $parametros = [
+      ":termino_codigo" => $valor,
+      ":termino_empresa" => $valor,
+      ":termino_tipo" => $valor,
+      ":termino_nombre" => $valor,
+      ":termino_celular" => $valor
+    ];
+    foreach ($parametros as $nombre => $valorParametro) {
+      $stmt->bindValue($nombre, $valorParametro);
+    }
+    $stmt->bindValue(":limite", $limite, PDO::PARAM_INT);
+    $stmt->bindValue(":desplazamiento", $desplazamiento, PDO::PARAM_INT);
+    $stmt->execute();
+    return $stmt->fetchAll(PDO::FETCH_ASSOC);
+  }
+
+  static public function mdlCerrarRecepcionesCompletadas()
+  {
+    Conexion::conectar()->exec(
       "UPDATE recepciones
        SET estado = 'Cerrada'
        WHERE estado = 'Abierta'
@@ -22,28 +72,23 @@ class ModeloRecepcion
              AND estado NOT IN ('Entregado', 'Eliminado')
          )"
     );
-    $stmt = $conexion->prepare(
-      "SELECT r.id, r.codigo, r.empresa, r.tipo_recepcion, r.estado,
-        r.fecha_registro, r.foto, r.observaciones, c.celular AS celular,
-        c.nombre AS nombre_cliente,
-        COUNT(e.id) AS total_encomiendas,
-        COALESCE(SUM(e.estado = 'Pendiente'), 0) AS pendientes,
-        COALESCE(SUM(e.estado = 'Entregado'), 0) AS entregados
-      FROM recepciones r
-      INNER JOIN clientes c ON c.id = r.id_cliente
-      LEFT JOIN encomiendas e ON e.id_recepcion = r.id
-      WHERE r.estado = 'Abierta'
-        AND r.tipo_recepcion IN ('Caja TikTok', 'Caja general')
-        AND (
-          r.codigo LIKE :termino_codigo
-          OR r.empresa LIKE :termino_empresa
-          OR r.tipo_recepcion LIKE :termino_tipo
-          OR c.nombre LIKE :termino_nombre
-          OR c.celular LIKE :termino_celular
-        )
-      GROUP BY r.id, r.codigo, r.empresa, r.tipo_recepcion, r.estado,
-        r.fecha_registro, r.foto, r.observaciones, c.nombre, c.celular
-      ORDER BY r.fecha_registro DESC, r.id DESC"
+  }
+
+  static public function mdlContarRecepciones($termino = "")
+  {
+    $stmt = Conexion::conectar()->prepare(
+      "SELECT COUNT(*)
+       FROM recepciones r
+       INNER JOIN clientes c ON c.id = r.id_cliente
+       WHERE r.estado = 'Abierta'
+         AND r.tipo_recepcion IN ('Caja TikTok', 'Caja general')
+         AND (
+           r.codigo LIKE :termino_codigo
+           OR r.empresa LIKE :termino_empresa
+           OR r.tipo_recepcion LIKE :termino_tipo
+           OR c.nombre LIKE :termino_nombre
+           OR c.celular LIKE :termino_celular
+         )"
     );
     $valor = "%" . trim($termino) . "%";
     $stmt->execute([
@@ -53,7 +98,7 @@ class ModeloRecepcion
       ":termino_nombre" => $valor,
       ":termino_celular" => $valor
     ]);
-    return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    return (int) $stmt->fetchColumn();
   }
 
   static public function mdlDetalleRecepcion($id)

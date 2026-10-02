@@ -3,13 +3,12 @@ $h = static fn($valor) => htmlspecialchars((string) ($valor ?? ""), ENT_QUOTES, 
 ?>
 <div class="busqueda-encomiendas">
   <div class="encabezado-busqueda">
-    <?php $cantidadSinImagen = count(array_filter($encomiendas, static fn($encomienda) => empty($encomienda["foto"]))); ?>
-    <h1>Encomiendas <span data-contador-resultados><?= count($encomiendas) ?></span>
+    <h1>Encomiendas <span data-contador-resultados><?= (int) $totalEncomiendas ?></span>
       <button
         type="button"
         class="filtro-sin-imagen"
         data-filtro-sin-imagen
-        aria-pressed="false"
+        aria-pressed="<?= $soloSinImagen ? "true" : "false" ?>"
         <?= $cantidadSinImagen === 0 ? "disabled" : "" ?>>
         Sin imagen <span data-contador-sin-imagen><?= $cantidadSinImagen ?></span>
       </button>
@@ -29,6 +28,7 @@ $h = static fn($valor) => htmlspecialchars((string) ($valor ?? ""), ENT_QUOTES, 
     <?php if (!empty($_GET["mensaje"])): ?><p class="alerta"><?= $h($_GET["mensaje"]) ?></p><?php endif; ?>
     <form method="GET" action="<?= $base_url ?>encomiendas/buscar">
       <input type="hidden" name="ruta" value="encomiendas/buscar">
+      <input type="hidden" name="sin_imagen" value="<?= $soloSinImagen ? "1" : "0" ?>" data-campo-sin-imagen>
       <input type="search" name="buscar" value="<?= $h($buscar) ?>" placeholder="🔎 Buscar por nombre o celular..." autofocus data-buscador-tiempo-real>
     </form>
   </div>
@@ -170,6 +170,8 @@ $h = static fn($valor) => htmlspecialchars((string) ($valor ?? ""), ENT_QUOTES, 
             <input type="hidden" name="id" value="<?= (int) $encomienda["id"] ?>">
             <input type="hidden" name="retorno" value="encomiendas/buscar">
             <input type="hidden" name="buscar" value="<?= $h($buscar) ?>">
+            <input type="hidden" name="sin_imagen" value="<?= $soloSinImagen ? "1" : "0" ?>">
+            <input type="hidden" name="pagina" value="<?= (int) $paginaActual ?>">
             <label class="accion foto">
               📷 Foto
               <input type="file" name="foto" accept="image/jpeg,image/png,image/gif,image/webp" capture="environment" required onchange="this.form.submit()">
@@ -180,6 +182,44 @@ $h = static fn($valor) => htmlspecialchars((string) ($valor ?? ""), ENT_QUOTES, 
     <?php endforeach; ?>
   </div>
   <p class="sin-resultados" data-sin-resultados <?= empty($encomiendas) ? "" : "hidden" ?>>No se encontraron encomiendas.</p>
+  <?php if ($totalEncomiendas > 0): ?>
+    <?php
+    $urlPagina = static function ($pagina) use ($base_url, $buscar, $soloSinImagen) {
+      return $base_url . "encomiendas/buscar?" . http_build_query([
+        "ruta" => "encomiendas/buscar",
+        "buscar" => $buscar,
+        "sin_imagen" => $soloSinImagen ? "1" : "0",
+        "pagina" => $pagina
+      ]);
+    };
+    $paginasVisibles = array_unique(array_merge(
+      [1, $totalPaginas],
+      range(max(1, $paginaActual - 2), min($totalPaginas, $paginaActual + 2))
+    ));
+    sort($paginasVisibles);
+    ?>
+    <nav class="paginacion-encomiendas" aria-label="Paginación de encomiendas">
+      <span>Mostrando <?= (int) ((($paginaActual - 1) * 12) + 1) ?> a <?= (int) min($paginaActual * 12, $totalEncomiendas) ?> de <?= (int) $totalEncomiendas ?></span>
+      <ul class="pagination pagination-sm mb-0">
+        <li class="page-item <?= $paginaActual === 1 ? "disabled" : "" ?>">
+          <a class="page-link" href="<?= $h($urlPagina(max(1, $paginaActual - 1))) ?>" aria-label="Página anterior">&laquo;</a>
+        </li>
+        <?php $paginaPrevia = 0; ?>
+        <?php foreach ($paginasVisibles as $pagina): ?>
+          <?php if ($paginaPrevia > 0 && $pagina > $paginaPrevia + 1): ?>
+            <li class="page-item disabled"><span class="page-link">&hellip;</span></li>
+          <?php endif; ?>
+          <li class="page-item <?= $pagina === $paginaActual ? "active" : "" ?>">
+            <a class="page-link" href="<?= $h($urlPagina($pagina)) ?>" <?= $pagina === $paginaActual ? 'aria-current="page"' : "" ?>><?= (int) $pagina ?></a>
+          </li>
+          <?php $paginaPrevia = $pagina; ?>
+        <?php endforeach; ?>
+        <li class="page-item <?= $paginaActual === $totalPaginas ? "disabled" : "" ?>">
+          <a class="page-link" href="<?= $h($urlPagina(min($totalPaginas, $paginaActual + 1))) ?>" aria-label="Página siguiente">&raquo;</a>
+        </li>
+      </ul>
+    </nav>
+  <?php endif; ?>
 </div>
 
 <div class="modal-eliminar-encomienda" id="modalEliminarEncomienda" hidden>

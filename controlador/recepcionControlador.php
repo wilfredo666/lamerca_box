@@ -76,9 +76,23 @@ class ControladorRecepcion
 
     static public function ctrBuscarCajas()
     {
+      $buscar = trim((string) ($_GET["buscar"] ?? ""));
+      $pagina = filter_input(INPUT_GET, "pagina", FILTER_VALIDATE_INT);
+      $pagina = $pagina && $pagina > 0 ? $pagina : 1;
+      $porPagina = 12;
+      ModeloRecepcion::mdlCerrarRecepcionesCompletadas();
+      $totalCajas = ModeloRecepcion::mdlContarRecepciones($buscar);
+      $totalPaginas = max(1, (int) ceil($totalCajas / $porPagina));
+      if ($pagina > $totalPaginas) {
+        $pagina = $totalPaginas;
+      }
+
       return [
-        "cajas" => ModeloRecepcion::mdlBuscarRecepciones($_GET["buscar"] ?? ""),
-        "buscar" => trim((string) ($_GET["buscar"] ?? ""))
+        "cajas" => ModeloRecepcion::mdlBuscarRecepciones($buscar, $pagina, $porPagina),
+        "buscar" => $buscar,
+        "totalCajas" => $totalCajas,
+        "paginaActual" => $pagina,
+        "totalPaginas" => $totalPaginas
       ];
     }
 
@@ -162,6 +176,13 @@ class ControladorRecepcion
       if (($_SERVER["REQUEST_METHOD"] ?? "GET") !== "POST") {
         throw new RuntimeException("Método no permitido.");
       }
+      $buscar = trim((string) ($_POST["buscar"] ?? ""));
+      $pagina = filter_input(INPUT_POST, "pagina", FILTER_VALIDATE_INT);
+      $pagina = $pagina && $pagina > 0 ? $pagina : 1;
+      $rutaRetorno = "recepcion/cajas-buscar?" . http_build_query([
+        "buscar" => $buscar,
+        "pagina" => $pagina
+      ]);
       try {
         $token = $_POST["csrf_token"] ?? "";
         if (!is_string($token) || !hash_equals($_SESSION["csrf_token"] ?? "", $token)) {
@@ -174,12 +195,12 @@ class ControladorRecepcion
         ModeloRecepcion::mdlEliminarRecepcion($id);
       } catch (InvalidArgumentException $error) {
         header(
-          "Location: " . self::ctrUrlProyecto() . "recepcion/cajas-buscar?tipo=error&mensaje="
+          "Location: " . self::ctrUrlProyecto() . $rutaRetorno . "&tipo=error&mensaje="
           . rawurlencode($error->getMessage())
         );
         exit;
       }
-      header("Location: " . self::ctrUrlProyecto() . "recepcion/cajas-buscar");
+      header("Location: " . self::ctrUrlProyecto() . $rutaRetorno);
       exit;
     }
 
@@ -190,6 +211,13 @@ class ControladorRecepcion
       }
 
       $id = filter_input(INPUT_POST, "id", FILTER_VALIDATE_INT);
+      $buscar = trim((string) ($_POST["buscar"] ?? ""));
+      $pagina = filter_input(INPUT_POST, "pagina", FILTER_VALIDATE_INT);
+      $pagina = $pagina && $pagina > 0 ? $pagina : 1;
+      $rutaRetorno = "recepcion/cajas-buscar?" . http_build_query([
+        "buscar" => $buscar,
+        "pagina" => $pagina
+      ]);
       try {
         $token = $_POST["csrf_token"] ?? "";
         if (!is_string($token) || !hash_equals($_SESSION["csrf_token"] ?? "", $token)) {
@@ -232,12 +260,12 @@ class ControladorRecepcion
           @unlink($ruta);
           throw $error;
         }
-        header("Location: " . self::ctrUrlProyecto() . "recepcion/cajas-buscar");
+        header("Location: " . self::ctrUrlProyecto() . $rutaRetorno);
         exit;
       } catch (InvalidArgumentException | RuntimeException $error) {
         header(
           "Location: " . self::ctrUrlProyecto()
-          . "recepcion/cajas-buscar?error=" . rawurlencode($error->getMessage())
+          . $rutaRetorno . "&error=" . rawurlencode($error->getMessage())
         );
         exit;
       }

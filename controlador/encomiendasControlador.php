@@ -4,13 +4,33 @@ class ControladorEncomiendas
 {
   static public function ctrBuscar()
   {
+    $buscar = trim((string) ($_GET["buscar"] ?? ""));
+    $pagina = filter_input(INPUT_GET, "pagina", FILTER_VALIDATE_INT);
+    $pagina = $pagina && $pagina > 0 ? $pagina : 1;
+    $soloSinImagen = ($_GET["sin_imagen"] ?? "") === "1";
+    $porPagina = 12;
+    $idAlmacen = (int) ($_SESSION["idAlmacen"] ?? 0);
+    $totalEncomiendas = ModeloEncomiendas::mdlContarBusqueda($buscar, $idAlmacen, $soloSinImagen);
+    $totalPaginas = max(1, (int) ceil($totalEncomiendas / $porPagina));
+    if ($pagina > $totalPaginas) {
+      $pagina = $totalPaginas;
+    }
+
     return [
       "encomiendas" => ModeloEncomiendas::mdlBuscar(
-        $_GET["buscar"] ?? "",
-        (int) ($_SESSION["idAlmacen"] ?? 0)
+        $buscar,
+        $idAlmacen,
+        $pagina,
+        $porPagina,
+        $soloSinImagen
       ),
-      "buscar" => trim((string) ($_GET["buscar"] ?? "")),
-      "almacenesTraspaso" => ModeloTraspaso::mdlAlmacenesActivos((int) ($_SESSION["idAlmacen"] ?? 0))
+      "buscar" => $buscar,
+      "soloSinImagen" => $soloSinImagen,
+      "cantidadSinImagen" => ModeloEncomiendas::mdlContarSinImagen($buscar, $idAlmacen),
+      "totalEncomiendas" => $totalEncomiendas,
+      "paginaActual" => $pagina,
+      "totalPaginas" => $totalPaginas,
+      "almacenesTraspaso" => ModeloTraspaso::mdlAlmacenesActivos($idAlmacen)
     ];
   }
 

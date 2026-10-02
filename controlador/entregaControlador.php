@@ -109,12 +109,19 @@ class ControladorEntrega
     $id = filter_input(INPUT_POST, "id", FILTER_VALIDATE_INT);
     $retorno = $_POST["retorno"] ?? "entrega/fotos-pendientes";
     $buscar = trim((string) ($_POST["buscar"] ?? ""));
+    $soloSinImagen = ($_POST["sin_imagen"] ?? "") === "1";
+    $pagina = filter_input(INPUT_POST, "pagina", FILTER_VALIDATE_INT);
+    $pagina = $pagina && $pagina > 0 ? $pagina : 1;
     if (!in_array($retorno, ["encomiendas/buscar", "entrega/fotos-pendientes"], true)) {
       $retorno = "entrega/fotos-pendientes";
     }
     $rutaRetorno = $retorno;
-    if ($retorno === "encomiendas/buscar" && $buscar !== "") {
-      $rutaRetorno .= "?buscar=" . rawurlencode($buscar);
+    if ($retorno === "encomiendas/buscar") {
+      $rutaRetorno .= "?" . http_build_query([
+        "buscar" => $buscar,
+        "sin_imagen" => $soloSinImagen ? "1" : "0",
+        "pagina" => $pagina
+      ]);
     }
     try {
       self::ctrValidarCsrf($_POST["csrf_token"] ?? "");

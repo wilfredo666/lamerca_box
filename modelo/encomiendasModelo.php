@@ -4,9 +4,13 @@ require_once "conexion.php";
 
 class ModeloEncomiendas
 {
-  static public function mdlBuscar($termino = "", $idAlmacen = null)
+  static public function mdlBuscar($termino = "", $idAlmacen = null, $pagina = 1, $limite = 12, $soloSinImagen = false)
   {
     $filtroAlmacen = $idAlmacen !== null ? " AND e.id_almacen_actual = :id_almacen" : "";
+    $filtroSinImagen = $soloSinImagen ? " AND (e.foto IS NULL OR e.foto = '')" : "";
+    $pagina = max(1, (int) $pagina);
+    $limite = max(1, (int) $limite);
+    $desplazamiento = ($pagina - 1) * $limite;
     $stmt = Conexion::conectar()->prepare(
       "SELECT e.*,
         r.codigo AS codigo_recepcion,
@@ -18,7 +22,7 @@ class ModeloEncomiendas
       FROM encomiendas e
       INNER JOIN recepciones r ON r.id = e.id_recepcion
       INNER JOIN clientes c ON c.id = r.id_cliente
-      WHERE e.estado = 'Pendiente'" . $filtroAlmacen . "
+      WHERE e.estado = 'Pendiente'" . $filtroAlmacen . $filtroSinImagen . "
       AND (
         e.codigo LIKE :termino_codigo OR
         e.destinatario LIKE :termino_destinatario OR
@@ -26,7 +30,46 @@ class ModeloEncomiendas
         c.nombre LIKE :termino_nombre OR
         c.celular LIKE :termino_celular
       )
-      ORDER BY e.fecha_registro DESC, e.id DESC"
+      ORDER BY e.fecha_registro DESC, e.id DESC
+      LIMIT :limite OFFSET :desplazamiento"
+    );
+    $valor = "%" . trim($termino) . "%";
+    $parametros = [
+      ":termino_codigo" => $valor,
+      ":termino_destinatario" => $valor,
+      ":termino_contacto" => $valor,
+      ":termino_nombre" => $valor,
+      ":termino_celular" => $valor
+    ];
+    if ($idAlmacen !== null) {
+      $parametros[":id_almacen"] = $idAlmacen;
+    }
+    foreach ($parametros as $nombre => $valorParametro) {
+      $stmt->bindValue($nombre, $valorParametro);
+    }
+    $stmt->bindValue(":limite", $limite, PDO::PARAM_INT);
+    $stmt->bindValue(":desplazamiento", $desplazamiento, PDO::PARAM_INT);
+    $stmt->execute();
+    return $stmt->fetchAll(PDO::FETCH_ASSOC);
+  }
+
+  static public function mdlContarBusqueda($termino = "", $idAlmacen = null, $soloSinImagen = false)
+  {
+    $filtroAlmacen = $idAlmacen !== null ? " AND e.id_almacen_actual = :id_almacen" : "";
+    $filtroSinImagen = $soloSinImagen ? " AND (e.foto IS NULL OR e.foto = '')" : "";
+    $stmt = Conexion::conectar()->prepare(
+      "SELECT COUNT(*)
+       FROM encomiendas e
+       INNER JOIN recepciones r ON r.id = e.id_recepcion
+       INNER JOIN clientes c ON c.id = r.id_cliente
+       WHERE e.estado = 'Pendiente'" . $filtroAlmacen . $filtroSinImagen . "
+       AND (
+         e.codigo LIKE :termino_codigo OR
+         e.destinatario LIKE :termino_destinatario OR
+         e.contacto LIKE :termino_contacto OR
+         c.nombre LIKE :termino_nombre OR
+         c.celular LIKE :termino_celular
+       )"
     );
     $valor = "%" . trim($termino) . "%";
     $parametros = [
@@ -40,7 +83,12 @@ class ModeloEncomiendas
       $parametros[":id_almacen"] = $idAlmacen;
     }
     $stmt->execute($parametros);
-    return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    return (int) $stmt->fetchColumn();
+  }
+
+  static public function mdlContarSinImagen($termino = "", $idAlmacen = null)
+  {
+    return self::mdlContarBusqueda($termino, $idAlmacen, true);
   }
 
   static public function mdlBuscarPorId($id)

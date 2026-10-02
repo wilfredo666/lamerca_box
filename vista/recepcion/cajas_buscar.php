@@ -3,7 +3,7 @@ $h = static fn($valor) => htmlspecialchars((string) ($valor ?? ""), ENT_QUOTES, 
 ?>
 <div class="busqueda-encomiendas">
   <div class="encabezado-busqueda">
-    <h1>Cajas recibidas <span data-contador-resultados><?= count($cajas) ?></span></h1>
+    <h1>Cajas recibidas <span data-contador-resultados><?= (int) $totalCajas ?></span></h1>
     <form method="GET" action="<?= $base_url ?>recepcion/cajas-buscar">
       <input type="hidden" name="ruta" value="recepcion/cajas-buscar">
       <input type="search" name="buscar" value="<?= $h($buscar) ?>" placeholder="🔎 Buscar por cliente, empresa, código o tipo..." autofocus data-buscador-tiempo-real>
@@ -50,6 +50,8 @@ $h = static fn($valor) => htmlspecialchars((string) ($valor ?? ""), ENT_QUOTES, 
           <form method="POST" action="<?= $base_url ?>recepcion/caja-eliminar" onsubmit="return confirm('¿Eliminar esta caja y sus encomiendas?');">
             <input type="hidden" name="csrf_token" value="<?= $h($csrfToken) ?>">
             <input type="hidden" name="id" value="<?= (int) $caja["id"] ?>">
+            <input type="hidden" name="buscar" value="<?= $h($buscar) ?>">
+            <input type="hidden" name="pagina" value="<?= (int) $paginaActual ?>">
             <?php
             if (ControladorUsuario::ctrUsuarioPermiso($_SESSION["idUsuario"], 21)) {
             ?>
@@ -86,6 +88,8 @@ $h = static fn($valor) => htmlspecialchars((string) ($valor ?? ""), ENT_QUOTES, 
           <form method="POST" action="<?= $base_url ?>recepcion/caja-foto" enctype="multipart/form-data" class="formulario-foto">
             <input type="hidden" name="csrf_token" value="<?= $h($csrfToken) ?>">
             <input type="hidden" name="id" value="<?= (int) $caja["id"] ?>">
+            <input type="hidden" name="buscar" value="<?= $h($buscar) ?>">
+            <input type="hidden" name="pagina" value="<?= (int) $paginaActual ?>">
             <label class="accion foto">
               📷 Foto
               <input type="file" name="foto" accept="image/jpeg,image/png,image/gif,image/webp" capture="environment" required onchange="this.form.submit()">
@@ -96,4 +100,41 @@ $h = static fn($valor) => htmlspecialchars((string) ($valor ?? ""), ENT_QUOTES, 
     <?php endforeach; ?>
   </div>
   <p class="sin-resultados" data-sin-resultados <?= empty($cajas) ? "" : "hidden" ?>>No se encontraron cajas TikTok o cajas generales.</p>
+  <?php if ($totalCajas > 0): ?>
+    <?php
+    $urlPagina = static function ($pagina) use ($base_url, $buscar) {
+      return $base_url . "recepcion/cajas-buscar?" . http_build_query([
+        "ruta" => "recepcion/cajas-buscar",
+        "buscar" => $buscar,
+        "pagina" => $pagina
+      ]);
+    };
+    $paginasVisibles = array_unique(array_merge(
+      [1, $totalPaginas],
+      range(max(1, $paginaActual - 2), min($totalPaginas, $paginaActual + 2))
+    ));
+    sort($paginasVisibles);
+    ?>
+    <nav class="paginacion-encomiendas" aria-label="Paginación de cajas">
+      <span>Mostrando <?= (int) ((($paginaActual - 1) * 12) + 1) ?> a <?= (int) min($paginaActual * 12, $totalCajas) ?> de <?= (int) $totalCajas ?></span>
+      <ul class="pagination pagination-sm mb-0">
+        <li class="page-item <?= $paginaActual === 1 ? "disabled" : "" ?>">
+          <a class="page-link" href="<?= $h($urlPagina(max(1, $paginaActual - 1))) ?>" aria-label="Página anterior">&laquo;</a>
+        </li>
+        <?php $paginaPrevia = 0; ?>
+        <?php foreach ($paginasVisibles as $pagina): ?>
+          <?php if ($paginaPrevia > 0 && $pagina > $paginaPrevia + 1): ?>
+            <li class="page-item disabled"><span class="page-link">&hellip;</span></li>
+          <?php endif; ?>
+          <li class="page-item <?= $pagina === $paginaActual ? "active" : "" ?>">
+            <a class="page-link" href="<?= $h($urlPagina($pagina)) ?>" <?= $pagina === $paginaActual ? 'aria-current="page"' : "" ?>><?= (int) $pagina ?></a>
+          </li>
+          <?php $paginaPrevia = $pagina; ?>
+        <?php endforeach; ?>
+        <li class="page-item <?= $paginaActual === $totalPaginas ? "disabled" : "" ?>">
+          <a class="page-link" href="<?= $h($urlPagina(min($totalPaginas, $paginaActual + 1))) ?>" aria-label="Página siguiente">&raquo;</a>
+        </li>
+      </ul>
+    </nav>
+  <?php endif; ?>
 </div>
