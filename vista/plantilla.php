@@ -62,66 +62,68 @@ $estilos_vista = [
   "recepcion/comprobante" => "assets/css/modules/recepcion/comprobante_caja.css",
   "recepcion/comprobante-general" => "assets/css/modules/recepcion/comprobante_caja_respaldo.css",
   "recepcion/tiktok" => "assets/css/modules/recepcion/recepcion_tiktok.css",
-  "recepcion/general" => "assets/css/modules/recepcion/recepcion_general.css"
-  ,"recepcion/cajas-buscar" => "assets/css/modules/encomiendas/buscar.css"
-  ,"recepcion/caja-ver" => "assets/css/modules/encomiendas/buscar.css"
-  ,"recepcion/caja-editar" => "assets/css/modules/recepcion/recepcion_general.css"
-  ,"encomiendas/buscar" => "assets/css/modules/encomiendas/buscar.css"
-  ,"encomiendas/eliminadas" => [
+  "recepcion/general" => "assets/css/modules/recepcion/recepcion_general.css",
+  "recepcion/cajas-buscar" => "assets/css/modules/encomiendas/buscar.css",
+  "recepcion/caja-ver" => "assets/css/modules/encomiendas/buscar.css",
+  "recepcion/caja-editar" => "assets/css/modules/recepcion/recepcion_general.css",
+  "encomiendas/buscar" => "assets/css/modules/encomiendas/buscar.css",
+  "encomiendas/eliminadas" => [
     "assets/css/modules/entrega/entregadas.css",
     "assets/plugins/datatables-bs4/css/dataTables.bootstrap4.min.css",
     "assets/plugins/datatables-responsive/css/responsive.bootstrap4.min.css"
-  ]
-  ,"encomiendas/eliminadas/ver" => [
+  ],
+  "encomiendas/eliminadas/ver" => [
     "assets/css/modules/entrega/retirados.css",
     "assets/css/modules/encomiendas/eliminadas.css"
-  ]
-  ,"encomiendas/ver" => ["assets/plugins/sweetalert2/sweetalert2.min.css",
-                          "assets/css/modules/encomiendas/buscar.css"]
-  ,"encomiendas/editar" => "assets/css/modules/encomiendas/buscar.css"
-  ,"entrega" => "assets/css/modules/entrega/entregar.css"
-  ,"entrega/entregadas" => [
+  ],
+  "encomiendas/ver" => [
+    "assets/plugins/sweetalert2/sweetalert2.min.css",
+    "assets/css/modules/encomiendas/buscar.css"
+  ],
+  "encomiendas/editar" => "assets/css/modules/encomiendas/buscar.css",
+  "entrega" => "assets/css/modules/entrega/entregar.css",
+  "entrega/entregadas" => [
     "assets/css/modules/entrega/entregadas.css",
     "assets/plugins/datatables-bs4/css/dataTables.bootstrap4.min.css",
     "assets/plugins/datatables-responsive/css/responsive.bootstrap4.min.css"
-  ]
-  ,"traspasos" => [
+  ],
+  "traspasos" => [
     "assets/css/modules/traspaso/index.css",
     "assets/plugins/datatables-bs4/css/dataTables.bootstrap4.min.css",
     "assets/plugins/datatables-responsive/css/responsive.bootstrap4.min.css"
-  ]
-  ,"entrega/retirados" => "assets/css/modules/entrega/retirados.css"
-  ,"entrega/fotos-pendientes" => "assets/css/modules/entrega/fotos_pendientes.css"
-  ,"entrega/detalle" => "assets/css/modules/entrega/detalle_entrega.css"
-  ,"entrega/ver-entregada" => "assets/css/modules/entrega/entregadas.css"
-  ,"cajas-tiktok/nueva" => "assets/css/modules/cajas_tiktok/nuevo.css"
-  ,"cajas-tiktok/editar" => "assets/css/modules/cajas_tiktok/editar.css"
-  ,"clientes" => [
+  ],
+  "entrega/retirados" => "assets/css/modules/entrega/retirados.css",
+  "entrega/fotos-pendientes" => "assets/css/modules/entrega/fotos_pendientes.css",
+  "entrega/detalle" => "assets/css/modules/entrega/detalle_entrega.css",
+  "entrega/ver-entregada" => "assets/css/modules/entrega/entregadas.css",
+  "cajas-tiktok/nueva" => "assets/css/modules/cajas_tiktok/nuevo.css",
+  "cajas-tiktok/editar" => "assets/css/modules/cajas_tiktok/editar.css",
+  "clientes" => [
     "assets/css/modules/clientes/index.css",
     "assets/plugins/datatables-bs4/css/dataTables.bootstrap4.min.css",
     "assets/plugins/datatables-responsive/css/responsive.bootstrap4.min.css",
     "assets/plugins/sweetalert2/sweetalert2.min.css"
-  ]
-  ,"almacenes" => [
+  ],
+  "almacenes" => [
     "assets/css/modules/almacenes/index.css",
     "assets/plugins/datatables-bs4/css/dataTables.bootstrap4.min.css",
     "assets/plugins/datatables-responsive/css/responsive.bootstrap4.min.css"
-  ]
-  ,"usuarios" => [
+  ],
+  "usuarios" => [
     "assets/css/modules/usuarios/index.css",
     "assets/plugins/datatables-bs4/css/dataTables.bootstrap4.min.css",
     "assets/plugins/datatables-responsive/css/responsive.bootstrap4.min.css",
     "assets/plugins/sweetalert2/sweetalert2.min.css"
-  ]
-  ,"usuarios/permisos" => "assets/css/modules/usuarios/permisos.css"
-  ,"caja" => [
+  ],
+  "usuarios/permisos" => "assets/css/modules/usuarios/permisos.css",
+  "caja" => [
     "assets/css/modules/caja/index.css",
     "assets/plugins/datatables-bs4/css/dataTables.bootstrap4.min.css",
     "assets/plugins/datatables-responsive/css/responsive.bootstrap4.min.css",
     "assets/plugins/datatables-buttons/css/buttons.bootstrap4.min.css",
     "assets/plugins/sweetalert2/sweetalert2.min.css"
-  ]
-  ,"clasificaciones" => [
+  ],
+  "clasificaciones" => [
     "assets/css/modules/clasificaciones/index.css",
     "assets/plugins/datatables-bs4/css/dataTables.bootstrap4.min.css",
     "assets/plugins/datatables-responsive/css/responsive.bootstrap4.min.css",
@@ -277,55 +279,55 @@ if (
 <!DOCTYPE html>
 <html lang="en">
 
-  <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>La Merca Box</title>
-    <link rel="shortcut icon" href="#">
-    <!-- Base URL dinámica -->
-    <?php $base_url = rtrim(dirname($_SERVER['SCRIPT_NAME']), '/') . '/'; ?>
-    <!-- Font Awesome -->
-    <link rel="stylesheet" href="<?php echo $base_url; ?>assets/plugins/fontawesome-free/css/all.min.css">
-    <!-- Theme style -->
-    <link rel="stylesheet" href="<?php echo $base_url; ?>assets/css/index.css">
-    <link rel="stylesheet" href="<?php echo $base_url; ?>assets/css/adminlte.css">
-    <link rel="stylesheet" href="<?php echo $base_url; ?>assets/css/componentes/aside-menu.css">
-    <?php foreach ((array) ($estilos_vista[$ruta_activos] ?? []) as $estilo) { ?>
-      <link rel="stylesheet" href="<?php echo $base_url . $estilo; ?>">
-    <?php } ?>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>La Merca Box</title>
+  <link rel="shortcut icon" href="#">
+  <!-- Base URL dinámica -->
+  <?php $base_url = rtrim(dirname($_SERVER['SCRIPT_NAME']), '/') . '/'; ?>
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="<?php echo $base_url; ?>assets/plugins/fontawesome-free/css/all.min.css">
+  <!-- Theme style -->
+  <link rel="stylesheet" href="<?php echo $base_url; ?>assets/css/index.css">
+  <link rel="stylesheet" href="<?php echo $base_url; ?>assets/css/adminlte.css">
+  <link rel="stylesheet" href="<?php echo $base_url; ?>assets/css/componentes/aside-menu.css">
+  <?php foreach ((array) ($estilos_vista[$ruta_activos] ?? []) as $estilo) { ?>
+    <link rel="stylesheet" href="<?php echo $base_url . $estilo; ?>">
+  <?php } ?>
 
-    <!--icono-->
-    <link rel="icon" href="<?php echo $base_url; ?>assets/img/icon.jpg">
+  <!--icono-->
+  <link rel="icon" href="<?php echo $base_url; ?>assets/img/icon.jpg">
 
-  </head>
+</head>
 
-  <body>
-    <?php
-    date_default_timezone_set("America/La_Paz");
-    $fechaActual= date("Y-m-d");
+<body>
+  <?php
+  date_default_timezone_set("America/La_Paz");
+  $fechaActual = date("Y-m-d");
 
-    //comprobamos las sesiones
-    if (isset($_SESSION["ingreso"]) && $_SESSION["ingreso"] == "ok") {
-      include __DIR__ . "/componentes/asideMenu.php";
-      echo '<main class="contenido-principal">';
+  //comprobamos las sesiones
+  if (isset($_SESSION["ingreso"]) && $_SESSION["ingreso"] == "ok") {
+    include __DIR__ . "/componentes/asideMenu.php";
+    echo '<main class="contenido-principal">';
 
-      if ($ruta_solicitada !== null) {
-        if (array_key_exists($ruta_solicitada, $rutas_validas)) {
-          $ruta_vista = is_array($rutas_validas[$ruta_solicitada])
-            ? $rutas_validas[$ruta_solicitada]["vista"]
-            : $rutas_validas[$ruta_solicitada];
-          extract($datos_vista, EXTR_SKIP);
-          include __DIR__ . "/" . $ruta_vista;
-        } else {
-          echo "Ruta no válida.";
-        }
-
-        foreach ($scripts_vista[$ruta_activos] ?? [] as $script) {
-          echo '<script src="' . htmlspecialchars($base_url . $script, ENT_QUOTES, "UTF-8") . '"></script>';
-        }
-        include __DIR__ . "/componentes/footer.php";
+    if ($ruta_solicitada !== null) {
+      if (array_key_exists($ruta_solicitada, $rutas_validas)) {
+        $ruta_vista = is_array($rutas_validas[$ruta_solicitada])
+          ? $rutas_validas[$ruta_solicitada]["vista"]
+          : $rutas_validas[$ruta_solicitada];
+        extract($datos_vista, EXTR_SKIP);
+        include __DIR__ . "/" . $ruta_vista;
+      } else {
+        echo "Ruta no válida.";
       }
-    } else {
-      include __DIR__ . "/login.php";
+
+      foreach ($scripts_vista[$ruta_activos] ?? [] as $script) {
+        echo '<script src="' . htmlspecialchars($base_url . $script, ENT_QUOTES, "UTF-8") . '"></script>';
+      }
+      include __DIR__ . "/componentes/footer.php";
     }
-    ?>
+  } else {
+    include __DIR__ . "/login.php";
+  }
+  ?>

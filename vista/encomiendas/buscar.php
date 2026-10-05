@@ -26,10 +26,12 @@ $h = static fn($valor) => htmlspecialchars((string) ($valor ?? ""), ENT_QUOTES, 
       ?>
     </h1>
     <?php if (!empty($_GET["mensaje"])): ?><p class="alerta"><?= $h($_GET["mensaje"]) ?></p><?php endif; ?>
-    <form method="GET" action="<?= $base_url ?>encomiendas/buscar">
+    <form method="GET" action="<?= $base_url ?>encomiendas/buscar" class="formulario-busqueda-manual">
       <input type="hidden" name="ruta" value="encomiendas/buscar">
       <input type="hidden" name="sin_imagen" value="<?= $soloSinImagen ? "1" : "0" ?>" data-campo-sin-imagen>
-      <input type="search" name="buscar" value="<?= $h($buscar) ?>" placeholder="🔎 Buscar por nombre o celular..." autofocus data-buscador-tiempo-real>
+      <input type="search" name="buscar" value="<?= $h($buscar) ?>" placeholder="🔎 Buscar por nombre o celular..." autofocus>
+      <button type="submit" class="boton-buscar-manual"><i class="fas fa-search" aria-hidden="true"></i> Buscar</button>
+      <a href="<?= $h($base_url . "encomiendas/buscar?ruta=encomiendas%2Fbuscar") ?>" class="boton-limpiar-busqueda"><i class="fas fa-times" aria-hidden="true"></i> Limpiar</a>
     </form>
   </div>
   <div id="modalTraspasoSeleccionadas" class="modal-entrega-lista" hidden>

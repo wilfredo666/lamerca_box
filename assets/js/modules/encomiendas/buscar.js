@@ -1,10 +1,8 @@
 document.addEventListener("DOMContentLoaded", function () {
 
-    const buscador = document.querySelector("[data-buscador-tiempo-real]");
     const filtroSinImagen = document.querySelector("[data-filtro-sin-imagen]");
-    const formularioBusqueda = buscador ? buscador.closest("form") : null;
+    const formularioBusqueda = document.querySelector(".formulario-busqueda-manual");
     const campoSinImagen = document.querySelector("[data-campo-sin-imagen]");
-    let temporizadorBusqueda;
 
     function enviarBusqueda() {
         if (!formularioBusqueda) return;
@@ -12,13 +10,6 @@ document.addEventListener("DOMContentLoaded", function () {
             campo.remove();
         });
         formularioBusqueda.submit();
-    }
-
-    if (buscador) {
-        buscador.addEventListener("input", function () {
-            window.clearTimeout(temporizadorBusqueda);
-            temporizadorBusqueda = window.setTimeout(enviarBusqueda, 350);
-        });
     }
 
     if (filtroSinImagen) {

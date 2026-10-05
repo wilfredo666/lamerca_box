@@ -85,13 +85,55 @@
 	font-weight: 700
 }
 
-.encabezado-busqueda form input {
+.formulario-busqueda-manual {
+	display: flex;
+	gap: 8px;
+}
+
+.formulario-busqueda-manual input {
 	box-sizing: border-box;
-	width: 100%;
+	flex: 1;
+	min-width: 0;
 	padding: 12px;
 	border: 1px solid #d5dce3;
 	border-radius: 6px;
 	font-size: 18px
+}
+
+.boton-buscar-manual {
+	padding: 10px 16px;
+	border: 0;
+	border-radius: 6px;
+	background: #14733a;
+	color: #fff;
+	cursor: pointer;
+	font-size: 16px;
+	font-weight: 700;
+}
+
+.boton-buscar-manual:hover {
+	background: #0f5b2e;
+}
+
+.boton-limpiar-busqueda {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	padding: 10px 16px;
+	border: 1px solid #64748b;
+	border-radius: 6px;
+	color: #475569;
+	background: #fff;
+	cursor: pointer;
+	font-size: 16px;
+	font-weight: 700;
+	text-decoration: none;
+}
+
+.boton-limpiar-busqueda:hover {
+	border-color: #334155;
+	color: #1e293b;
+	background: #f1f5f9;
 }
 
 .grid-encomiendas {

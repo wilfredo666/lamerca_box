@@ -4,9 +4,11 @@ $h = static fn($valor) => htmlspecialchars((string) ($valor ?? ""), ENT_QUOTES, 
 <div class="busqueda-encomiendas">
   <div class="encabezado-busqueda">
     <h1>Cajas recibidas <span data-contador-resultados><?= (int) $totalCajas ?></span></h1>
-    <form method="GET" action="<?= $base_url ?>recepcion/cajas-buscar">
+    <form method="GET" action="<?= $base_url ?>recepcion/cajas-buscar" class="formulario-busqueda-manual">
       <input type="hidden" name="ruta" value="recepcion/cajas-buscar">
-      <input type="search" name="buscar" value="<?= $h($buscar) ?>" placeholder="🔎 Buscar por cliente, empresa, código o tipo..." autofocus data-buscador-tiempo-real>
+      <input type="search" name="buscar" value="<?= $h($buscar) ?>" placeholder="🔎 Buscar por cliente, empresa, código o tipo..." autofocus>
+      <button type="submit" class="boton-buscar-manual"><i class="fas fa-search" aria-hidden="true"></i> Buscar</button>
+      <a href="<?= $h($base_url . "recepcion/cajas-buscar?ruta=recepcion%2Fcajas-buscar") ?>" class="boton-limpiar-busqueda"><i class="fas fa-times" aria-hidden="true"></i> Limpiar</a>
     </form>
   </div>
 
