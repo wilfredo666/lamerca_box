@@ -3,11 +3,11 @@
 .caja-indicador { align-items: center; border-radius: 5px; box-shadow: 0 2px 5px rgba(0, 0, 0, .2); color: #fff; display: flex; gap: 26px; min-height: 100px; padding: 20px 35px; }
 .caja-indicador i { font-size: 38px; }.caja-indicador span, .caja-indicador strong { display: block; font-size: 18px; }.caja-indicador strong { margin-top: 15px; }.caja-indicador-ingreso { background: #24aa47; }.caja-indicador-salida { background: #df3044; }.caja-indicador-saldo { background: #1fa0b5; }
 .caja-encabezado { align-items: center; border-left: 6px solid #6c757d; display: flex; justify-content: space-between; margin: 14px 0; padding-left: 8px; }.caja-encabezado h1 { color: #374151; font-size: 24px; margin: 0; }.caja-card { border: 0; box-shadow: 0 2px 8px rgba(15, 23, 42, .12); }.form-anular-caja { display: inline; }
-.caja-filtro-fechas { align-items: flex-end; display: flex; flex-wrap: wrap; gap: 10px; margin: 18px 0; padding: 16px; border: 1px solid #e2e8f0; border-radius: 8px; background: #fff; }
-.caja-filtro-fechas > label { align-self: center; flex-basis: 100%; margin: 0; color: #334155; font-weight: 700; }
-.caja-rango-fechas { align-items: center; display: flex; flex: 1 1 440px; gap: 10px; min-height: 46px; padding: 6px 12px; border: 1px solid #ced4da; border-radius: 6px; background: #f8f9fa; }
-.caja-rango-fechas > i { color: #495057; font-size: 17px; }
-.caja-rango-fechas input { min-width: 0; flex: 1; padding: 5px; border: 0; background: transparent; color: #334155; font: inherit; }
-.caja-rango-fechas input:focus { outline: 2px solid #80bdff; outline-offset: 2px; }
-.caja-filtro-fechas .btn { min-height: 42px; }
-@media (max-width: 767px) { .caja-resumen { grid-template-columns: 1fr; }.caja-indicador { min-height: auto; }.caja-encabezado { align-items: flex-start; flex-direction: column; gap: 12px; }.caja-filtro-fechas { align-items: stretch; }.caja-rango-fechas { flex-basis: 100%; }.caja-rango-fechas input { font-size: 13px; }.caja-filtro-fechas .btn { flex: 1; } }
+.caja-barra-acciones { align-items: flex-end; display: flex; gap: 14px; justify-content: space-between; margin: 18px 0; }
+.caja-filtro-fechas { align-items: flex-end; display: flex; flex: 1; flex-wrap: wrap; gap: 10px; margin: 0; padding: 16px; border: 1px solid #e2e8f0; border-radius: 8px; background: #fff; }
+.caja-campo-fecha { flex: 1 1 180px; }
+.caja-campo-fecha label { display: block; margin: 0 0 6px; color: #334155; font-weight: 700; }
+.caja-campo-fecha .form-control { min-height: 38px; }
+.caja-acciones-filtro { align-items: center; display: flex; gap: 8px; min-height: 38px; }
+.caja-filtro-fechas .btn, .caja-boton-nuevo { min-height: 38px; white-space: nowrap; }
+@media (max-width: 767px) { .caja-resumen { grid-template-columns: 1fr; }.caja-indicador { min-height: auto; }.caja-encabezado { align-items: flex-start; flex-direction: column; gap: 12px; }.caja-barra-acciones { align-items: stretch; flex-direction: column; }.caja-filtro-fechas { align-items: stretch; }.caja-campo-fecha { flex-basis: 100%; }.caja-acciones-filtro { display: grid; grid-template-columns: 1fr 1fr; }.caja-acciones-filtro .btn, .caja-boton-nuevo { width: 100%; } }

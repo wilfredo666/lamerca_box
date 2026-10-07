@@ -6,12 +6,10 @@ $h = static fn($valor) => htmlspecialchars((string) ($valor ?? ""), ENT_QUOTES, 
     <h1>Cajas recibidas <span data-contador-resultados><?= (int) $totalCajas ?></span></h1>
     <form method="GET" action="<?= $base_url ?>recepcion/cajas-buscar" class="formulario-busqueda-manual">
       <input type="hidden" name="ruta" value="recepcion/cajas-buscar">
-      <div class="input-group grupo-busqueda-responsive">
-        <input type="search" name="buscar" value="<?= $h($buscar) ?>" placeholder="🔎 Buscar por cliente, empresa, código o tipo..." class="form-control">
-        <span class="input-group-append">
-          <button type="submit" class="btn btn-info btn-flat"><i class="fas fa-search" aria-hidden="true"></i> Buscar</button>
-          <a href="<?= $h($base_url . "recepcion/cajas-buscar?ruta=recepcion%2Fcajas-buscar") ?>" class="btn btn-danger btn-flat"><i class="fas fa-broom" aria-hidden="true"></i> Limpiar</a>
-        </span>
+      <div class="input-group input-group">
+      <input type="search" name="buscar" value="<?= $h($buscar) ?>" placeholder="🔎 Buscar por cliente, empresa, código o tipo..." class="form-control">
+        <button type="submit" class="btn btn-info btn-flat"><i class="fas fa-search" aria-hidden="true"></i> Buscar</button>
+        <a href="<?= $h($base_url . "recepcion/cajas-buscar?ruta=recepcion%2Fcajas-buscar") ?>" class="btn btn-danger btn-flat"><i class="fa solid fa-broom" aria-hidden="true"></i> Limpiar</a>
       </div>
     </form>
   </div>
@@ -46,6 +44,9 @@ $h = static fn($valor) => htmlspecialchars((string) ($valor ?? ""), ENT_QUOTES, 
           <div>🟡 <b>Pendientes:</b> <?= (int) $caja["pendientes"] ?></div>
           <div>🔵 <b>Entregadas:</b> <?= (int) $caja["entregados"] ?></div>
           <div>🔵 <b>Estado:</b> <?= $h($caja["estado"]) ?></div>
+        </div>
+        <div class="foto-tarjeta">
+          <?= !empty($caja["foto"]) ? '<img src="' . $h($base_url . "assets/img/recepciones/" . rawurlencode(basename($caja["foto"]))) . '" alt="Foto de la caja">' : "📷 Foto pendiente" ?>
         </div>
         <div class="acciones-tarjeta">
           <a class="accion ver" href="<?= $base_url ?>recepcion/caja-ver?id=<?= (int) $caja["id"] ?>">👁 Ver</a>

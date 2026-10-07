@@ -14,35 +14,47 @@
     </article>
   </div>
 
-<form method="GET" action="<?= $h($base_url . "caja") ?>">
-  <div class="row g-3 align-items-end">
-    <!-- Fecha desde -->
-    <div class="col-md-4">
-      <label for="fechaDesdeCaja" class="form-label">Fecha Desde:</label>
-      <input id="fechaDesdeCaja" type="date" name="fecha_desde"
-             value="<?= $h($fechaDesde) ?>" class="form-control" required>
+  <div class="caja-encabezado row">
+    <div class="col-10">
+    <h1>Gestión de Caja Chica</h1>
+    </div>
+    <div class="col-2 text-right">
+      <button type="button" class="btn btn-primary caja-boton-nuevo" data-toggle="modal" data-target="#modalCaja">
+                <i class="fas fa-plus" aria-hidden="true"></i> Nuevo Movimiento
+              </button>
     </div>
 
-    <!-- Fecha hasta -->
-    <div class="col-md-4">
-      <label for="fechaHastaCaja" class="form-label">Fecha Hasta:</label>
-      <input id="fechaHastaCaja" type="date" name="fecha_hasta"
-             value="<?= $h($fechaHasta) ?>" class="form-control" required>
-    </div>
-
-    <!-- Botones -->
-    <div class="col-md-4 d-flex gap-2">
-      <input type="hidden" name="ruta" value="caja">
-      <button type="submit" class="btn btn-primary">
-        <i class="fas fa-filter" aria-hidden="true"></i> Filtrar
-      </button>
-      <label for="" class="form-label">&nbsp;</label>
-      <a class="btn btn-outline-secondary" href="<?= $h($base_url . "caja") ?>">
-        Limpiar
-      </a>
-    </div>
   </div>
-</form>
+
+  <div class="caja-barra-acciones">
+    <form method="GET" action="<?= $h($base_url . "caja") ?>" class="caja-filtro-fechas">
+      <input type="hidden" name="ruta" value="caja">
+      <div class="caja-campo-fecha">
+        <label for="fechaDesdeCaja">Fecha desde</label>
+        <input id="fechaDesdeCaja" type="date" name="fecha_desde" value="<?= $h($fechaDesde) ?>" class="form-control" required>
+      </div>
+      <div class="caja-campo-fecha">
+        <label for="fechaHastaCaja">Fecha hasta</label>
+        <input id="fechaHastaCaja" type="date" name="fecha_hasta" value="<?= $h($fechaHasta) ?>" class="form-control" required>
+      </div>
+      <div class="caja-campo-fecha">
+        <label for="usuarioCaja">Usuario</label>
+        <select id="usuarioCaja" name="usuario" class="form-control">
+          <option value="">Todos los usuarios</option>
+          <?php foreach ($usuariosCaja as $usuario): ?>
+            <option value="<?= (int) $usuario["id_usuario"] ?>" <?= $idUsuarioFiltro === (int) $usuario["id_usuario"] ? "selected" : "" ?>>
+              <?= $h($usuario["nombre"]) ?>
+            </option>
+          <?php endforeach; ?>
+        </select>
+      </div>
+      <div class="caja-acciones-filtro">
+        <button type="submit" class="btn btn-info"><i class="fas fa-filter" aria-hidden="true"></i> Filtrar</button>
+        <a class="btn btn-outline-secondary" href="<?= $h($base_url . "caja") ?>">Limpiar</a>
+      </div>
+    </form>
+  </div>
+
 
 
   <?php if (!empty($errorFiltroFecha)): ?>
@@ -60,7 +72,7 @@
             <th>Usuario</th>
             <th>Fecha</th>
             <th>Estado</th>
-            <th>Acciones</th>
+            <th></th>
           </tr>
         </thead>
         <tbody><?php foreach ($movimientos as $movimiento): ?><tr>

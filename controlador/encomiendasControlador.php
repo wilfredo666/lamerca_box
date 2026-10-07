@@ -59,8 +59,10 @@ class ControladorEncomiendas
   static public function ctrVer()
   {
     $id = filter_input(INPUT_GET, "id", FILTER_VALIDATE_INT);
+    $idAlmacen = (int) ($_SESSION["idAlmacen"] ?? 0);
     return [
-      "encomienda" => $id ? ModeloEncomiendas::mdlBuscarPorId($id) : null
+      "encomienda" => $id ? ModeloEncomiendas::mdlBuscarPorId($id) : null,
+      "almacenesTraspaso" => ModeloTraspaso::mdlAlmacenesActivos($idAlmacen)
     ];
   }
 

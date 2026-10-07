@@ -136,6 +136,28 @@
 	background: #f1f5f9;
 }
 
+@media (max-width: 767px) {
+	.formulario-busqueda-manual .grupo-busqueda-responsive {
+		flex-wrap: wrap;
+	}
+
+	.formulario-busqueda-manual .grupo-busqueda-responsive > .form-control {
+		flex: 0 0 100%;
+		max-width: 100%;
+		border-radius: .25rem;
+	}
+
+	.formulario-busqueda-manual .grupo-busqueda-responsive > .input-group-append {
+		display: flex;
+		width: 100%;
+		margin: 8px 0 0;
+	}
+
+	.formulario-busqueda-manual .grupo-busqueda-responsive > .input-group-append > .btn {
+		flex: 1;
+	}
+}
+
 .grid-encomiendas {
 	display: grid;
 	grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));

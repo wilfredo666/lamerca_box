@@ -3,8 +3,9 @@ require_once "conexion.php";
 
 class ModeloCaja
 {
-  public static function mdlMovimientos($idAlmacen, $fechaDesde, $fechaHasta)
+  public static function mdlMovimientos($idAlmacen, $fechaDesde, $fechaHasta, $idUsuario = null)
   {
+    $filtroUsuario = $idUsuario !== null ? " AND c.id_usuario = :id_usuario" : "";
     $stmt = Conexion::conectar()->prepare(
       "SELECT c.*, u.nombre AS nombre_usuario
        FROM caja c
@@ -12,13 +13,31 @@ class ModeloCaja
        WHERE c.id_almacen = :id_almacen
          AND c.fecha_movimiento >= :fecha_desde
          AND c.fecha_movimiento < DATE_ADD(:fecha_hasta, INTERVAL 1 DAY)
+         " . $filtroUsuario . "
        ORDER BY c.fecha_movimiento DESC, c.id_caja DESC"
     );
-    $stmt->execute([
+    $parametros = [
       ":id_almacen" => $idAlmacen,
       ":fecha_desde" => $fechaDesde . " 00:00:00",
       ":fecha_hasta" => $fechaHasta
-    ]);
+    ];
+    if ($idUsuario !== null) {
+      $parametros[":id_usuario"] = $idUsuario;
+    }
+    $stmt->execute($parametros);
+    return $stmt->fetchAll(PDO::FETCH_ASSOC);
+  }
+
+  public static function mdlUsuariosConMovimientos($idAlmacen)
+  {
+    $stmt = Conexion::conectar()->prepare(
+      "SELECT DISTINCT u.id_usuario, u.nombre
+       FROM caja c
+       INNER JOIN usuario u ON u.id_usuario = c.id_usuario
+       WHERE c.id_almacen = :id_almacen
+       ORDER BY u.nombre ASC, u.id_usuario ASC"
+    );
+    $stmt->execute([":id_almacen" => $idAlmacen]);
     return $stmt->fetchAll(PDO::FETCH_ASSOC);
   }
 

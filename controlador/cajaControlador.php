@@ -10,6 +10,8 @@ class ControladorCaja
     $fechaDesdeEntrada = $_GET["fecha_desde"] ?? null;
     $fechaHastaEntrada = $_GET["fecha_hasta"] ?? null;
     $errorFiltroFecha = null;
+    $usuariosCaja = ModeloCaja::mdlUsuariosConMovimientos($idAlmacen);
+    $idUsuarioFiltro = null;
 
     if ($fechaDesdeEntrada === null && $fechaHastaEntrada === null) {
       $fechaDesde = $fechaInicioPredeterminada;
@@ -32,13 +34,26 @@ class ControladorCaja
       $fechaHasta = $fechaHastaEntrada;
     }
 
+    $usuarioEntrada = $_GET["usuario"] ?? "";
+    if ($errorFiltroFecha === null && $usuarioEntrada !== "") {
+      $idUsuarioEntrada = filter_var($usuarioEntrada, FILTER_VALIDATE_INT);
+      $usuariosValidos = array_map("intval", array_column($usuariosCaja, "id_usuario"));
+      if (!$idUsuarioEntrada || !in_array($idUsuarioEntrada, $usuariosValidos, true)) {
+        $errorFiltroFecha = "Seleccione un usuario válido.";
+      } else {
+        $idUsuarioFiltro = $idUsuarioEntrada;
+      }
+    }
+
     return [
       "movimientos" => $errorFiltroFecha === null
-        ? ModeloCaja::mdlMovimientos($idAlmacen, $fechaDesde, $fechaHasta)
+        ? ModeloCaja::mdlMovimientos($idAlmacen, $fechaDesde, $fechaHasta, $idUsuarioFiltro)
         : [],
       "resumen" => ModeloCaja::mdlResumen($idAlmacen),
       "fechaDesde" => $fechaDesde,
       "fechaHasta" => $fechaHasta,
+      "usuariosCaja" => $usuariosCaja,
+      "idUsuarioFiltro" => $idUsuarioFiltro,
       "errorFiltroFecha" => $errorFiltroFecha
     ];
   }

@@ -29,11 +29,11 @@ $h = static fn($valor) => htmlspecialchars((string) ($valor ?? ""), ENT_QUOTES, 
     <form method="GET" action="<?= $base_url ?>encomiendas/buscar" class="formulario-busqueda-manual">
       <input type="hidden" name="ruta" value="encomiendas/buscar">
       <input type="hidden" name="sin_imagen" value="<?= $soloSinImagen ? "1" : "0" ?>" data-campo-sin-imagen>
-      <div class="input-group grupo-busqueda-responsive">
+      <div class="input-group input-group">
         <input type="text" name="buscar" value="<?= $h($buscar) ?>" placeholder="🔎 Buscar por nombre o celular..." class="form-control">
         <span class="input-group-append">
           <button type="submit" class="btn btn-info btn-flat"><i class="fas fa-search" aria-hidden="true"></i> Buscar</button>
-          <a href="<?= $h($base_url . "encomiendas/buscar?ruta=encomiendas%2Fbuscar") ?>" class="btn btn-danger btn-flat"><i class="fas fa-broom" aria-hidden="true"></i> Limpiar</a>
+          <a href="<?= $h($base_url . "encomiendas/buscar?ruta=encomiendas%2Fbuscar") ?>" class="btn btn-danger btn-flat"><i class="fa solid fa-broom" aria-hidden="true">Limpiar</i></a>
         </span>
       </div>
     </form>
@@ -90,6 +90,11 @@ $h = static fn($valor) => htmlspecialchars((string) ($valor ?? ""), ENT_QUOTES, 
 
   <div class="grid-encomiendas">
     <?php foreach ($encomiendas as $encomienda): ?>
+      <?php
+      $foto = !empty($encomienda["foto"])
+        ? $base_url . "assets/img/paquetes/" . rawurlencode(basename($encomienda["foto"]))
+        : "";
+      ?>
       <article class="tarjeta-encomienda" data-id="<?= (int) $encomienda["id"] ?>" data-destinatario="<?= $h($encomienda["destinatario"]) ?>" data-descripcion="<?= $h($encomienda["descripcion"] ?: "Sin descripción") ?>" data-codigo="<?= $h($encomienda["codigo"]) ?>" data-precio="<?= number_format((float) ($encomienda["precio"] ?? 2), 2, ".", "") ?>" data-quien-paga="<?= $h($encomienda["quien_paga"]) ?>" data-fecha-registro="<?= $h($encomienda["fecha_registro"]) ?>" data-sin-imagen="<?= empty($encomienda["foto"]) ? "true" : "false" ?>">
         <div class="encabezado-tarjeta">
           <div class="identidad-encomienda">
@@ -134,6 +139,9 @@ $h = static fn($valor) => htmlspecialchars((string) ($valor ?? ""), ENT_QUOTES, 
               <?= $h(date("d/m/Y H:i", strtotime($encomienda["fecha_recepcion"]))) ?>
             <?php endif; ?>
           </div>
+        </div>
+        <div class="foto-tarjeta">
+          <?= $foto ? '<img src="' . $h($foto) . '" alt="Foto de la encomienda">' : "📷 Foto pendiente" ?>
         </div>
         <div class="acciones-tarjeta">
           <a class="accion ver" href="<?= $base_url ?>encomiendas/ver?id=<?= (int) $encomienda["id"] ?>">👁 Ver</a>
