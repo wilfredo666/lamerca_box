@@ -21,8 +21,10 @@ class ModeloEntrega
     return $stmt->fetchAll(PDO::FETCH_ASSOC);
   }
 
-  public static function mdlEntregasRegistradas()
+  public static function mdlEntregasRegistradas($termino = "", $pagina = 1, $limite = 15)
   {
+    $pagina = max(1, (int) $pagina);
+    $limite = max(1, (int) $limite);
     $stmt = Conexion::conectar()->prepare(
       "SELECT en.id, en.codigo, en.destinatario, en.descripcion,
           r.tipo_recepcion AS tipo, c.nombre AS cliente,
@@ -32,11 +34,46 @@ class ModeloEntrega
        INNER JOIN encomiendas en ON en.id = et.id_encomienda
        INNER JOIN recepciones r ON r.id = en.id_recepcion
        LEFT JOIN clientes c ON c.id = r.id_cliente
-       WHERE et.estado = 'Entregado'
-       ORDER BY et.fecha_entrega DESC, et.id DESC"
+       WHERE et.estado = 'Entregado'" . self::filtroEntregasRegistradas() . "
+       ORDER BY et.fecha_entrega DESC, et.id DESC
+       LIMIT :limite OFFSET :desplazamiento"
     );
+    self::vincularFiltroEntregas($stmt, $termino);
+    $stmt->bindValue(":limite", $limite, PDO::PARAM_INT);
+    $stmt->bindValue(":desplazamiento", ($pagina - 1) * $limite, PDO::PARAM_INT);
     $stmt->execute();
     return $stmt->fetchAll(PDO::FETCH_ASSOC);
+  }
+
+  public static function mdlContarEntregasRegistradas($termino = "")
+  {
+    $stmt = Conexion::conectar()->prepare(
+      "SELECT COUNT(*)
+       FROM entrega et
+       INNER JOIN encomiendas en ON en.id = et.id_encomienda
+       INNER JOIN recepciones r ON r.id = en.id_recepcion
+       LEFT JOIN clientes c ON c.id = r.id_cliente
+       WHERE et.estado = 'Entregado'" . self::filtroEntregasRegistradas()
+    );
+    self::vincularFiltroEntregas($stmt, $termino);
+    $stmt->execute();
+    return (int) $stmt->fetchColumn();
+  }
+
+  private static function filtroEntregasRegistradas()
+  {
+    return " AND (
+        en.codigo LIKE :t_codigo OR en.destinatario LIKE :t_destinatario OR
+        en.descripcion LIKE :t_descripcion OR c.nombre LIKE :t_cliente
+      )";
+  }
+
+  private static function vincularFiltroEntregas($stmt, $termino)
+  {
+    $valor = "%" . trim((string) $termino) . "%";
+    foreach ([":t_codigo", ":t_destinatario", ":t_descripcion", ":t_cliente"] as $nombre) {
+      $stmt->bindValue($nombre, $valor);
+    }
   }
 
   public static function mdlDetalleEntregaRegistrada($id)

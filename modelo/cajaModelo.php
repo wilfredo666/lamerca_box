@@ -56,6 +56,30 @@ class ModeloCaja
     return $resumen;
   }
 
+  public static function mdlPagosPorMetodo($idAlmacen, $fechaDesde, $fechaHasta, $idUsuario = null)
+  {
+    $filtroUsuario = $idUsuario !== null ? " AND id_usuario = :id_usuario" : "";
+    $stmt = Conexion::conectar()->prepare(
+      "SELECT
+        COALESCE(SUM(CASE WHEN metodo_cobro = 'QR' THEN total_cobrado ELSE 0 END), 0) AS qr,
+        COALESCE(SUM(CASE WHEN metodo_cobro = 'Efectivo' THEN total_cobrado ELSE 0 END), 0) AS efectivo
+       FROM entrega
+       WHERE estado = 'Entregado' AND id_almacen = :id_almacen
+         AND fecha_entrega >= :fecha_desde
+         AND fecha_entrega < DATE_ADD(:fecha_hasta, INTERVAL 1 DAY)" . $filtroUsuario
+    );
+    $parametros = [
+      ":id_almacen" => $idAlmacen,
+      ":fecha_desde" => $fechaDesde . " 00:00:00",
+      ":fecha_hasta" => $fechaHasta
+    ];
+    if ($idUsuario !== null) {
+      $parametros[":id_usuario"] = $idUsuario;
+    }
+    $stmt->execute($parametros);
+    return $stmt->fetch(PDO::FETCH_ASSOC);
+  }
+
   public static function mdlRegistrar($datos)
   {
     $stmt = Conexion::conectar()->prepare(

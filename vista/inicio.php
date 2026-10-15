@@ -121,6 +121,10 @@ $totalAmbos = $totalCobradoHoy + $totalEnCaja;
         🔍 Buscar Encomienda
     </a>
 
+    <a href="<?= $base_url ?? '' ?>encomiendas/consultar" class="boton">
+        🔎 Consultar Encomienda
+    </a>
+
     <a href="<?= $base_url ?? '' ?>encomiendas/eliminadas" class="boton">
         🗑️ Encomiendas Eliminadas
     </a>

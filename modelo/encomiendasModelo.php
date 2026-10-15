@@ -91,6 +91,59 @@ class ModeloEncomiendas
     return self::mdlContarBusqueda($termino, $idAlmacen, true);
   }
 
+  static public function mdlConsultar($termino, $limite = 20)
+  {
+    $conexion = Conexion::conectar();
+    $stmt = $conexion->prepare(
+      "SELECT e.*, r.codigo AS codigo_recepcion, r.tipo_recepcion, r.empresa,
+        r.fecha_registro AS fecha_recepcion, r.estado AS estado_recepcion,
+        c.nombre AS remitente, c.celular AS celular_remitente,
+        al.nombre_almacen AS almacen_actual, al.ciudad AS ciudad_almacen,
+        en.fecha_entrega, en.recargo, en.descuento, en.total_cobrado,
+        en.metodo_cobro, en.observaciones AS observaciones_entrega,
+        en.estado AS estado_entrega, ue.nombre AS usuario_entrega,
+        ae.nombre_almacen AS almacen_entrega
+       FROM encomiendas e
+       INNER JOIN recepciones r ON r.id = e.id_recepcion
+       LEFT JOIN clientes c ON c.id = r.id_cliente
+       LEFT JOIN almacen al ON al.id_almacen = e.id_almacen_actual
+       LEFT JOIN entrega en ON en.id_encomienda = e.id
+       LEFT JOIN usuario ue ON ue.id_usuario = en.id_usuario
+       LEFT JOIN almacen ae ON ae.id_almacen = en.id_almacen
+       WHERE e.codigo LIKE :codigo OR e.destinatario LIKE :destinatario
+         OR e.contacto LIKE :contacto OR c.nombre LIKE :remitente
+         OR c.celular LIKE :celular
+       ORDER BY (e.codigo = :exacto) DESC, e.fecha_registro DESC, e.id DESC
+       LIMIT :limite"
+    );
+    $valor = "%" . $termino . "%";
+    foreach ([":codigo", ":destinatario", ":contacto", ":remitente", ":celular"] as $nombre) {
+      $stmt->bindValue($nombre, $valor);
+    }
+    $stmt->bindValue(":exacto", $termino);
+    $stmt->bindValue(":limite", (int) $limite, PDO::PARAM_INT);
+    $stmt->execute();
+    $encomiendas = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+    foreach ($encomiendas as &$encomienda) {
+      $stmtTraspasos = $conexion->prepare(
+        "SELECT t.codigo, t.fecha_traspaso, t.estado, t.concepto,
+          ao.nombre_almacen AS origen, ad.nombre_almacen AS destino,
+          u.nombre AS usuario
+         FROM traspaso t
+         LEFT JOIN almacen ao ON ao.id_almacen = t.id_almacen_origen
+         LEFT JOIN almacen ad ON ad.id_almacen = t.id_almacen_destino
+         LEFT JOIN usuario u ON u.id_usuario = t.id_usuario
+         WHERE t.id_encomienda = :id
+         ORDER BY t.fecha_traspaso DESC, t.id DESC"
+      );
+      $stmtTraspasos->execute([":id" => $encomienda["id"]]);
+      $encomienda["traspasos"] = $stmtTraspasos->fetchAll(PDO::FETCH_ASSOC);
+    }
+    unset($encomienda);
+    return $encomiendas;
+  }
+
   static public function mdlBuscarPorId($id)
   {
     $stmt = Conexion::conectar()->prepare(

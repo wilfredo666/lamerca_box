@@ -66,21 +66,102 @@ document.addEventListener("DOMContentLoaded", function () {
     const botonTraspasar = document.getElementById("botonTraspasarSeleccionadas");
     const selectores = document.querySelectorAll(".selectorEncomienda");
 
-    if (!boton || !botonTraspasar || selectores.length === 0) {
+    const listaCarrito = document.getElementById("listaCarrito");
+    const carritoVacio = document.getElementById("carritoVacio");
+    const contadorCarrito = document.getElementById("contadorCarrito");
+    const CLAVE_CARRITO = "carritoEncomiendas";
+
+    if (!boton || !botonTraspasar) {
         return;
     }
 
-    function actualizarBoton() {
-        const ids = Array.from(document.querySelectorAll(".selectorEncomienda:checked"))
-            .map(function (selector) { return selector.value; });
-        boton.hidden = ids.length === 0;
-        botonTraspasar.hidden = ids.length === 0;
-        boton.dataset.ids = ids.join(",");
+    const modoCarrito = !!listaCarrito;
+    const carrito = new Map();
+
+    if (modoCarrito) {
+        try {
+            JSON.parse(sessionStorage.getItem(CLAVE_CARRITO) || "[]").forEach(function (item) {
+                carrito.set(String(item.id), item);
+            });
+        } catch (error) {
+            sessionStorage.removeItem(CLAVE_CARRITO);
+        }
+    }
+
+    function datosTarjeta(tarjeta) {
+        return {
+            id: tarjeta.dataset.id,
+            destinatario: tarjeta.dataset.destinatario,
+            descripcion: tarjeta.dataset.descripcion,
+            codigo: tarjeta.dataset.codigo,
+            precio: tarjeta.dataset.precio,
+            quienPaga: tarjeta.dataset.quienPaga,
+            fechaRegistro: tarjeta.dataset.fechaRegistro
+        };
+    }
+
+    function idsCarrito() {
+        return Array.from(carrito.keys());
+    }
+
+    function vaciarCarrito() {
+        carrito.clear();
+        if (modoCarrito) sessionStorage.removeItem(CLAVE_CARRITO);
+    }
+
+    function renderizarCarrito() {
+        if (!modoCarrito) return;
+        sessionStorage.setItem(CLAVE_CARRITO, JSON.stringify(Array.from(carrito.values())));
+        listaCarrito.replaceChildren();
+        carrito.forEach(function (item) {
+            const fila = document.createElement("li");
+            fila.className = "carrito-item";
+            const texto = document.createElement("div");
+            const nombre = document.createElement("strong");
+            nombre.textContent = item.destinatario;
+            const codigo = document.createElement("small");
+            codigo.textContent = item.codigo;
+            texto.append(nombre, codigo);
+            const quitar = document.createElement("button");
+            quitar.type = "button";
+            quitar.className = "carrito-quitar";
+            quitar.setAttribute("aria-label", "Quitar " + item.codigo + " del carrito");
+            quitar.innerHTML = "&times;";
+            quitar.addEventListener("click", function () {
+                carrito.delete(String(item.id));
+                const selector = document.querySelector('.selectorEncomienda[value="' + item.id + '"]');
+                if (selector) selector.checked = false;
+                renderizarCarrito();
+            });
+            fila.append(texto, quitar);
+            listaCarrito.appendChild(fila);
+        });
+        const vacio = carrito.size === 0;
+        carritoVacio.hidden = !vacio;
+        contadorCarrito.textContent = carrito.size;
+        boton.disabled = vacio;
+        if (botonTraspasar.tagName === "BUTTON") botonTraspasar.disabled = vacio;
     }
 
     selectores.forEach(function (selector) {
-        selector.addEventListener("change", actualizarBoton);
+        const tarjetaInicial = selector.closest(".tarjeta-encomienda");
+        if (modoCarrito) {
+            if (carrito.has(selector.value)) selector.checked = true;
+        } else if (selector.checked && tarjetaInicial) {
+            carrito.set(selector.value, datosTarjeta(tarjetaInicial));
+        }
+        selector.addEventListener("change", function () {
+            const tarjeta = selector.closest(".tarjeta-encomienda");
+            if (selector.checked && tarjeta) {
+                carrito.set(selector.value, datosTarjeta(tarjeta));
+            } else {
+                carrito.delete(selector.value);
+            }
+            renderizarCarrito();
+        });
     });
+
+    renderizarCarrito();
 
     const modal = document.getElementById("modalEntregaSeleccionadas");
     const cerrar = document.getElementById("cerrarModalEntrega");
@@ -117,16 +198,13 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     botonTraspasar.addEventListener("click", function () {
-        const ids = Array.from(document.querySelectorAll(".selectorEncomienda:checked")).map(function (selector) {
-            return selector.value;
-        });
+        const ids = idsCarrito();
         if (ids.length === 0) return;
         detalleTraspaso.replaceChildren();
         ids.forEach(function (id) {
-            const tarjeta = document.querySelector('.tarjeta-encomienda[data-id="' + id + '"]');
-            if (!tarjeta) return;
+            const tarjeta = carrito.get(id);
             const item = document.createElement("div");
-            item.textContent = tarjeta.dataset.destinatario + " | " + tarjeta.dataset.descripcion + " | " + tarjeta.dataset.codigo;
+            item.textContent = tarjeta.destinatario + " | " + tarjeta.descripcion + " | " + tarjeta.codigo;
             detalleTraspaso.appendChild(item);
         });
         almacenDestino.value = "";
@@ -138,10 +216,19 @@ document.addEventListener("DOMContentLoaded", function () {
     modalTraspaso.addEventListener("click", function (evento) {
         if (evento.target === modalTraspaso) cerrarModalTraspaso();
     });
+
+
+
     registrarTraspaso.addEventListener("click", function () {
-        const ids = Array.from(document.querySelectorAll(".selectorEncomienda:checked")).map(function (selector) {
-            return Number(selector.value);
-        });
+
+    var Toast = Swal.mixin({
+      toast: true,
+      position: 'top-end',
+      showConfirmButton: false,
+      timer: 3000
+    });
+
+        const ids = idsCarrito().map(Number);
         if (!almacenDestino.value) {
             alert("Seleccione el almacén destino.");
             return;
@@ -159,7 +246,16 @@ document.addEventListener("DOMContentLoaded", function () {
                         throw new Error(mensaje || "No se pudo registrar el traspaso.");
                     });
                 }
-                window.location.reload();
+
+                vaciarCarrito();
+                Toast.fire({
+                icon: 'success',
+                title: 'Traspaso realizado correctamente.'
+                 });
+
+                setTimeout(function () {
+                    window.location.href = "buscar";
+                }, 1000);
             })
             .catch(function (error) {
                 registrarTraspaso.disabled = false;
@@ -168,9 +264,7 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 
     boton.addEventListener("click", function () {
-        const ids = Array.from(document.querySelectorAll(".selectorEncomienda:checked")).map(function (selector) {
-            return selector.value;
-        });
+        const ids = idsCarrito();
         if (ids.length === 0) return;
         let base = 0;
         detalle.replaceChildren();
@@ -182,22 +276,21 @@ document.addEventListener("DOMContentLoaded", function () {
         const tbody = document.createElement("tbody");
         let totalRecargo = 0;
         ids.forEach(function (id) {
-            const tarjeta = document.querySelector('.tarjeta-encomienda[data-id="' + id + '"]');
-            if (!tarjeta) return;
-            const precio = Number(tarjeta.dataset.precio) || 2;
-            const pagaRemitente = tarjeta.dataset.quienPaga === "Remitente";
+            const tarjeta = carrito.get(id);
+            const precio = Number(tarjeta.precio) || 2;
+            const pagaRemitente = tarjeta.quienPaga === "Remitente";
             if (!pagaRemitente) {
                 base += precio;
             }
 
             const fila = document.createElement("tr");
             const celdaEncomienda = document.createElement("td");
-            celdaEncomienda.textContent = tarjeta.dataset.destinatario + " | " + tarjeta.dataset.descripcion + " | " + tarjeta.dataset.codigo;
+            celdaEncomienda.textContent = tarjeta.destinatario + " | " + tarjeta.descripcion + " | " + tarjeta.codigo;
             const celdaPrecio = document.createElement("td");
             celdaPrecio.textContent = precio.toFixed(2) + " Bs";
             const celdaRecargo = document.createElement("td");
             //calcular la fecha de registro de la encomienda con la fecha actual para determinar el recargo
-            const fechaRegistro = new Date(tarjeta.dataset.fechaRegistro);
+            const fechaRegistro = new Date(tarjeta.fechaRegistro);
             const fechaActual = new Date();
             const semanasTranscurridas = Math.floor((fechaActual - fechaRegistro) / (7 * 24 * 60 * 60 * 1000));
             //si ha transcurrido al menos una semana desde la fecha de registro, se aplica un recargo de 1.00 Bs. por cada semana
@@ -254,9 +347,7 @@ document.addEventListener("DOMContentLoaded", function () {
       timer: 3000
     });
 
-        const ids = Array.from(document.querySelectorAll(".selectorEncomienda:checked")).map(function (selector) {
-            return Number(selector.value);
-        });
+        const ids = idsCarrito().map(Number);
         cobrar.disabled = true;
         fetch(window.entregaMultipleUrl, {
             method: "POST",
@@ -282,7 +373,7 @@ document.addEventListener("DOMContentLoaded", function () {
     })
          .then(function (datos) {
 
-        // Aquí sabemos que el servidor respondió correctamente
+        vaciarCarrito();
         Toast.fire({
             icon: 'success',
             title: 'Entrega realizada correctamente.'

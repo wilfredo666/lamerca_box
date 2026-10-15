@@ -34,6 +34,18 @@ class ControladorEncomiendas
     ];
   }
 
+  static public function ctrConsultar()
+  {
+    $buscar = trim((string) ($_GET["buscar"] ?? ""));
+    $buscar = mb_substr($buscar, 0, 100);
+    $busquedaRealizada = $buscar !== "";
+    return [
+      "buscar" => $buscar,
+      "busquedaRealizada" => $busquedaRealizada,
+      "resultados" => $busquedaRealizada ? ModeloEncomiendas::mdlConsultar($buscar) : []
+    ];
+  }
+
   static public function ctrEliminadas()
   {
     return [

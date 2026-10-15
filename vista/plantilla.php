@@ -17,6 +17,7 @@ $rutas_validas = [
   "recepcion/caja-foto" => ["vista" => "recepcion/cajas_buscar.php", "accion" => "ctrSubirFotoCaja"],
   "recepcion/caja-eliminar" => ["vista" => "recepcion/cajas_buscar.php", "accion" => "ctrEliminarCaja"],
   "encomiendas/buscar" => ["vista" => "encomiendas/buscar.php", "controlador" => "ControladorEncomiendas", "accion" => "ctrBuscar"],
+  "encomiendas/consultar" => ["vista" => "encomiendas/consultar.php", "controlador" => "ControladorEncomiendas", "accion" => "ctrConsultar"],
   "encomiendas/eliminadas" => ["vista" => "encomiendas/eliminadas.php", "controlador" => "ControladorEncomiendas", "accion" => "ctrEliminadas"],
   "encomiendas/eliminadas/ver" => ["vista" => "encomiendas/eliminada_ver.php", "controlador" => "ControladorEncomiendas", "accion" => "ctrDetalleEliminada"],
   "encomiendas/ver" => ["vista" => "encomiendas/ver.php", "controlador" => "ControladorEncomiendas", "accion" => "ctrVer"],
@@ -67,6 +68,7 @@ $estilos_vista = [
   "recepcion/caja-ver" => "assets/css/modules/encomiendas/buscar.css",
   "recepcion/caja-editar" => "assets/css/modules/recepcion/recepcion_general.css",
   "encomiendas/buscar" => "assets/css/modules/encomiendas/buscar.css",
+  "encomiendas/consultar" => "assets/css/modules/encomiendas/consultar.css",
   "encomiendas/eliminadas" => [
     "assets/css/modules/entrega/entregadas.css",
     "assets/plugins/datatables-bs4/css/dataTables.bootstrap4.min.css",
@@ -82,11 +84,7 @@ $estilos_vista = [
   ],
   "encomiendas/editar" => "assets/css/modules/encomiendas/buscar.css",
   "entrega" => "assets/css/modules/entrega/entregar.css",
-  "entrega/entregadas" => [
-    "assets/css/modules/entrega/entregadas.css",
-    "assets/plugins/datatables-bs4/css/dataTables.bootstrap4.min.css",
-    "assets/plugins/datatables-responsive/css/responsive.bootstrap4.min.css"
-  ],
+  "entrega/entregadas" => "assets/css/modules/entrega/entregadas.css",
   "traspasos" => [
     "assets/css/modules/traspaso/index.css",
     "assets/plugins/datatables-bs4/css/dataTables.bootstrap4.min.css",
@@ -158,6 +156,7 @@ $scripts_vista = [
     "assets/js/modules/almacenes/index.js"
   ],
   "encomiendas/buscar" => [
+    "assets/plugins/sweetalert2/sweetalert2.all.min.js",
     "assets/js/modules/encomiendas/buscar.js"
   ],
   "encomiendas/eliminadas" => [
@@ -181,14 +180,6 @@ $scripts_vista = [
   ],
   "recepcion/comprobante-general" => [
     "assets/js/modules/recepcion/comprobante_caja.js"
-  ],
-  "entrega/entregadas" => [
-    "assets/js/jquery.min.js",
-    "assets/plugins/datatables/jquery.dataTables.min.js",
-    "assets/plugins/datatables-bs4/js/dataTables.bootstrap4.min.js",
-    "assets/plugins/datatables-responsive/js/dataTables.responsive.min.js",
-    "assets/plugins/datatables-responsive/js/responsive.bootstrap4.min.js",
-    "assets/js/modules/entrega/entregadas.js"
   ],
   "traspasos" => [
     "assets/js/jquery.min.js",

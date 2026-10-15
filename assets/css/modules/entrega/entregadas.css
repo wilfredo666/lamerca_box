@@ -588,3 +588,43 @@ input{
         gap:3px;
     }
 }
+
+.formulario-busqueda-entregas {
+	max-width: 760px;
+	margin-bottom: 16px;
+}
+
+.paginacion-entregas {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	flex-wrap: wrap;
+	gap: 12px;
+	margin-top: 16px;
+}
+
+.paginacion-entregas .pagination {
+	flex-wrap: wrap;
+}
+
+@media (max-width: 767px) {
+	.formulario-busqueda-entregas .grupo-busqueda-responsive {
+		flex-wrap: wrap;
+	}
+
+	.formulario-busqueda-entregas .grupo-busqueda-responsive > .form-control {
+		flex: 0 0 100%;
+		max-width: 100%;
+		border-radius: .25rem;
+	}
+
+	.formulario-busqueda-entregas .grupo-busqueda-responsive > .input-group-append {
+		display: flex;
+		width: 100%;
+		margin: 8px 0 0;
+	}
+
+	.formulario-busqueda-entregas .grupo-busqueda-responsive > .input-group-append > .btn {
+		flex: 1;
+	}
+}

@@ -12,18 +12,6 @@ $h = static fn($valor) => htmlspecialchars((string) ($valor ?? ""), ENT_QUOTES, 
         <?= $cantidadSinImagen === 0 ? "disabled" : "" ?>>
         Sin imagen <span data-contador-sin-imagen><?= $cantidadSinImagen ?></span>
       </button>
-      <button type="button" id="botonEntregarSeleccionadas" class="boton-entregar-seleccionadas" hidden>✅ Entregar</button>
-      <?php
-      if (ControladorUsuario::ctrUsuarioPermiso($_SESSION["idUsuario"], 14)) {
-      ?>
-        <button type="button" id="botonTraspasarSeleccionadas" class="boton-entregar-seleccionadas boton-traspasar-seleccionadas" hidden>↔ Traspasar</button>
-      <?php
-      } else {
-      ?>
-        <span id="botonTraspasarSeleccionadas" style="display:none;"></span>
-      <?php
-      }
-      ?>
     </h1>
     <?php if (!empty($_GET["mensaje"])): ?><p class="alerta"><?= $h($_GET["mensaje"]) ?></p><?php endif; ?>
     <form method="GET" action="<?= $base_url ?>encomiendas/buscar" class="formulario-busqueda-manual">
@@ -43,19 +31,19 @@ $h = static fn($valor) => htmlspecialchars((string) ($valor ?? ""), ENT_QUOTES, 
       <button type="button" class="cerrar-modal-entrega" id="cerrarModalTraspaso" aria-label="Cerrar">&times;</button>
       <h2 id="tituloModalTraspaso">Traspasar encomiendas</h2>
       <div id="detalleTraspasoSeleccionadas" class="detalle-entrega-seleccionadas"></div>
-      <div class="resumen-cobro-entrega">
-        <label>Almacén destino
-          <select id="almacenDestinoTraspaso" required>
+      <div class="form-group row">
+        <label class="col-sm-4 col-form-label">Almacén destino</label>
+        <div class="col-sm-8">
+          <select id="almacenDestinoTraspaso" required class="form-control">
             <option value="">Seleccione un almacén</option>
             <?php foreach ($almacenesTraspaso as $almacen): ?>
               <option value="<?= (int) $almacen["id_almacen"] ?>"><?= $h($almacen["nombre_almacen"] . " - " . $almacen["ciudad"]) ?></option>
             <?php endforeach; ?>
           </select>
-        </label>
-        <label>Observaciones
-          <textarea id="observacionesTraspaso" maxlength="255" rows="3"></textarea>
-        </label>
+        </div>
       </div>
+      <label>Observaciones </label>
+      <textarea id="observacionesTraspaso" maxlength="255" rows="3"></textarea>
       <button type="button" id="registrarTraspasoSeleccionadas" class="boton-cobrar-entrega">↔ Registrar traspaso</button>
     </div>
   </div>
@@ -88,6 +76,8 @@ $h = static fn($valor) => htmlspecialchars((string) ($valor ?? ""), ENT_QUOTES, 
     window.entregaCsrfToken = <?= json_encode($csrfToken) ?>;
   </script>
 
+  <div class="encomiendas-layout">
+  <div class="encomiendas-principal">
   <div class="grid-encomiendas">
     <?php foreach ($encomiendas as $encomienda): ?>
       <article class="tarjeta-encomienda" data-id="<?= (int) $encomienda["id"] ?>" data-destinatario="<?= $h($encomienda["destinatario"]) ?>" data-descripcion="<?= $h($encomienda["descripcion"] ?: "Sin descripción") ?>" data-codigo="<?= $h($encomienda["codigo"]) ?>" data-precio="<?= number_format((float) ($encomienda["precio"] ?? 2), 2, ".", "") ?>" data-quien-paga="<?= $h($encomienda["quien_paga"]) ?>" data-fecha-registro="<?= $h($encomienda["fecha_registro"]) ?>" data-sin-imagen="<?= empty($encomienda["foto"]) ? "true" : "false" ?>">
@@ -144,7 +134,6 @@ $h = static fn($valor) => htmlspecialchars((string) ($valor ?? ""), ENT_QUOTES, 
             <button
               type="button"
               class="accion eliminar"
-              style="height: 47px;"
               data-abrir-modal-eliminacion
               data-id="<?= (int) $encomienda["id"] ?>"
               data-codigo="<?= $h($encomienda["codigo"]) ?>">
@@ -157,7 +146,7 @@ $h = static fn($valor) => htmlspecialchars((string) ($valor ?? ""), ENT_QUOTES, 
             <button
               type="button"
               class="accion eliminar"
-              style="height: 47px; background-color: #ccc; cursor: not-allowed;" disabled>
+              style="background-color: #ccc; cursor: not-allowed;" disabled>
               🗑 Eliminar
             </button>
           <?php
@@ -170,10 +159,10 @@ $h = static fn($valor) => htmlspecialchars((string) ($valor ?? ""), ENT_QUOTES, 
             <input type="hidden" name="buscar" value="<?= $h($buscar) ?>">
             <input type="hidden" name="sin_imagen" value="<?= $soloSinImagen ? "1" : "0" ?>">
             <input type="hidden" name="pagina" value="<?= (int) $paginaActual ?>">
-            <label class="accion foto">
+            <!--<label class="accion foto">
               📷 Foto
               <input type="file" name="foto" accept="image/jpeg,image/png,image/gif,image/webp" capture="environment" required onchange="this.form.submit()">
-            </label>
+            </label>-->
           </form>
         </div>
       </article>
@@ -218,6 +207,21 @@ $h = static fn($valor) => htmlspecialchars((string) ($valor ?? ""), ENT_QUOTES, 
       </ul>
     </nav>
   <?php endif; ?>
+  </div>
+  <aside class="carrito-encomiendas" aria-label="Carrito de encomiendas">
+    <h2>Carrito <span id="contadorCarrito" class="carrito-contador">0</span></h2>
+    <div class="carrito-acciones">
+      <button type="button" id="botonEntregarSeleccionadas" class="carrito-boton carrito-entregar" disabled>✅ Entregar</button>
+      <?php if (ControladorUsuario::ctrUsuarioPermiso($_SESSION["idUsuario"], 14)): ?>
+        <button type="button" id="botonTraspasarSeleccionadas" class="carrito-boton carrito-traspasar" disabled>↔ Traspasar</button>
+      <?php else: ?>
+        <span id="botonTraspasarSeleccionadas" hidden></span>
+      <?php endif; ?>
+    </div>
+    <p id="carritoVacio" class="carrito-vacio">Selecciona encomiendas para agregarlas.</p>
+    <ul id="listaCarrito" class="carrito-lista"></ul>
+  </aside>
+  </div>
 </div>
 
 <div class="modal-eliminar-encomienda" id="modalEliminarEncomienda" hidden>

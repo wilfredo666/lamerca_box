@@ -17,7 +17,22 @@ class ControladorEntrega
 
   public static function ctrVistaEntregadas()
   {
-    return ["paquetes" => ModeloEntrega::mdlEntregasRegistradas()];
+    $buscar = mb_substr(trim((string) ($_GET["buscar"] ?? "")), 0, 100);
+    $pagina = filter_input(INPUT_GET, "pagina", FILTER_VALIDATE_INT);
+    $pagina = $pagina && $pagina > 0 ? $pagina : 1;
+    $porPagina = 15;
+    $total = ModeloEntrega::mdlContarEntregasRegistradas($buscar);
+    $totalPaginas = max(1, (int) ceil($total / $porPagina));
+    $pagina = min($pagina, $totalPaginas);
+
+    return [
+      "paquetes" => ModeloEntrega::mdlEntregasRegistradas($buscar, $pagina, $porPagina),
+      "buscar" => $buscar,
+      "totalEntregas" => $total,
+      "paginaActual" => $pagina,
+      "totalPaginas" => $totalPaginas,
+      "porPagina" => $porPagina
+    ];
   }
 
   public static function ctrVistaDetalleEntregada()

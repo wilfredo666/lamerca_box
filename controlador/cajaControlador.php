@@ -50,6 +50,9 @@ class ControladorCaja
         ? ModeloCaja::mdlMovimientos($idAlmacen, $fechaDesde, $fechaHasta, $idUsuarioFiltro)
         : [],
       "resumen" => ModeloCaja::mdlResumen($idAlmacen),
+      "pagosMetodo" => $errorFiltroFecha === null
+        ? ModeloCaja::mdlPagosPorMetodo($idAlmacen, $fechaDesde, $fechaHasta, $idUsuarioFiltro)
+        : ["qr" => 0, "efectivo" => 0],
       "fechaDesde" => $fechaDesde,
       "fechaHasta" => $fechaHasta,
       "usuariosCaja" => $usuariosCaja,

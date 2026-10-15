@@ -2,18 +2,6 @@
   return htmlspecialchars((string) ($valor ?? ""), ENT_QUOTES, "UTF-8");
 }; ?>
 <section class="caja-contenedor">
-  <div class="caja-resumen">
-    <article class="caja-indicador caja-indicador-ingreso"><i class="fas fa-arrow-up"></i>
-      <div><span>Total ingresos</span><strong>Bs. <?= number_format((float) $resumen["total_ingresos"], 2) ?></strong></div>
-    </article>
-    <article class="caja-indicador caja-indicador-salida"><i class="fas fa-arrow-down"></i>
-      <div><span>Total salidas</span><strong>Bs. <?= number_format((float) $resumen["total_salidas"], 2) ?></strong></div>
-    </article>
-    <article class="caja-indicador caja-indicador-saldo"><i class="fas fa-wallet"></i>
-      <div><span>Saldo actual</span><strong>Bs. <?= number_format((float) $resumen["saldo_actual"], 2) ?></strong></div>
-    </article>
-  </div>
-
   <div class="caja-encabezado row">
     <div class="col-10">
     <h1>Gestión de Caja Chica</h1>
@@ -60,7 +48,8 @@
   <?php if (!empty($errorFiltroFecha)): ?>
     <div class="alert alert-danger" role="alert"><?= $h($errorFiltroFecha) ?></div>
   <?php endif; ?>
-  <div class="card caja-card">
+  <div class="caja-cuerpo">
+  <div class="card caja-card caja-tabla">
     <div class="card-body table-responsive">
       <table id="tablaCaja" class="table table-bordered table-hover">
         <thead>
@@ -87,6 +76,28 @@
             </tr><?php endforeach; ?></tbody>
       </table>
     </div>
+  </div>
+  <aside class="card caja-card caja-informe" aria-label="Informe de caja">
+    <div class="card-body">
+      <h2 class="caja-informe-titulo">Informe</h2>
+      <div class="caja-informe-item caja-informe-ingreso"><i class="fas fa-arrow-up"></i>
+        <div><span>Total ingresos</span><strong>Bs. <?= number_format((float) $resumen["total_ingresos"], 2) ?></strong></div>
+      </div>
+      <div class="caja-informe-item caja-informe-salida"><i class="fas fa-arrow-down"></i>
+        <div><span>Total salidas</span><strong>Bs. <?= number_format((float) $resumen["total_salidas"], 2) ?></strong></div>
+      </div>
+      <div class="caja-informe-item caja-informe-saldo"><i class="fas fa-wallet"></i>
+        <div><span>Saldo actual</span><strong>Bs. <?= number_format((float) $resumen["saldo_actual"], 2) ?></strong></div>
+      </div>
+      <div class="caja-informe-item caja-informe-qr"><i class="fas fa-qrcode"></i>
+        <div><span>Pagos por QR</span><strong>Bs. <?= number_format((float) $pagosMetodo["qr"], 2) ?></strong></div>
+      </div>
+      <div class="caja-informe-item caja-informe-efectivo"><i class="fas fa-money-bill-wave"></i>
+        <div><span>Pagos en efectivo</span><strong>Bs. <?= number_format((float) $pagosMetodo["efectivo"], 2) ?></strong></div>
+      </div>
+      <small class="caja-informe-nota">Los pagos por QR y en efectivo corresponden a las entregas del rango de fechas y usuario filtrados.</small>
+    </div>
+  </aside>
   </div>
 </section>
 <div class="modal fade" id="modalCaja" tabindex="-1" aria-hidden="true">
