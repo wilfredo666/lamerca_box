@@ -5,7 +5,7 @@ class ControladorCaja
   {
     $idAlmacen = self::idAlmacenSesion();
     $hoy = new DateTimeImmutable("today");
-    $fechaInicioPredeterminada = $hoy->modify("first day of this month")->format("Y-m-d");
+    $fechaInicioPredeterminada = $hoy->format("Y-m-d");
     $fechaFinPredeterminada = $hoy->format("Y-m-d");
     $fechaDesdeEntrada = $_GET["fecha_desde"] ?? null;
     $fechaHastaEntrada = $_GET["fecha_hasta"] ?? null;
@@ -35,6 +35,7 @@ class ControladorCaja
     }
 
     $usuarioEntrada = $_GET["usuario"] ?? "";
+    $filtrosAplicados = $fechaDesdeEntrada !== null || $fechaHastaEntrada !== null || $usuarioEntrada !== "";
     if ($errorFiltroFecha === null && $usuarioEntrada !== "") {
       $idUsuarioEntrada = filter_var($usuarioEntrada, FILTER_VALIDATE_INT);
       $usuariosValidos = array_map("intval", array_column($usuariosCaja, "id_usuario"));
@@ -49,7 +50,8 @@ class ControladorCaja
       "movimientos" => $errorFiltroFecha === null
         ? ModeloCaja::mdlMovimientos($idAlmacen, $fechaDesde, $fechaHasta, $idUsuarioFiltro)
         : [],
-      "resumen" => ModeloCaja::mdlResumen($idAlmacen),
+      "resumen" => ModeloCaja::mdlResumen($idAlmacen, $fechaDesde, $fechaHasta, $idUsuarioFiltro),
+      "filtrosAplicados" => $filtrosAplicados,
       "pagosMetodo" => $errorFiltroFecha === null
         ? ModeloCaja::mdlPagosPorMetodo($idAlmacen, $fechaDesde, $fechaHasta, $idUsuarioFiltro)
         : ["qr" => 0, "efectivo" => 0],

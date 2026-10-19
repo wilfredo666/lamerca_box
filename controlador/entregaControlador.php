@@ -67,7 +67,7 @@ class ControladorEntrega
     $precioBase = (float) ($paquete["precio_base"] ?: $paquete["precio"]);
     $precioBase = $precioBase > 0 ? $precioBase : 2;
     $dias = max(0, (new DateTime($paquete["fecha_registro"]))->diff(new DateTime())->days);
-    $recargo = $dias > 7 ? 1 : 0;
+    $recargo = intdiv($dias, 7);
     if ($pagaRemitente) {
       $precioBase = 0;
       $recargo = 0;

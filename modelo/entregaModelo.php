@@ -223,7 +223,7 @@ class ModeloEntrega
         $paquetes[] = $paquete;
       }
 
-      $cobros = array_map(fn($paquete) => self::mdlCobroPaquete($paquete, false), $paquetes);
+      $cobros = array_map(fn($paquete) => self::mdlCobroPaquete($paquete, true), $paquetes);
       $subtotalCentavos = array_sum(array_column($cobros, "centavos"));
       $recargoCentavos = (int) round($recargo * 100);
       $descuentoCentavos = (int) round($descuento * 100);
@@ -258,6 +258,7 @@ class ModeloEntrega
         $descuentoPaquete = $esUltimo || $subtotalRestante <= 0
           ? $descuentoRestante
           : (int) floor($descuentoRestante * $cobro["centavos"] / $subtotalRestante);
+        $recargoAutomatico = (int) round($cobro["recargo"] * 100);
         $totalCentavos = $cobro["centavos"] + $recargoPaquete - $descuentoPaquete;
         $pagaRemitente = $paquete["quien_paga"] === "Remitente";
         $observaciones = $pagaRemitente ? "Ya pagado (Remitente)" : null;
@@ -265,7 +266,7 @@ class ModeloEntrega
           ":id_encomienda" => $paquete["id"],
           ":id_usuario" => $idUsuario,
           ":id_almacen" => $idAlmacen,
-          ":recargo" => $recargoPaquete / 100,
+          ":recargo" => ($recargoPaquete + $recargoAutomatico) / 100,
           ":descuento" => $descuentoPaquete / 100,
           ":total" => $totalCentavos / 100,
           ":medio" => $medioCobro,
@@ -313,7 +314,7 @@ class ModeloEntrega
       $precioBase = 2;
     }
     $dias = max(0, (new DateTime($paquete["fecha_registro"]))->diff(new DateTime())->days);
-    $recargo = $aplicarRecargo && $dias > 7 ? 1.0 : 0.0;
+    $recargo = $aplicarRecargo ? (float) intdiv($dias, 7) : 0.0;
     $centavos = (int) round(($precioBase + $recargo) * 100);
     return ["precio_base" => $precioBase, "recargo" => $recargo, "total" => $centavos / 100, "centavos" => $centavos];
   }

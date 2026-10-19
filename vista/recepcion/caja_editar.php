@@ -58,7 +58,7 @@
                 <td><select name="clasificacion[]" required><option value="">Seleccione</option><?php foreach ($clasificaciones as $clasificacion): ?><option value="<?= $h($clasificacion["descripcion"]) ?>"><?= $h($clasificacion["descripcion"]) ?></option><?php endforeach; ?></select></td>
                 <td><input type="text" name="descripcion[]" maxlength="5000"></td>
                 <td><input type="number" name="precio[]" min="0" step="0.01" value="2.00" required></td>
-                <td><select name="quien_paga[]" required><option value="Destinatario">Destinatario</option><option value="Remitente">Remitente</option></select></td>
+                <td class="celda-paga"><select name="quien_paga[]" required><option value="Destinatario">Destinatario</option><option value="Remitente">Remitente</option></select><label class="paga-qr" hidden><input type="checkbox" class="check-qr-remitente"> QR</label><input type="hidden" name="medio_pago_remitente[]" value="Efectivo"></td>
                 <td><label class="campo-foto-encomienda" title="Subir foto de la encomienda"><span class="icono-foto-encomienda" aria-hidden="true">📷</span><input type="file" name="foto_encomienda[]" accept="image/jpeg,image/png,image/gif,image/webp" capture="environment" class="input-foto-encomienda" aria-label="Foto de la encomienda"></label></td>
                 <td><button type="button" class="boton-quitar" aria-label="Quitar encomienda"><i class="fas fa-times"></i></button></td>
               </tr>
@@ -74,7 +74,7 @@
           <td><select name="clasificacion[]" required><option value="">Seleccione</option><?php foreach ($clasificaciones as $clasificacion): ?><option value="<?= $h($clasificacion["descripcion"]) ?>"><?= $h($clasificacion["descripcion"]) ?></option><?php endforeach; ?></select></td>
           <td><input type="text" name="descripcion[]" maxlength="5000"></td>
           <td><input type="number" name="precio[]" min="0" step="0.01" value="2.00" required></td>
-          <td><select name="quien_paga[]" required><option>Destinatario</option><option>Remitente</option></select></td>
+          <td class="celda-paga"><select name="quien_paga[]" required><option>Destinatario</option><option>Remitente</option></select><label class="paga-qr" hidden><input type="checkbox" class="check-qr-remitente"> QR</label><input type="hidden" name="medio_pago_remitente[]" value="Efectivo"></td>
           <td><label class="campo-foto-encomienda" title="Subir foto de la encomienda"><span class="icono-foto-encomienda" aria-hidden="true">📷</span><input type="file" name="foto_encomienda[]" accept="image/jpeg,image/png,image/gif,image/webp" capture="environment" class="input-foto-encomienda" aria-label="Foto de la encomienda"></label></td>
           <td><button type="button" class="boton-quitar" aria-label="Quitar encomienda"><i class="fas fa-times"></i></button></td>
         </tr>

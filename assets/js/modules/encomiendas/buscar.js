@@ -296,7 +296,7 @@ document.addEventListener("DOMContentLoaded", function () {
             //si ha transcurrido al menos una semana desde la fecha de registro, se aplica un recargo de 1.00 Bs. por cada semana
             //si ha transcurrido menos de una semana, no se aplica recargo
             let recargo;
-            if (semanasTranscurridas < 1) {
+            if (semanasTranscurridas < 1 || pagaRemitente) {
                 recargo = 0.00;
             } else {
                 recargo = semanasTranscurridas * 1.00;

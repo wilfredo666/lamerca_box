@@ -131,11 +131,13 @@
             </select>
           </td>
           <td style="width: 100px;"><input type="number" name="precio[]" min="0" step="0.50" value="2.00" required></td>
-          <td>
+          <td class="celda-paga">
             <select name="quien_paga[]" required>
               <option value="Destinatario">Destinatario</option>
               <option value="Remitente">Remitente</option>
             </select>
+            <label class="paga-qr" hidden><input type="checkbox" class="check-qr-remitente"> QR</label>
+            <input type="hidden" name="medio_pago_remitente[]" value="Efectivo">
           </td>
           <td>
             <label class="campo-foto-encomienda" title="Subir foto de la encomienda">

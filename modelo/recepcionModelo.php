@@ -160,8 +160,8 @@ class ModeloRecepcion
 
       $stmt = $conexion->prepare(
         "INSERT INTO encomiendas
-        (codigo, id_recepcion, id_almacen_actual, clasificacion, descripcion, precio, destinatario, contacto, foto, quien_paga, estado, cobrado)
-        VALUES ('', :id_recepcion, (SELECT id_almacen FROM recepciones WHERE id = :id_recepcion_almacen), :clasificacion, :descripcion, :precio, :destinatario, :contacto, :foto, :quien_paga, 'Pendiente', :cobrado)"
+        (codigo, id_recepcion, id_almacen_actual, clasificacion, descripcion, precio, destinatario, contacto,         foto, quien_paga, medio_pago_remitente, estado, cobrado)
+                VALUES ('', :id_recepcion, (SELECT id_almacen FROM recepciones WHERE id = :id_recepcion_almacen), :clasificacion, :descripcion, :precio, :destinatario, :contacto, :foto, :quien_paga, :medio_pago, 'Pendiente', :cobrado)"
       );
       $stmtCodigo = $conexion->prepare("UPDATE encomiendas SET codigo = :codigo WHERE id = :id");
       foreach ($paquetes as $paquete) {
@@ -176,6 +176,7 @@ class ModeloRecepcion
           ":contacto" => $paquete["contacto"],
           ":foto" => $paquete["foto"],
           ":quien_paga" => $paquete["quien_paga"],
+                  ":medio_pago" => $paquete["medio_pago_remitente"] ?? null,
           ":cobrado" => $pagaRemitente ? 1 : 0
         ]);
         $idEncomienda = (int) $conexion->lastInsertId();
@@ -333,8 +334,8 @@ class ModeloRecepcion
 
       $stmtEncomienda = $conexion->prepare(
         "INSERT INTO encomiendas
-        (codigo, id_recepcion, id_almacen_actual, clasificacion, descripcion, precio, destinatario, contacto, foto, quien_paga, estado, cobrado)
-        VALUES ('', :id_recepcion, :id_almacen_actual, :clasificacion, :descripcion, :precio, :destinatario, :contacto, :foto, :quien_paga, 'Pendiente', :cobrado)"
+        (codigo, id_recepcion, id_almacen_actual, clasificacion, descripcion, precio, destinatario, contacto,         foto, quien_paga, medio_pago_remitente, estado, cobrado)
+                VALUES ('', :id_recepcion, :id_almacen_actual, :clasificacion, :descripcion, :precio, :destinatario, :contacto, :foto, :quien_paga, :medio_pago, 'Pendiente', :cobrado)"
       );
       $stmtCodigo = $conexion->prepare("UPDATE encomiendas SET codigo = :codigo WHERE id = :id");
 
@@ -350,6 +351,7 @@ class ModeloRecepcion
           ":contacto" => $paquete["contacto"],
           ":foto" => $paquete["foto"],
           ":quien_paga" => $paquete["quien_paga"],
+                  ":medio_pago" => $paquete["medio_pago_remitente"] ?? null,
           ":cobrado" => $pagaRemitente ? 1 : 0
         ]);
         $idEncomienda = (int) $conexion->lastInsertId();

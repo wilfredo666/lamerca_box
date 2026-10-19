@@ -13,7 +13,9 @@
     </div>
 
   </div>
-
+                <?php
+    if (ControladorUsuario::ctrUsuarioPermiso($_SESSION["idUsuario"], 23)) {
+    ?>
   <div class="caja-barra-acciones">
     <form method="GET" action="<?= $h($base_url . "caja") ?>" class="caja-filtro-fechas">
       <input type="hidden" name="ruta" value="caja">
@@ -43,7 +45,9 @@
     </form>
   </div>
 
-
+                <?php
+    }
+    ?>
 
   <?php if (!empty($errorFiltroFecha)): ?>
     <div class="alert alert-danger" role="alert"><?= $h($errorFiltroFecha) ?></div>
@@ -72,7 +76,15 @@
               <td><?= $h($movimiento["nombre_usuario"]) ?></td>
               <td><?= date("d/m/Y H:i", strtotime($movimiento["fecha_movimiento"])) ?></td>
               <td><span class="badge badge-<?= (int) $movimiento["estado_caja"] === 1 ? "success" : "secondary" ?>"><?= (int) $movimiento["estado_caja"] === 1 ? "Activo" : "Anulado" ?></span></td>
-              <td><?php if ((int) $movimiento["estado_caja"] === 1): ?><form method="POST" action="<?= $base_url ?>caja/anular" class="form-anular-caja"><input type="hidden" name="csrf_token" value="<?= $h($csrfToken) ?>"><input type="hidden" name="id_caja" value="<?= (int) $movimiento["id_caja"] ?>"><button type="submit" class="btn btn-sm btn-danger" title="Anular movimiento"><i class="fas fa-ban"></i></button></form><?php endif; ?></td>
+              <td>
+                <?php
+    if (ControladorUsuario::ctrUsuarioPermiso($_SESSION["idUsuario"], 22)) {
+    ?>
+              <?php if ((int) $movimiento["estado_caja"] === 1): ?><form method="POST" action="<?= $base_url ?>caja/anular" class="form-anular-caja"><input type="hidden" name="csrf_token" value="<?= $h($csrfToken) ?>"><input type="hidden" name="id_caja" value="<?= (int) $movimiento["id_caja"] ?>"><button type="submit" class="btn btn-sm btn-danger" title="Anular movimiento"><i class="fas fa-ban"></i></button></form><?php endif; ?>
+                <?php
+    }
+    ?>
+              </td>
             </tr><?php endforeach; ?></tbody>
       </table>
     </div>
@@ -86,16 +98,25 @@
       <div class="caja-informe-item caja-informe-salida"><i class="fas fa-arrow-down"></i>
         <div><span>Total salidas</span><strong>Bs. <?= number_format((float) $resumen["total_salidas"], 2) ?></strong></div>
       </div>
-      <div class="caja-informe-item caja-informe-saldo"><i class="fas fa-wallet"></i>
-        <div><span>Saldo actual</span><strong>Bs. <?= number_format((float) $resumen["saldo_actual"], 2) ?></strong></div>
-      </div>
       <div class="caja-informe-item caja-informe-qr"><i class="fas fa-qrcode"></i>
         <div><span>Pagos por QR</span><strong>Bs. <?= number_format((float) $pagosMetodo["qr"], 2) ?></strong></div>
       </div>
       <div class="caja-informe-item caja-informe-efectivo"><i class="fas fa-money-bill-wave"></i>
         <div><span>Pagos en efectivo</span><strong>Bs. <?= number_format((float) $pagosMetodo["efectivo"], 2) ?></strong></div>
       </div>
-      <small class="caja-informe-nota">Los pagos por QR y en efectivo corresponden a las entregas del rango de fechas y usuario filtrados.</small>
+      <div class="caja-informe-item caja-informe-saldo"><i class="fas fa-wallet"></i>
+        <div><span>Saldo actual</span><strong>Bs. <?= number_format((float) $resumen["total_ingresos"] + (float) $pagosMetodo["qr"] + (float) $pagosMetodo["efectivo"] - (float) $resumen["total_salidas"], 2) ?></strong></div>
+      </div>
+      <small class="caja-informe-nota">
+        <?php if (!empty($filtrosAplicados)): ?>
+          Resumen según los filtros aplicados (<?= $h($fechaDesde) ?> a <?= $h($fechaHasta) ?><?php
+            foreach ($usuariosCaja as $u) {
+              if ($idUsuarioFiltro === (int) $u["id_usuario"]) { echo ", usuario: " . $h($u["nombre"]); }
+            } ?>).
+        <?php else: ?>
+          Resumen del día de hoy (<?= $h($fechaDesde) ?>). Use los filtros para consultar otros periodos.
+        <?php endif; ?>
+      </small>
     </div>
   </aside>
   </div>

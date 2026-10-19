@@ -55,13 +55,18 @@ $totalPaquetes = count($paquetes);
     //$url = 'https://www.facebook.com/share/r/1JnBZTTc4e';
     $mensaje = "Gracias por confiar en Tu Merca Encomiendas\nRevisa los detalles de tu encomienda en el siguiente enlace:\n" . $url;
     ?>
-    <button
-            type="button"
-            class="btnWhatsapp"
-            data-whatsapp="<?= $h($numeroWhatsapp ?? "") ?>"
-            data-mensaje="<?= $h($mensaje) ?>">
-      📲 Compartir por WhatsApp
-    </button>
+    <div class="acciones-comprobante">
+      <button
+              type="button"
+              class="btnWhatsapp"
+              data-whatsapp="<?= $h($numeroWhatsapp ?? "") ?>"
+              data-mensaje="<?= $h($mensaje) ?>">
+        📲 Compartir por WhatsApp
+      </button>
+      <a class="btnImprimirEtiquetas" href="<?= $base_url ?>recepcion/etiquetas?id=<?= (int) $recepcion["id"] ?>" target="_blank" rel="noopener">
+        🖨️ Imprimir etiquetas
+      </a>
+    </div>
 
   </div>
 </div>

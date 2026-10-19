@@ -134,6 +134,19 @@ document.addEventListener("DOMContentLoaded", function () {
     actualizarNumeros();
 
     tabla.addEventListener("change", function (evento) {
+        const celdaPaga = evento.target.closest(".celda-paga");
+        if (celdaPaga) {
+            const select = celdaPaga.querySelector('select[name="quien_paga[]"]');
+            const etiquetaQr = celdaPaga.querySelector(".paga-qr");
+            const checkQr = celdaPaga.querySelector(".check-qr-remitente");
+            const medio = celdaPaga.querySelector('input[name="medio_pago_remitente[]"]');
+            const esRemitente = select.value === "Remitente";
+            etiquetaQr.hidden = !esRemitente;
+            if (!esRemitente) {
+                checkQr.checked = false;
+            }
+            medio.value = esRemitente && checkQr.checked ? "QR" : "Efectivo";
+        }
         if (evento.target.matches(".input-foto-encomienda")) {
             const archivo = evento.target.files[0];
             if (!archivo) return;

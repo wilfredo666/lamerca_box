@@ -67,6 +67,9 @@ $mensajeWhatsapp = "📦 *TU MERCA ENCOMIENDAS*\n\n"
                 data-mensaje="<?= $h($mensajeWhatsapp) ?>">
                 📲 Compartir por WhatsApp
               </button>
+              <a class="btn btn-dark" style="margin-top: 5px;" href="<?= $base_url ?>recepcion/etiquetas?id=<?= (int) $encomienda["id_recepcion"] ?>&encomienda=<?= (int) $encomienda["id"] ?>" target="_blank" rel="noopener">
+                🖨️ Imprimir etiqueta
+              </a>
             </div>
 
           </div>

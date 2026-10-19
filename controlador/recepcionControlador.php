@@ -311,6 +311,7 @@ class ControladorRecepcion
     $descripciones = $_POST["descripcion"] ?? [];
     $precios = $_POST["precio"] ?? [];
     $quienesPagan = $_POST["quien_paga"] ?? [];
+    $mediosPago = $_POST["medio_pago_remitente"] ?? [];
     $clasificacionesPaquete = $_POST["clasificacion"] ?? [];
     $fotosEncomienda = $_FILES["foto_encomienda"] ?? ["name" => [], "tmp_name" => [], "size" => [], "error" => []];
     if (!is_array($fotosEncomienda) || !is_array($fotosEncomienda["error"] ?? null)) {
@@ -354,6 +355,7 @@ class ControladorRecepcion
         "clasificacion" => $clasificacion,
         "precio" => $precio,
         "quien_paga" => $quienPaga,
+        "medio_pago_remitente" => $quienPaga === "Remitente" && ($mediosPago[$indice] ?? "") === "QR" ? "QR" : ($quienPaga === "Remitente" ? "Efectivo" : null),
         "foto" => null,
         "indice_foto" => $indice
       ];
@@ -515,6 +517,50 @@ class ControladorRecepcion
       . "Gracias por confiar en *Tu Merca Encomiendas*.";
 
     return $comprobante;
+  }
+
+  static public function ctrEtiquetas()
+  {
+    $idRecepcion = filter_input(INPUT_GET, "id", FILTER_VALIDATE_INT);
+    $comprobante = $idRecepcion ? ModeloRecepcion::mdlComprobanteRecepcion($idRecepcion) : null;
+    if ($comprobante === null) {
+      http_response_code(404);
+      exit("Recepción no encontrada.");
+    }
+    $idEncomienda = filter_input(INPUT_GET, "encomienda", FILTER_VALIDATE_INT);
+    $idAlmacenSesion = (int) ($_SESSION["idAlmacen"] ?? 0);
+    $tieneAcceso = (int) $comprobante["recepcion"]["id_almacen"] === $idAlmacenSesion;
+    if (!$tieneAcceso && $idEncomienda) {
+      foreach ($comprobante["paquetes"] as $paquete) {
+        if ((int) $paquete["id"] === $idEncomienda && (int) $paquete["id_almacen_actual"] === $idAlmacenSesion) {
+          $tieneAcceso = true;
+        }
+      }
+    }
+    if (!$tieneAcceso) {
+      http_response_code(403);
+      exit("No tiene acceso a esta recepción.");
+    }
+    $paquetes = array_values(array_filter(
+      $comprobante["paquetes"],
+      fn($paquete) => $paquete["estado"] !== "Eliminado" && (!$idEncomienda || (int) $paquete["id"] === $idEncomienda)
+    ));
+    if (empty($paquetes)) {
+      http_response_code(404);
+      exit("No hay encomiendas para imprimir.");
+    }
+
+    require_once __DIR__ . "/../assets/fpdf/EtiquetaEncomienda.php";
+    $pdf = new EtiquetaEncomienda();
+    $fecha = date("d/m/Y", strtotime($comprobante["recepcion"]["fecha_registro"]));
+    foreach ($paquetes as $paquete) {
+      $contacto = trim((string) ($paquete["contacto"] ?? ""));
+      $pdf->agregarEtiqueta($paquete["codigo"], $paquete["destinatario"], $contacto, $fecha);
+    }
+    header("Content-Type: application/pdf");
+    header("Content-Disposition: inline; filename=\"etiquetas-" . $comprobante["recepcion"]["codigo"] . ".pdf\"");
+    $pdf->Output("I", "etiquetas.pdf");
+    exit;
   }
 
   static public function ctrVistaComprobanteGeneral()

@@ -41,16 +41,27 @@ class ModeloCaja
     return $stmt->fetchAll(PDO::FETCH_ASSOC);
   }
 
-  public static function mdlResumen($idAlmacen)
+  public static function mdlResumen($idAlmacen, $fechaDesde = null, $fechaHasta = null, $idUsuario = null)
   {
+    $filtros = "";
+    $parametros = [":id_almacen" => $idAlmacen];
+    if ($fechaDesde !== null && $fechaHasta !== null) {
+      $filtros .= " AND fecha_movimiento >= :fecha_desde AND fecha_movimiento < DATE_ADD(:fecha_hasta, INTERVAL 1 DAY)";
+      $parametros[":fecha_desde"] = $fechaDesde . " 00:00:00";
+      $parametros[":fecha_hasta"] = $fechaHasta;
+    }
+    if ($idUsuario !== null) {
+      $filtros .= " AND id_usuario = :id_usuario";
+      $parametros[":id_usuario"] = $idUsuario;
+    }
     $stmt = Conexion::conectar()->prepare(
       "SELECT
         COALESCE(SUM(CASE WHEN tipo = 'Ingreso' AND estado_caja = 1 THEN cantidad ELSE 0 END), 0) AS total_ingresos,
         COALESCE(SUM(CASE WHEN tipo = 'Salida' AND estado_caja = 1 THEN cantidad ELSE 0 END), 0) AS total_salidas
        FROM caja
-       WHERE id_almacen = :id_almacen"
+       WHERE id_almacen = :id_almacen" . $filtros
     );
-    $stmt->execute([":id_almacen" => $idAlmacen]);
+    $stmt->execute($parametros);
     $resumen = $stmt->fetch(PDO::FETCH_ASSOC);
     $resumen["saldo_actual"] = (float) $resumen["total_ingresos"] - (float) $resumen["total_salidas"];
     return $resumen;
@@ -77,7 +88,28 @@ class ModeloCaja
       $parametros[":id_usuario"] = $idUsuario;
     }
     $stmt->execute($parametros);
-    return $stmt->fetch(PDO::FETCH_ASSOC);
+    $pagos = $stmt->fetch(PDO::FETCH_ASSOC);
+
+    // Pagos del remitente: se cuentan el día de la recepción, no el de la entrega
+    $filtroRecepcionista = $idUsuario !== null ? " AND r.id_usuario_recepcion = :id_usuario" : "";
+    $stmtRemitente = Conexion::conectar()->prepare(
+      "SELECT
+        COALESCE(SUM(CASE WHEN e.medio_pago_remitente = 'QR' THEN e.precio ELSE 0 END), 0) AS qr,
+        COALESCE(SUM(CASE WHEN e.medio_pago_remitente = 'Efectivo' THEN e.precio ELSE 0 END), 0) AS efectivo
+       FROM encomiendas e
+       INNER JOIN recepciones r ON r.id = e.id_recepcion
+       WHERE e.quien_paga = 'Remitente' AND e.cobrado = 1 AND e.estado <> 'Eliminado'
+         AND r.id_almacen = :id_almacen
+         AND e.fecha_registro >= :fecha_desde
+         AND e.fecha_registro < DATE_ADD(:fecha_hasta, INTERVAL 1 DAY)" . $filtroRecepcionista
+    );
+    $stmtRemitente->execute($parametros);
+    $remitente = $stmtRemitente->fetch(PDO::FETCH_ASSOC);
+
+    return [
+      "qr" => (float) $pagos["qr"] + (float) $remitente["qr"],
+      "efectivo" => (float) $pagos["efectivo"] + (float) $remitente["efectivo"]
+    ];
   }
 
   public static function mdlRegistrar($datos)

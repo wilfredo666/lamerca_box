@@ -11,6 +11,7 @@ $rutas_validas = [
   "recepcion/historial" => ["vista" => "recepcion/historial_cajas.php", "accion" => "ctrVistaHistorial"],
   "recepcion/comprobante" => ["vista" => "recepcion/comprobante_caja.php", "accion" => "ctrVistaComprobante"],
   "recepcion/comprobante-general" => ["vista" => "recepcion/comprobante_caja_respaldo.php", "accion" => "ctrVistaComprobanteGeneral"],
+  "recepcion/etiquetas" => ["vista" => "recepcion/comprobante_caja_respaldo.php", "accion" => "ctrEtiquetas"],
   "recepcion/cajas-buscar" => ["vista" => "recepcion/cajas_buscar.php", "accion" => "ctrBuscarCajas"],
   "recepcion/caja-ver" => ["vista" => "recepcion/caja_ver.php", "accion" => "ctrVerCaja"],
   "recepcion/caja-editar" => ["vista" => "recepcion/caja_editar.php", "accion" => "ctrEditarCaja"],

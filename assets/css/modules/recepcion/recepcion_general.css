@@ -287,6 +287,34 @@
   color: #b91c1c;
 }
 
+.celda-paga {
+  white-space: nowrap;
+}
+
+.celda-paga select {
+  width: auto;
+  display: inline-block;
+}
+
+.paga-qr {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  margin: 0 0 0 6px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.paga-qr[hidden] {
+  display: none;
+}
+
+.paga-qr input[type="checkbox"] {
+  width: auto;
+  min-height: 0;
+  margin: 0;
+}
+
 .campo-foto-encomienda {
   display: inline-flex;
   align-items: center;
