@@ -31,55 +31,82 @@
       <?php endif; ?>
     </aside>
     <section class="panel-encomiendas">
-    <?php if ($recepcion["estado"] !== "Abierta"): ?>
-      <div class="alerta-error">Esta caja está cerrada y no permite agregar encomiendas.</div>
-    <?php else: ?>
-      <div class="titulo-paquetes">
-        <div>
-          <h2>Encomiendas</h2>
-          <p><span id="contadorPaquetes">1</span> <span id="textoContador">encomienda registrada</span></p>
+      <?php if ($recepcion["estado"] !== "Abierta"): ?>
+        <div class="alerta-error">Esta caja está cerrada y no permite agregar encomiendas.</div>
+      <?php else: ?>
+        <div class="titulo-paquetes">
+          <div>
+            <h2>Encomiendas</h2>
+            <p><span id="contadorPaquetes">1</span> <span id="textoContador">encomienda registrada</span></p>
+          </div>
+          <button type="button" class="boton-secundario" id="agregarEncomienda"><i class="fas fa-plus"></i> Agregar encomienda</button>
         </div>
-        <button type="button" class="boton-secundario" id="agregarEncomienda"><i class="fas fa-plus"></i> Agregar encomienda</button>
-      </div>
-      <form method="POST" id="formRecepcion" enctype="multipart/form-data">
-        <input type="hidden" name="csrf_token" value="<?= $h($csrfToken) ?>">
-        <input type="hidden" name="id_cliente" value="<?= (int) $recepcion["id_cliente"] ?>">
-        <input type="hidden" name="empresa" value="<?= $h($recepcion["empresa"]) ?>">
-        <input type="hidden" name="tipo_recepcion" value="<?= $h($recepcion["tipo_recepcion"]) ?>">
-        <input type="hidden" name="observaciones" value="<?= $h($recepcion["observaciones"]) ?>">
-        <div class="tabla-responsive">
-          <table>
-            <thead><tr><th>N°</th><th>Destinatario</th><th>Contacto</th><th>Clasificación</th><th>Descripción</th><th>Precio (Bs)</th><th>Paga</th><th>Foto</th><th></th></tr></thead>
-            <tbody id="tablaPaquetes">
-              <tr>
-                <td class="numero-encomienda">1</td>
-                <td><input type="text" name="destinatario[]" maxlength="150" required></td>
-                <td><input type="text" name="contacto[]" maxlength="30"></td>
-                <td><select name="clasificacion[]" required><option value="">Seleccione</option><?php foreach ($clasificaciones as $clasificacion): ?><option value="<?= $h($clasificacion["descripcion"]) ?>"><?= $h($clasificacion["descripcion"]) ?></option><?php endforeach; ?></select></td>
-                <td><input type="text" name="descripcion[]" maxlength="5000"></td>
-                <td><input type="number" name="precio[]" min="0" step="0.01" value="2.00" required></td>
-                <td class="celda-paga"><select name="quien_paga[]" required><option value="Destinatario">Destinatario</option><option value="Remitente">Remitente</option></select><label class="paga-qr" hidden><input type="checkbox" class="check-qr-remitente"> QR</label><input type="hidden" name="medio_pago_remitente[]" value="Efectivo"></td>
-                <td><label class="campo-foto-encomienda" title="Subir foto de la encomienda"><span class="icono-foto-encomienda" aria-hidden="true">📷</span><input type="file" name="foto_encomienda[]" accept="image/jpeg,image/png,image/gif,image/webp" capture="environment" class="input-foto-encomienda" aria-label="Foto de la encomienda"></label></td>
-                <td><button type="button" class="boton-quitar" aria-label="Quitar encomienda"><i class="fas fa-times"></i></button></td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      </form>
-      <template id="plantillaEncomienda">
-        <tr>
-          <td class="numero-encomienda"></td>
-          <td><input type="text" name="destinatario[]" maxlength="150" required></td>
-          <td><input type="text" name="contacto[]" maxlength="30"></td>
-          <td><select name="clasificacion[]" required><option value="">Seleccione</option><?php foreach ($clasificaciones as $clasificacion): ?><option value="<?= $h($clasificacion["descripcion"]) ?>"><?= $h($clasificacion["descripcion"]) ?></option><?php endforeach; ?></select></td>
-          <td><input type="text" name="descripcion[]" maxlength="5000"></td>
-          <td><input type="number" name="precio[]" min="0" step="0.01" value="2.00" required></td>
-          <td class="celda-paga"><select name="quien_paga[]" required><option>Destinatario</option><option>Remitente</option></select><label class="paga-qr" hidden><input type="checkbox" class="check-qr-remitente"> QR</label><input type="hidden" name="medio_pago_remitente[]" value="Efectivo"></td>
-          <td><label class="campo-foto-encomienda" title="Subir foto de la encomienda"><span class="icono-foto-encomienda" aria-hidden="true">📷</span><input type="file" name="foto_encomienda[]" accept="image/jpeg,image/png,image/gif,image/webp" capture="environment" class="input-foto-encomienda" aria-label="Foto de la encomienda"></label></td>
-          <td><button type="button" class="boton-quitar" aria-label="Quitar encomienda"><i class="fas fa-times"></i></button></td>
-        </tr>
-      </template>
-    <?php endif; ?>
+        <form method="POST" id="formRecepcion" enctype="multipart/form-data">
+          <input type="hidden" name="csrf_token" value="<?= $h($csrfToken) ?>">
+          <input type="hidden" name="id_cliente" value="<?= (int) $recepcion["id_cliente"] ?>">
+          <input type="hidden" name="empresa" value="<?= $h($recepcion["empresa"]) ?>">
+          <input type="hidden" name="tipo_recepcion" value="<?= $h($recepcion["tipo_recepcion"]) ?>">
+          <input type="hidden" name="observaciones" value="<?= $h($recepcion["observaciones"]) ?>">
+          <div class="tabla-responsive">
+            <table>
+              <thead>
+                <tr>
+                  <th>N°</th>
+                  <th>Destinatario</th>
+                  <th>Contacto</th>
+                  <th>Descripción</th>
+                  <th>Clasificación</th>
+                  <th>Precio (Bs)</th>
+                  <th>Paga</th>
+                  <th>Foto</th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody id="tablaPaquetes">
+                <tr>
+                  <td class="numero-encomienda">1</td>
+                  <td><input type="text" name="destinatario[]" maxlength="150" required></td>
+                  <td><input type="text" name="contacto[]" maxlength="30"></td>
+                  <td><input type="text" name="descripcion[]" maxlength="5000"></td>
+                  <td>
+                    <select name="clasificacion[]" required>
+                      <?php foreach ($clasificaciones as $clasificacion): ?>
+                        <option value="<?= $h($clasificacion["descripcion"]) ?>"><?= $h($clasificacion["descripcion"]) ?></option><?php endforeach; ?>
+                    </select>
+                  </td>
+                  <td  style="width: 100px;"><input type="number" name="precio[]" min="0" step="0.01" value="2.00" required></td>
+                  <td class="celda-paga">
+                    <select name="quien_paga[]" required>
+                      <option value="Destinatario">Destinatario</option>
+                      <option value="Remitente">Remitente</option>
+                    </select><label class="paga-qr" hidden><input type="checkbox" class="check-qr-remitente"> QR</label><input type="hidden" name="medio_pago_remitente[]" value="Efectivo">
+                  </td>
+                  <td><label class="campo-foto-encomienda" title="Subir foto de la encomienda"><span class="icono-foto-encomienda" aria-hidden="true">📷</span><input type="file" name="foto_encomienda[]" accept="image/jpeg,image/png,image/gif,image/webp" capture="environment" class="input-foto-encomienda" aria-label="Foto de la encomienda"></label></td>
+                  <td><button type="button" class="boton-quitar" aria-label="Quitar encomienda"><i class="fas fa-times"></i></button></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </form>
+        <template id="plantillaEncomienda">
+          <tr>
+            <td class="numero-encomienda"></td>
+            <td><input type="text" name="destinatario[]" maxlength="150" required></td>
+            <td><input type="text" name="contacto[]" maxlength="30"></td>
+            <td><select name="clasificacion[]" required>
+                <option value="">Seleccione</option><?php foreach ($clasificaciones as $clasificacion): ?><option value="<?= $h($clasificacion["descripcion"]) ?>"><?= $h($clasificacion["descripcion"]) ?></option><?php endforeach; ?>
+              </select></td>
+            <td><input type="text" name="descripcion[]" maxlength="5000"></td>
+            <td><input type="number" name="precio[]" min="0" step="0.01" value="2.00" required></td>
+            <td class="celda-paga"><select name="quien_paga[]" required>
+                <option>Destinatario</option>
+                <option>Remitente</option>
+              </select><label class="paga-qr" hidden><input type="checkbox" class="check-qr-remitente"> QR</label><input type="hidden" name="medio_pago_remitente[]" value="Efectivo"></td>
+            <td><label class="campo-foto-encomienda" title="Subir foto de la encomienda"><span class="icono-foto-encomienda" aria-hidden="true">📷</span><input type="file" name="foto_encomienda[]" accept="image/jpeg,image/png,image/gif,image/webp" capture="environment" class="input-foto-encomienda" aria-label="Foto de la encomienda"></label></td>
+            <td><button type="button" class="boton-quitar" aria-label="Quitar encomienda"><i class="fas fa-times"></i></button></td>
+          </tr>
+        </template>
+      <?php endif; ?>
     </section>
   </div>
 </div>

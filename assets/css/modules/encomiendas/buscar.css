@@ -313,7 +313,7 @@
 	grid-column: 1 / -1
 }
 
-.acciones-tarjeta form:not(:has(label)) {
+.acciones-tarjeta form.formulario-foto:not(:has(label)) {
 	display: none
 }
 

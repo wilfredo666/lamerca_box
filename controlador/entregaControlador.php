@@ -127,10 +127,13 @@ class ControladorEntrega
     $soloSinImagen = ($_POST["sin_imagen"] ?? "") === "1";
     $pagina = filter_input(INPUT_POST, "pagina", FILTER_VALIDATE_INT);
     $pagina = $pagina && $pagina > 0 ? $pagina : 1;
-    if (!in_array($retorno, ["encomiendas/buscar", "entrega/fotos-pendientes"], true)) {
+    if (!in_array($retorno, ["encomiendas/buscar", "encomiendas/ver", "entrega/fotos-pendientes"], true)) {
       $retorno = "entrega/fotos-pendientes";
     }
     $rutaRetorno = $retorno;
+    if ($retorno === "encomiendas/ver") {
+      $rutaRetorno .= "?id=" . (int) $id;
+    }
     if ($retorno === "encomiendas/buscar") {
       $rutaRetorno .= "?" . http_build_query([
         "buscar" => $buscar,

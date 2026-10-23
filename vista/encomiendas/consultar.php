@@ -8,21 +8,24 @@ $clasesEstado = [
   "Eliminado" => "estado-eliminado"
 ];
 ?>
-<div class="contenedor">
+<br>
   <div class="card consulta-encomienda">
-    <h1>Consultar encomienda</h1>
-    <p class="consulta-ayuda">Busca por código, destinatario, remitente o celular en todos los almacenes.</p>
-    <form method="GET" action="<?= $h($base_url) ?>" class="consulta-formulario">
-      <input type="hidden" name="ruta" value="encomiendas/consultar">
-      <div class="input-group">
-        <input type="text" name="buscar" class="form-control" maxlength="100" value="<?= $h($buscar) ?>"
-          placeholder="Código, destinatario, remitente o celular" autocomplete="off" autofocus>
-        <div class="input-group-append">
-          <button type="submit" class="btn btn-info btn-flat"><i class="fas fa-search"></i> Buscar</button>
-          <a href="<?= $h($base_url) ?>encomiendas/consultar" class="btn btn-danger btn-flat"><i class="fas fa-broom"></i> Limpiar</a>
+
+    <div class="card-header">
+      <h1>Consultar encomienda</h1>
+      <p class="consulta-ayuda">Busca por código, destinatario, remitente o celular en todos los almacenes.</p>
+      <form method="GET" action="<?= $h($base_url) ?>" class="consulta-formulario">
+        <input type="hidden" name="ruta" value="encomiendas/consultar">
+        <div class="input-group">
+          <input type="text" name="buscar" class="form-control" value="<?= $h($buscar) ?>"
+            placeholder="Código, destinatario, remitente o celular" autocomplete="off" autofocus>
+          <div class="input-group-append">
+            <button type="submit" class="btn btn-info btn-flat"><i class="fas fa-search"></i> Buscar</button>
+            <a href="<?= $h($base_url) ?>encomiendas/consultar" class="btn btn-danger btn-flat"><i class="fas fa-broom"></i> Limpiar</a>
+          </div>
         </div>
-      </div>
-    </form>
+      </form>
+    </div>
 
     <?php if ($busquedaRealizada && empty($resultados)): ?>
       <p class="consulta-vacio">No se encontró ninguna encomienda para «<?= $h($buscar) ?>».</p>
@@ -60,26 +63,68 @@ $clasesEstado = [
           <section>
             <h2>Encomienda</h2>
             <dl>
-              <div><dt>Destinatario</dt><dd><?= $h($dato($e["destinatario"])) ?></dd></div>
-              <div><dt>Contacto</dt><dd><?= $h($dato($e["contacto"])) ?></dd></div>
-              <div><dt>Descripción</dt><dd><?= nl2br($h($dato($e["descripcion"], "Sin descripción"))) ?></dd></div>
-              <div><dt>Clasificación</dt><dd><?= $h($dato($e["clasificacion"])) ?></dd></div>
-              <div><dt>Precio</dt><dd>Bs <?= number_format((float) $e["precio"], 2) ?></dd></div>
-              <div><dt>Quién paga</dt><dd><?= $h($dato($e["quien_paga"])) ?></dd></div>
-              <div><dt>Cobrado</dt><dd><?= !empty($e["cobrado"]) ? "Sí" : "No" ?></dd></div>
-              <div><dt>Registrada</dt><dd><?= $h($fecha($e["fecha_registro"])) ?></dd></div>
+              <div>
+                <dt>Destinatario</dt>
+                <dd><?= $h($dato($e["destinatario"])) ?></dd>
+              </div>
+              <div>
+                <dt>Contacto</dt>
+                <dd><?= $h($dato($e["contacto"])) ?></dd>
+              </div>
+              <div>
+                <dt>Descripción</dt>
+                <dd><?= nl2br($h($dato($e["descripcion"], "Sin descripción"))) ?></dd>
+              </div>
+              <div>
+                <dt>Clasificación</dt>
+                <dd><?= $h($dato($e["clasificacion"])) ?></dd>
+              </div>
+              <div>
+                <dt>Precio</dt>
+                <dd>Bs <?= number_format((float) $e["precio"], 2) ?></dd>
+              </div>
+              <div>
+                <dt>Quién paga</dt>
+                <dd><?= $h($dato($e["quien_paga"])) ?></dd>
+              </div>
+              <div>
+                <dt>Cobrado</dt>
+                <dd><?= !empty($e["cobrado"]) ? "Sí" : "No" ?></dd>
+              </div>
+              <div>
+                <dt>Registrada</dt>
+                <dd><?= $h($fecha($e["fecha_registro"])) ?></dd>
+              </div>
             </dl>
           </section>
 
           <section>
             <h2>Remitente y recepción</h2>
             <dl>
-              <div><dt>Remitente</dt><dd><?= $h($dato($e["remitente"])) ?></dd></div>
-              <div><dt>Celular</dt><dd><?= $h($dato($e["celular_remitente"])) ?></dd></div>
-              <div><dt>Empresa</dt><dd><?= $h($dato($e["empresa"])) ?></dd></div>
-              <div><dt>Caja / recepción</dt><dd><?= $h($dato($e["codigo_recepcion"])) ?> (<?= $h($dato($e["estado_recepcion"], "-")) ?>)</dd></div>
-              <div><dt>Tipo</dt><dd><?= $h($dato($e["tipo_recepcion"])) ?></dd></div>
-              <div><dt>Fecha recepción</dt><dd><?= $h($fecha($e["fecha_recepcion"])) ?></dd></div>
+              <div>
+                <dt>Remitente</dt>
+                <dd><?= $h($dato($e["remitente"])) ?></dd>
+              </div>
+              <div>
+                <dt>Celular</dt>
+                <dd><?= $h($dato($e["celular_remitente"])) ?></dd>
+              </div>
+              <div>
+                <dt>Empresa</dt>
+                <dd><?= $h($dato($e["empresa"])) ?></dd>
+              </div>
+              <div>
+                <dt>Caja / recepción</dt>
+                <dd><?= $h($dato($e["codigo_recepcion"])) ?> (<?= $h($dato($e["estado_recepcion"], "-")) ?>)</dd>
+              </div>
+              <div>
+                <dt>Tipo</dt>
+                <dd><?= $h($dato($e["tipo_recepcion"])) ?></dd>
+              </div>
+              <div>
+                <dt>Fecha recepción</dt>
+                <dd><?= $h($fecha($e["fecha_recepcion"])) ?></dd>
+              </div>
             </dl>
           </section>
 
@@ -87,15 +132,39 @@ $clasesEstado = [
             <section>
               <h2>Entrega</h2>
               <dl>
-                <div><dt>Fecha</dt><dd><?= $h($fecha($e["fecha_entrega"])) ?></dd></div>
-                <div><dt>Entregado por</dt><dd><?= $h($dato($e["usuario_entrega"])) ?></dd></div>
-                <div><dt>Almacén</dt><dd><?= $h($dato($e["almacen_entrega"])) ?></dd></div>
-                <div><dt>Método de cobro</dt><dd><?= $h($dato($e["metodo_cobro"])) ?></dd></div>
-                <div><dt>Recargo</dt><dd>Bs <?= number_format((float) $e["recargo"], 2) ?></dd></div>
-                <div><dt>Descuento</dt><dd>Bs <?= number_format((float) $e["descuento"], 2) ?></dd></div>
-                <div><dt>Total cobrado</dt><dd><strong>Bs <?= number_format((float) $e["total_cobrado"], 2) ?></strong></dd></div>
+                <div>
+                  <dt>Fecha</dt>
+                  <dd><?= $h($fecha($e["fecha_entrega"])) ?></dd>
+                </div>
+                <div>
+                  <dt>Entregado por</dt>
+                  <dd><?= $h($dato($e["usuario_entrega"])) ?></dd>
+                </div>
+                <div>
+                  <dt>Almacén</dt>
+                  <dd><?= $h($dato($e["almacen_entrega"])) ?></dd>
+                </div>
+                <div>
+                  <dt>Método de cobro</dt>
+                  <dd><?= $h($dato($e["metodo_cobro"])) ?></dd>
+                </div>
+                <div>
+                  <dt>Recargo</dt>
+                  <dd>Bs <?= number_format((float) $e["recargo"], 2) ?></dd>
+                </div>
+                <div>
+                  <dt>Descuento</dt>
+                  <dd>Bs <?= number_format((float) $e["descuento"], 2) ?></dd>
+                </div>
+                <div>
+                  <dt>Total cobrado</dt>
+                  <dd><strong>Bs <?= number_format((float) $e["total_cobrado"], 2) ?></strong></dd>
+                </div>
                 <?php if (!empty($e["observaciones_entrega"])): ?>
-                  <div><dt>Observaciones</dt><dd><?= nl2br($h($e["observaciones_entrega"])) ?></dd></div>
+                  <div>
+                    <dt>Observaciones</dt>
+                    <dd><?= nl2br($h($e["observaciones_entrega"])) ?></dd>
+                  </div>
                 <?php endif; ?>
               </dl>
             </section>
@@ -105,8 +174,14 @@ $clasesEstado = [
             <section>
               <h2>Eliminación</h2>
               <dl>
-                <div><dt>Fecha</dt><dd><?= $h($fecha($e["fecha_actualizacion"])) ?></dd></div>
-                <div><dt>Motivo</dt><dd><?= nl2br($h($dato($e["observacion"], "Sin motivo registrado"))) ?></dd></div>
+                <div>
+                  <dt>Fecha</dt>
+                  <dd><?= $h($fecha($e["fecha_actualizacion"])) ?></dd>
+                </div>
+                <div>
+                  <dt>Motivo</dt>
+                  <dd><?= nl2br($h($dato($e["observacion"], "Sin motivo registrado"))) ?></dd>
+                </div>
               </dl>
             </section>
           <?php endif; ?>
@@ -138,4 +213,3 @@ $clasesEstado = [
       </article>
     <?php endforeach; ?>
   </div>
-</div>

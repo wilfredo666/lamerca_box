@@ -78,6 +78,9 @@ $mensajeWhatsapp = "📦 *TU MERCA ENCOMIENDAS*\n\n"
         <!-- Columna de imagen -->
         <div class="col-md-6">
           <div class="card-body text-center">
+            <?php if (!empty($_GET["mensaje"]) && $_GET["mensaje"] !== "Fotografía guardada."): ?>
+              <div class="alert alert-info" role="alert"><?= $h($_GET["mensaje"]) ?></div>
+            <?php endif; ?>
             <?php if (!empty($encomienda["foto"])): ?>
               <div>
                 <img src="<?= $base_url . "assets/img/paquetes/" . rawurlencode(basename($encomienda["foto"])) ?>" alt="Foto de la encomienda" class="w-100 rounded" style="max-height:100%; object-fit:cover;">
@@ -85,8 +88,20 @@ $mensajeWhatsapp = "📦 *TU MERCA ENCOMIENDAS*\n\n"
             <?php else: ?>
               <div class="foto-tarjeta">📷 Foto pendiente</div>
             <?php endif; ?>
+            <?php if ($encomienda["estado"] === "Pendiente"): ?>
+              <form method="POST" action="<?= $base_url ?>entrega/foto" enctype="multipart/form-data" class="formulario-foto mt-2">
+                <input type="hidden" name="csrf_token" value="<?= $h($csrfToken) ?>">
+                <input type="hidden" name="id" value="<?= (int) $encomienda["id"] ?>">
+                <input type="hidden" name="retorno" value="encomiendas/ver">
+                <label class="accion foto">
+                  📷 <?= !empty($encomienda["foto"]) ? "Cambiar foto" : "Subir foto" ?>
+                  <input type="file" name="foto" accept="image/jpeg,image/png,image/gif,image/webp" capture="environment" required onchange="this.form.submit()">
+                </label>
+              </form>
+            <?php endif; ?>
           </div>
         </div>
+        
       </div>
     </div>
   <?php endif; ?>

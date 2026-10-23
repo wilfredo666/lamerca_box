@@ -15,9 +15,10 @@ class ModeloRecepcion
       FROM (
         SELECT r.id, r.codigo, r.empresa, r.tipo_recepcion, r.estado,
           r.fecha_registro, r.foto, r.observaciones, c.celular,
-          c.nombre AS nombre_cliente
+          c.nombre AS nombre_cliente, a.nombre_almacen
         FROM recepciones r
         INNER JOIN clientes c ON c.id = r.id_cliente
+        LEFT JOIN almacen a ON a.id_almacen = r.id_almacen
         WHERE r.estado = 'Abierta'
           AND r.tipo_recepcion IN ('Caja TikTok', 'Caja general')
           AND (
@@ -32,7 +33,7 @@ class ModeloRecepcion
       ) r
       LEFT JOIN encomiendas e ON e.id_recepcion = r.id
       GROUP BY r.id, r.codigo, r.empresa, r.tipo_recepcion, r.estado,
-        r.fecha_registro, r.foto, r.observaciones, r.nombre_cliente, r.celular
+        r.fecha_registro, r.foto, r.observaciones, r.nombre_cliente, r.celular, r.nombre_almacen
       ORDER BY r.fecha_registro DESC, r.id DESC"
     );
     $pagina = max(1, (int) $pagina);

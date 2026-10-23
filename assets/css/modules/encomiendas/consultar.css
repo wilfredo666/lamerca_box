@@ -160,13 +160,20 @@
 	}
 
 	.consulta-formulario .input-group {
-		flex-direction: column;
+		flex-wrap: wrap;
+	}
+
+	.consulta-formulario .input-group > .form-control {
+		flex: 0 0 100%;
+		width: 100%;
+		max-width: 100%;
+		border-radius: .25rem;
 	}
 
 	.consulta-formulario .input-group-append {
-		margin-top: 8px;
-		margin-left: 0;
 		display: flex;
+		width: 100%;
+		margin: 8px 0 0;
 		gap: 8px;
 	}
 

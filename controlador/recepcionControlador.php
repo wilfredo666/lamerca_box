@@ -218,6 +218,9 @@ class ControladorRecepcion
         "buscar" => $buscar,
         "pagina" => $pagina
       ]);
+      if (($_POST["retorno"] ?? "") === "detalle" && $id) {
+        $rutaRetorno = "recepcion/caja-ver?id=" . $id;
+      }
       try {
         $token = $_POST["csrf_token"] ?? "";
         if (!is_string($token) || !hash_equals($_SESSION["csrf_token"] ?? "", $token)) {

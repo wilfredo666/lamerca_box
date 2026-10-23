@@ -45,12 +45,17 @@ $h = static fn($valor) => htmlspecialchars((string) ($valor ?? ""), ENT_QUOTES, 
           <div>📦 <b>Encomiendas:</b> <?= (int) $caja["total_encomiendas"] ?></div>
           <div>🟡 <b>Pendientes:</b> <?= (int) $caja["pendientes"] ?></div>
           <div>🔵 <b>Entregadas:</b> <?= (int) $caja["entregados"] ?></div>
+          <div>🏬 <b>Almacén:</b> <?= $h($caja["nombre_almacen"] ?: "No registrado") ?></div>
           <div>🔵 <b>Estado:</b> <?= $h($caja["estado"]) ?></div>
         </div>
-        <div class="acciones-tarjeta">
-          <a class="accion ver" href="<?= $base_url ?>recepcion/caja-ver?id=<?= (int) $caja["id"] ?>">👁 Ver</a>
-          <a class="accion editar" href="<?= $base_url ?>recepcion/caja-editar?id=<?= (int) $caja["id"] ?>">✏ Editar</a>
-          <form method="POST" action="<?= $base_url ?>recepcion/caja-eliminar" onsubmit="return confirm('¿Eliminar esta caja y sus encomiendas?');">
+        <div class="acciones-tarjeta ">
+
+<a class="accion ver" href="<?= $base_url ?>recepcion/caja-ver?id=<?= (int) $caja["id"] ?>">👁 Ver</a>
+
+
+<a class="accion editar" href="<?= $base_url ?>recepcion/caja-editar?id=<?= (int) $caja["id"] ?>">✏ Editar</a>
+
+<form method="POST" action="<?= $base_url ?>recepcion/caja-eliminar" onsubmit="return confirm('¿Eliminar esta caja y sus encomiendas?');" style="display: contents;">
             <input type="hidden" name="csrf_token" value="<?= $h($csrfToken) ?>">
             <input type="hidden" name="id" value="<?= (int) $caja["id"] ?>">
             <input type="hidden" name="buscar" value="<?= $h($buscar) ?>">
@@ -88,17 +93,9 @@ $h = static fn($valor) => htmlspecialchars((string) ($valor ?? ""), ENT_QUOTES, 
           <?php if ((int) $caja["entregados"] > 0): ?>
             <!--mensaje opcional si la caja tiene encomiendas entregadas.-->
           <?php endif; ?>
-          <form method="POST" action="<?= $base_url ?>recepcion/caja-foto" enctype="multipart/form-data" class="formulario-foto">
-            <input type="hidden" name="csrf_token" value="<?= $h($csrfToken) ?>">
-            <input type="hidden" name="id" value="<?= (int) $caja["id"] ?>">
-            <input type="hidden" name="buscar" value="<?= $h($buscar) ?>">
-            <input type="hidden" name="pagina" value="<?= (int) $paginaActual ?>">
-            <label class="accion foto">
-              📷 Foto
-              <input type="file" name="foto" accept="image/jpeg,image/png,image/gif,image/webp" capture="environment" required onchange="this.form.submit()">
-            </label>
-          </form>
-        </div>
+
+
+        </div> <!-- .acciones-tarjeta -->
       </article>
     <?php endforeach; ?>
   </div>
